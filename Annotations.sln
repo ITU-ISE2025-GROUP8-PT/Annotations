@@ -3,6 +3,8 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Annotations.Blazor", "Annotations.Blazor\Annotations.Blazor.csproj", "{09D2FDA2-5853-48B8-9EB8-04345C208AAC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -16,5 +18,9 @@ Global
 		{0BF5641D-0C92-4F47-884F-626C2B0EA9C1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0BF5641D-0C92-4F47-884F-626C2B0EA9C1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0BF5641D-0C92-4F47-884F-626C2B0EA9C1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{09D2FDA2-5853-48B8-9EB8-04345C208AAC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{09D2FDA2-5853-48B8-9EB8-04345C208AAC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{09D2FDA2-5853-48B8-9EB8-04345C208AAC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{09D2FDA2-5853-48B8-9EB8-04345C208AAC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

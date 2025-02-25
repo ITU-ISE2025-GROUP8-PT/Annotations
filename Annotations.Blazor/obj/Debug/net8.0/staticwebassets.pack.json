@@ -1,0 +1,41 @@
+{
+  "Files": [
+    {
+      "Id": "/Users/Jake/Desktop/ITU/4-semester/ISE/Annotations/Annotations.Blazor/obj/Debug/net8.0/scopedcss/projectbundle/Annotations.Blazor.bundle.scp.css",
+      "PackagePath": "staticwebassets/Annotations.Blazor.bundle.scp.css"
+    },
+    {
+      "Id": "/Users/Jake/Desktop/ITU/4-semester/ISE/Annotations/Annotations.Blazor/wwwroot/app.css",
+      "PackagePath": "staticwebassets/app.css"
+    },
+    {
+      "Id": "/Users/Jake/Desktop/ITU/4-semester/ISE/Annotations/Annotations.Blazor/wwwroot/bootstrap/bootstrap.min.css",
+      "PackagePath": "staticwebassets/bootstrap/bootstrap.min.css"
+    },
+    {
+      "Id": "/Users/Jake/Desktop/ITU/4-semester/ISE/Annotations/Annotations.Blazor/wwwroot/bootstrap/bootstrap.min.css.map",
+      "PackagePath": "staticwebassets/bootstrap/bootstrap.min.css.map"
+    },
+    {
+      "Id": "/Users/Jake/Desktop/ITU/4-semester/ISE/Annotations/Annotations.Blazor/wwwroot/favicon.png",
+      "PackagePath": "staticwebassets/favicon.png"
+    },
+    {
+      "Id": "obj/Debug/net8.0/staticwebassets/msbuild.Annotations.Blazor.Microsoft.AspNetCore.StaticWebAssets.props",
+      "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssets.props"
+    },
+    {
+      "Id": "obj/Debug/net8.0/staticwebassets/msbuild.build.Annotations.Blazor.props",
+      "PackagePath": "build\\Annotations.Blazor.props"
+    },
+    {
+      "Id": "obj/Debug/net8.0/staticwebassets/msbuild.buildMultiTargeting.Annotations.Blazor.props",
+      "PackagePath": "buildMultiTargeting\\Annotations.Blazor.props"
+    },
+    {
+      "Id": "obj/Debug/net8.0/staticwebassets/msbuild.buildTransitive.Annotations.Blazor.props",
+      "PackagePath": "buildTransitive\\Annotations.Blazor.props"
+    }
+  ],
+  "ElementsToRemove": []
+}

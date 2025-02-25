@@ -17,35 +17,41 @@ build_property.SupportLocalizedComponentNames =
 build_property.GenerateRazorMetadataSourceChecksumAttributes = 
 build_property.MSBuildProjectDirectory = /Users/Jake/Desktop/ITU/4-semester/ISE/Annotations/Annotations.Blazor
 build_property._RazorSourceGeneratorDebug = 
+build_property.EffectiveAnalysisLevelStyle = 8.0
+build_property.EnableCodeStyleSeverity = 
 
-[/Users/Jake/Desktop/ITU/4-semester/ISE/Annotations/Annotations.Blazor/App.razor]
-build_metadata.AdditionalFiles.TargetPath = QXBwLnJhem9y
+[/Users/Jake/Desktop/ITU/4-semester/ISE/Annotations/Annotations.Blazor/Components/App.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9BcHAucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
-[/Users/Jake/Desktop/ITU/4-semester/ISE/Annotations/Annotations.Blazor/Pages/Index.razor]
-build_metadata.AdditionalFiles.TargetPath = UGFnZXMvSW5kZXgucmF6b3I=
+[/Users/Jake/Desktop/ITU/4-semester/ISE/Annotations/Annotations.Blazor/Components/Pages/Counter.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9QYWdlcy9Db3VudGVyLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
-[/Users/Jake/Desktop/ITU/4-semester/ISE/Annotations/Annotations.Blazor/Shared/SurveyPrompt.razor]
-build_metadata.AdditionalFiles.TargetPath = U2hhcmVkL1N1cnZleVByb21wdC5yYXpvcg==
+[/Users/Jake/Desktop/ITU/4-semester/ISE/Annotations/Annotations.Blazor/Components/Pages/Error.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9QYWdlcy9FcnJvci5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
-[/Users/Jake/Desktop/ITU/4-semester/ISE/Annotations/Annotations.Blazor/_Imports.razor]
-build_metadata.AdditionalFiles.TargetPath = X0ltcG9ydHMucmF6b3I=
+[/Users/Jake/Desktop/ITU/4-semester/ISE/Annotations/Annotations.Blazor/Components/Pages/Home.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9QYWdlcy9Ib21lLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
-[/Users/Jake/Desktop/ITU/4-semester/ISE/Annotations/Annotations.Blazor/Shared/MainLayout.razor]
-build_metadata.AdditionalFiles.TargetPath = U2hhcmVkL01haW5MYXlvdXQucmF6b3I=
-build_metadata.AdditionalFiles.CssScope = b-oopucjl76s
-
-[/Users/Jake/Desktop/ITU/4-semester/ISE/Annotations/Annotations.Blazor/Shared/NavMenu.razor]
-build_metadata.AdditionalFiles.TargetPath = U2hhcmVkL05hdk1lbnUucmF6b3I=
-build_metadata.AdditionalFiles.CssScope = b-hmr8vwu1fc
-
-[/Users/Jake/Desktop/ITU/4-semester/ISE/Annotations/Annotations.Blazor/Pages/Error.cshtml]
-build_metadata.AdditionalFiles.TargetPath = UGFnZXMvRXJyb3IuY3NodG1s
+[/Users/Jake/Desktop/ITU/4-semester/ISE/Annotations/Annotations.Blazor/Components/Pages/Weather.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9QYWdlcy9XZWF0aGVyLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
-[/Users/Jake/Desktop/ITU/4-semester/ISE/Annotations/Annotations.Blazor/Pages/_Host.cshtml]
-build_metadata.AdditionalFiles.TargetPath = UGFnZXMvX0hvc3QuY3NodG1s
+[/Users/Jake/Desktop/ITU/4-semester/ISE/Annotations/Annotations.Blazor/Components/Routes.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9Sb3V0ZXMucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/Jake/Desktop/ITU/4-semester/ISE/Annotations/Annotations.Blazor/Components/_Imports.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9fSW1wb3J0cy5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/Jake/Desktop/ITU/4-semester/ISE/Annotations/Annotations.Blazor/Components/Layout/MainLayout.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9MYXlvdXQvTWFpbkxheW91dC5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = b-4wadzj4bh2
+
+[/Users/Jake/Desktop/ITU/4-semester/ISE/Annotations/Annotations.Blazor/Components/Layout/NavMenu.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9MYXlvdXQvTmF2TWVudS5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = b-0rtd0juc2r

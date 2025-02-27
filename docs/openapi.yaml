@@ -13,12 +13,14 @@ tags:
   - name: Admin
     description: Operations related to the Admin user role.
 paths:
-  /uploadImage:
+  /uploadImage: # If admin ID is required for this endpoint, maybe add it to path: /{adminId}/uploadImage
     put:
       summary: Upload an image
       description: Admin can upload angiographic images for reviewers and annotators to use.
       tags:
         - Admin
+      operationId: putImage # Used to make method names, when generating code
+      # TODO: identify security measures for such operations
       requestBody:
         content:
           multipart/form-data: # Swagger Docs for file upload
@@ -40,4 +42,48 @@ paths:
       responses:
         '200':    
           description: Image uploaded successfully
+  /images/{imageId}:
+    delete:
+      summary: Delete an image
+      description: An admin user role, can delete angiographic images if needed.
+      tags:
+        - Admin
+      operationId: deleteImage
+      # TODO: identify security measures for such operations
+      parameters:
+        - name: imageId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The unique image ID for the image to be deleted
+      responses: 
+        '204': # Successful request, with nothing to be returned to the client
+          description: Image was successfully deleted
+        '404': 
+          description: Image not found
+          content: 
+            application/json:
+              schema: 
+                type: string
+                example: "Image not found"
+        '403':
+          description: Forbidden (user not authorized)
+          content: 
+            application/json:
+              schema:
+                type: string
+                example: "You are not authorized to delete this image"
+        '401':
+          description: Unauthorized (authentication required)
+          content:
+            application/json:
+              schema:
+                type: string
+                example: "Authentication required"
+        
+                
+          
+          
+        
   

@@ -154,6 +154,29 @@ paths:
       responses:
         '200':
           description: The user was successfully logged out
+  /user/{username}:
+    put:
+      summary: Update the user, with the specified username
+      description:
+      operationId: updateUser
+      tags:
+        - Users
+      parameters:
+      - in: path
+        name: username
+        description: Username that needs to be updated
+        required: true
+        schema:
+          type: string
+      - in: body
+        name: body
+        description: Updated user object
+        required: true
+        schema:
+          $ref: '#/components/schemas/User'
+        
+    
+    
       
 components: 
   schemas:

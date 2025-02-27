@@ -123,6 +123,7 @@ paths:
     get:
       summary: User login
       description: User can login to an already created account.
+      operationId: userLogin
       tags:
         - Users
       parameters:
@@ -144,8 +145,16 @@ paths:
         '400':
           description: Invalid username/password supplied
   /user/logout:
-    
-
+    get:
+      summary: Logs out current logged in user session
+      description: 
+      operationId: userLogout
+      tags:
+        - Users
+      responses:
+        '200':
+          description: The user was successfully logged out
+      
 components: 
   schemas:
     User:

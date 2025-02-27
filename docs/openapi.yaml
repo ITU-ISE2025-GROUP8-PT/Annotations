@@ -187,7 +187,7 @@ paths:
           required: true
           schema:
             type: string
-          description: Username that needs to be deleted
+          description: User name that needs to be deleted
       responses:
         '204':
           description: User was successfully deleted, nothing to return
@@ -195,6 +195,25 @@ paths:
           description: Invalid username supplied
         '404':
           description: User not found
+    get:
+      summary: Get user by user name
+      tags:
+        - Users
+      operationId: getUser
+      parameters:
+        - in: path
+          name: username
+          required: true
+          schema:
+            type: string
+          description: The user being queried
+      responses:
+        '200':
+          description: The user was successfully found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
         
 
 components: 

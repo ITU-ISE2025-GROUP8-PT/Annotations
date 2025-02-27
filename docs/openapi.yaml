@@ -13,4 +13,31 @@ tags:
   - name: Admin
     description: Operations related to the Admin user role.
 paths:
+  /uploadImage:
+    put:
+      summary: Upload an image
+      description: Admin can upload angiographic images for reviewers and annotators to use.
+      tags:
+        - Admin
+      requestBody:
+        content:
+          multipart/form-data: # Swagger Docs for file upload
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: The image file to upload
+                title:
+                  type: string
+                  description: A title for the image
+                text:
+                  type: string
+                  description: A description of the image
+              required:
+                - file
+      responses:
+        '200':    
+          description: Image uploaded successfully
   

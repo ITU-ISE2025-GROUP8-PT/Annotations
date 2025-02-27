@@ -27,18 +27,7 @@ paths:
         content:
           multipart/form-data: # Swagger Docs for file upload
             schema:
-              type: object
-              properties:
-                file:
-                  type: string
-                  format: binary
-                  description: The image file to upload
-                title:
-                  type: string
-                  description: A title for the image
-                text:
-                  type: string
-                  description: A description of the image
+              $ref: '#/components/schemas/Image'
               required:
                 - file
       responses:
@@ -162,6 +151,19 @@ components:
               type: string
               format: binary
               description: Image file
+    Image:
+      type: object
+      properties:
+        file:
+          type: string
+          format: binary
+          description: The image file to upload
+        title:
+          type: string
+          description: A title for the image
+        text:
+          type: string
+          description: A description of the image
               
         userRole:
           type: string

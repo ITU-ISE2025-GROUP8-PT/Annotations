@@ -31,7 +31,7 @@ paths:
               required:
                 - file
       responses:
-        '200':    
+        '200':
           description: Image uploaded successfully
         '403':
           description: Forbidden (user not authorized)
@@ -62,19 +62,19 @@ paths:
           schema:
             type: string
           description: The unique image ID for the specified image
-      responses: 
+      responses:
         '204': # Successful request, with nothing to be returned to the client
           description: Image was successfully deleted
-        '404': 
+        '404':
           description: Image not found
-          content: 
+          content:
             application/json:
-              schema: 
+              schema:
                 type: string
                 example: "Image not found"
         '403':
           description: Forbidden (user not authorized)
-          content: 
+          content:
             application/json:
               schema:
                 type: string
@@ -109,16 +109,42 @@ paths:
   /user:
     post:
       summary: Create user
-      description: User creation by the logged in user.
+      description: User registration by the logged in user.
       operationId: createUser
       tags:
         - Users
-      requestBody: 
+      requestBody:
         required: true
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/User'
+  /user/login:
+    get:
+      summary: User login
+      description: User can login to an already created account.
+      tags:
+        - Users
+      parameters:
+        - in: query
+          name: username
+          description: The username of the user for login
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: password
+          description: The user's password for login
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: User successfully logged in
+        '400':
+          description: Invalid username/password supplied
+  /user/logout:
+    
 
 components: 
   schemas:
@@ -163,8 +189,7 @@ components:
           description: A title for the image
         text:
           type: string
-          description: A description of the image
-              
+          description: A description of the image    
         userRole:
           type: string
           description: The specified user's authorization

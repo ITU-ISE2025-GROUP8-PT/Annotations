@@ -12,14 +12,16 @@ tags:
     description: Operations related to the annotating angiographic images.
   - name: Images
     description: Operations related to managing the angiographic images.
+  - name: Users
+    description: Operations related to managing users and user roles.
 paths:
   /uploadImage: # If admin ID is required for this endpoint, maybe add it to path: /{adminId}/uploadImage
-    put:
+    post:
       summary: Upload an image
       description: Admin can upload angiographic images for reviewers and annotators to use.
       tags:
         - Images
-      operationId: putImage # Used to make method names, when generating code
+      operationId: postImage # Used to make method names, when generating code
       # TODO: identify security measures for such operations
       requestBody:
         content:
@@ -115,12 +117,51 @@ paths:
           description: Invalid ID supplied
         '404':
           description: Image not found
-        
-      
-    
-        
-                
-          
-          
-        
-  
+  /user:
+    post:
+      summary: Create user
+      description: User creation by the logged in user.
+      operationId: createUser
+      tags:
+        - Users
+
+components: 
+  schemas:
+    User:
+      type: object
+      properties: 
+        id:
+          type: integer
+          format: "int64"
+        username:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+        phone:
+          type: string
+        jobTitle:
+          type: string
+        affiliation:
+          type: string
+        profilePicture:
+          type: object
+          properties: 
+            file:
+              type: string
+              format: binary
+              description: Image file
+              
+        userRole:
+          type: string
+          description: The specified user's authorization
+          enum: [
+            "admin"
+            "annotator"
+            "reviewer"
+          ]

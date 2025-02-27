@@ -124,6 +124,12 @@ paths:
       operationId: createUser
       tags:
         - Users
+      requestBody: 
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
 
 components: 
   schemas:

@@ -160,8 +160,4 @@ components:
         userRole:
           type: string
           description: The specified user's authorization
-          enum: [
-            "admin"
-            "annotator"
-            "reviewer"
-          ]
+          enum: ["admin", "annotator", "reviewer"]

@@ -168,16 +168,35 @@ paths:
         required: true
         schema:
           type: string
-      - in: body
-        name: body
+      requestBody:
         description: Updated user object
         required: true
-        schema:
-          $ref: '#/components/schemas/User'
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+    delete:
+      summary: Delete user
+      description: Can only be done by the user that is logged in
+      tags:
+        - Users
+      operationId: deleteUser
+      parameters:
+        - name: username
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Username that needs to be deleted
+      responses:
+        '204':
+          description: User was successfully deleted, nothing to return
+        '400':
+          description: Invalid username supplied
+        '404':
+          description: User not found
         
-    
-    
-      
+
 components: 
   schemas:
     User:

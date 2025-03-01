@@ -131,6 +131,25 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/Annotation'
+    get:
+      summary: Retrieve all annotations for a specific image
+      description: ""
+      operationId: getAnnotations
+      tags:
+        - Annotations
+      parameters:
+        - in: path
+          name: imageId
+          description: The image ID of the image on which the annotations where made
+          required: true
+          schema:
+            type: integer
+            format: "int64"
+      responses:
+        '200':
+          description: The annotations were successfully retrieved
+        '400':
+          description: Invalid image ID supplied
   /annotations/{annotationId}:
     patch:
       summary: Update an annotation
@@ -215,7 +234,7 @@ paths:
   /user/logout:
     get:
       summary: Logs out current logged in user session
-      description: 
+      description: ""
       operationId: userLogout
       tags:
         - Users
@@ -225,7 +244,7 @@ paths:
   /user/{username}:
     patch:
       summary: Update the user, with the specified username
-      description:
+      description: ""
       operationId: updateUser
       tags:
         - Users

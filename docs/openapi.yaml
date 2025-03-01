@@ -152,6 +152,27 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/Annotation'
+    delete:
+      summary: Delete an annotation
+      description: Can only be done by the Admin user role, or the annotator of the annotation
+      tags:
+        - Annotations
+      operationId: deleteAnnotation
+      parameters:
+        - name: annotationId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: "int64"
+          description: Annotation ID of the annotation that needs to be deleted
+      responses:
+        '204':
+          description: Annotation was successfully deleted, nothing to return
+        '400':
+          description: Invalid annotation ID supplied
+        '404':
+          description: Annotation not found
   /user:
     post:
       summary: Create user

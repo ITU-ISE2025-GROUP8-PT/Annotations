@@ -118,6 +118,20 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/Image'
+  /images/{imageId}/annotations:
+    post:
+      summary: Create a new annotation for an angiographic image
+      operationId: createAnnotation
+      tags:
+        - Annotations
+      requestBody:
+        description: One Annotation object made by the user
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Annotation'
+      
   /user:
     post:
       summary: Create user
@@ -126,7 +140,7 @@ paths:
       tags:
         - Users
       requestBody:
-        description: Updated Image object with new description
+        description: The newly created user object
         required: true
         content:
           application/json:
@@ -277,3 +291,19 @@ components:
           type: string
           description: The specified user's authorization
           enum: ["admin", "annotator", "reviewer"]
+    Annotation:
+      type: object
+      properties: 
+        imageId:
+          type: integer
+          format: "int64"
+        userId:
+          type: integer
+          format: "int64"
+        annotationType:
+          type: string
+          description: The type of annotation made by the user
+          # TODO: make enum of different annotation types
+        annotations:
+          type: string
+          description: The annotations made by the user on the specific image

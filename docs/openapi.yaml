@@ -131,7 +131,27 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/Annotation'
-      
+  /annotations/{annotationId}:
+    patch:
+      summary: Update an annotation
+      operationId: updateAnnotation
+      tags:
+        - Annotations
+      parameters:
+        - in: path
+          name: annotationId
+          description: The annotation ID of the annotation to be updated
+          required: true
+          schema:
+            type: integer
+            format: "int64"
+      requestBody:
+        description: The updated Annotation object
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Annotation'
   /user:
     post:
       summary: Create user

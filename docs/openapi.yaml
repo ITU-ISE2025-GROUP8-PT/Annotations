@@ -204,6 +204,68 @@ paths:
           description: Invalid annotation ID supplied
         '404':
           description: Annotation not found
+  /annotations/{annotationId}/reviews:
+    post:
+      summary: Add a review to an annotation
+      operationId: createReview
+      tags:
+        - Reviews
+      requestBody:
+        description: The review object 
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Review'
+      responses:
+        '200':
+          description: Review was created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Review'
+  /reviews/{reviewId}:              
+    patch:
+      summary: Update a review
+      operationId: updateReview
+      tags:
+        - Reviews
+      parameters:
+        - in: path
+          name: reviewId
+          description: The review ID of the review to be updated
+          required: true
+          schema:
+            type: integer
+            format: "int64"
+      requestBody:
+        description: The updated Review object
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Review'
+    delete:
+      summary: Delete a review
+      description: Can only be done by the Admin user role, or the reviewer of the annotation
+      tags:
+        - Reviews
+      operationId: deleteReview
+      parameters:
+        - name: reviewId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: "int64"
+          description: Review ID of the review that needs to be deleted
+      responses:
+        '204':
+          description: Review was successfully deleted, nothing to return
+        '400':
+          description: Invalid review ID supplied
+        '404':
+          description: Review not found
   /user:
     post:
       summary: Create user
@@ -393,3 +455,15 @@ components:
       required:
         - imageId
         - userId
+    Review:
+      type: object
+      properties:
+        annotationId:
+          type: integer
+          format: "int64"
+        review:
+          type: string
+          description: The body of the user's review 
+      required:
+        - annotationId
+        - review

@@ -28,11 +28,13 @@ paths:
           multipart/form-data: # Swagger Docs for file upload
             schema:
               $ref: '#/components/schemas/Image'
-              required:
-                - file
       responses:
         '200':
           description: Image uploaded successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Image'
         '403':
           description: Forbidden (user not authorized)
           content:
@@ -102,6 +104,10 @@ paths:
       responses:
         '200':
           description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Image'
         '400':
           description: Invalid ID supplied
         '404':
@@ -148,6 +154,12 @@ paths:
       responses:
         '200':
           description: The annotations were successfully retrieved
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Annotation'
         '400':
           description: Invalid image ID supplied
   /annotations/{annotationId}:
@@ -206,6 +218,13 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/User'
+      responses:
+        '200':
+          description: User was created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
   /user/login:
     get:
       summary: User login
@@ -329,11 +348,17 @@ components:
           type: string
         profilePicture:
           type: object
-          properties: 
-            file:
-              type: string
-              format: binary
-              description: Image file
+        userRole:
+          type: string
+          description: The specified user's authorization
+          enum: [ "admin", "annotator", "reviewer" ]
+      required:
+        - id
+        - username
+        - email
+        - password
+        - phone
+        - userRole
     Image:
       type: object
       properties:
@@ -347,10 +372,8 @@ components:
         text:
           type: string
           description: A description of the image    
-        userRole:
-          type: string
-          description: The specified user's authorization
-          enum: ["admin", "annotator", "reviewer"]
+      required:
+        - file
     Annotation:
       type: object
       properties: 
@@ -367,3 +390,6 @@ components:
         annotations:
           type: string
           description: The annotations made by the user on the specific image
+      required:
+        - imageId
+        - userId

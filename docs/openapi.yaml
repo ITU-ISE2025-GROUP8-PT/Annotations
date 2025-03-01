@@ -15,7 +15,7 @@ tags:
   - name: Users
     description: Operations related to managing users and user roles.
 paths:
-  /uploadImage: # If admin ID is required for this endpoint, maybe add it to path: /{adminId}/uploadImage
+  /images: # If admin ID is required for this endpoint, maybe add it to path: /{adminId}/uploadImage
     post:
       summary: Upload an image
       description: Admin can upload angiographic images for reviewers and annotators to use.
@@ -106,6 +106,18 @@ paths:
           description: Invalid ID supplied
         '404':
           description: Image not found
+    patch:
+      summary: Update an image
+      description: Partially update an already existing image's description
+      operationId: updateImage
+      tags:
+        - Images
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Image'
   /user:
     post:
       summary: Create user
@@ -114,6 +126,7 @@ paths:
       tags:
         - Users
       requestBody:
+        description: Updated Image object with new description
         required: true
         content:
           application/json:
@@ -155,7 +168,7 @@ paths:
         '200':
           description: The user was successfully logged out
   /user/{username}:
-    put:
+    patch:
       summary: Update the user, with the specified username
       description:
       operationId: updateUser

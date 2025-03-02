@@ -1,7 +1,7 @@
-@Annotations.API_HostAddress = http://localhost:5084
+@API_Hostaddress = http://localhost:5084
 @Annotations = 🐿️
 
-GET {{Annotations.API_HostAddress}}/weatherforecast/
+GET {{API_Hostaddress}}/weatherforecast/
 Accept: application/json
 
 ###

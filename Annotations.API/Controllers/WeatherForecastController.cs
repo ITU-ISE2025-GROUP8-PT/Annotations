@@ -4,21 +4,22 @@ namespace Annotations.API.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class WeatherForecastController : ControllerBase
+    public class KageController : ControllerBase
     {
-        private static readonly string[] Summaries = new[]
-        {
+        private static readonly string[] Summaries =
+        [
             "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-        };
+        ];
 
-        private readonly ILogger<WeatherForecastController> _logger;
+        private readonly ILogger<KageController> _logger;
 
-        public WeatherForecastController(ILogger<WeatherForecastController> logger)
+        public KageController(ILogger<KageController> logger)
         {
             _logger = logger;
         }
 
         [HttpGet]
+        [Route("Kagevejr")]
         public IEnumerable<WeatherForecast> Get(int days = 8)
         {
             return Enumerable.Range(1, days).Select(index => new WeatherForecast

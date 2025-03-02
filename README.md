@@ -36,7 +36,7 @@
 2. **Navigate** to the Annotations root directory<br>
 	Choose here to navigate to either Annotations.Blazor directory, which is the application, or the Annotations.API directory<br>
 	Certain functions will require both to run individually to be fully function.
-3. **Launch** the API or GUI and **type** in the _console_ the following command: `dotnet run`
+3. **Launch** the API or GUI by **typing** in the _console_ the following command: `dotnet run`
    * If needed then do the exact same for the other directory
       
        

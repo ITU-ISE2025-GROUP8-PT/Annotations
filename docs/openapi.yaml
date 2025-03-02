@@ -32,9 +32,10 @@ paths:
         '200':
           description: Image uploaded successfully
           content:
-            application/json:
+            application/json: 
               schema:
-                $ref: '#/components/schemas/Image'
+                type: int64
+                description: Image ID
         '403':
           description: Forbidden (user not authorized)
           content:
@@ -105,9 +106,10 @@ paths:
         '200':
           description: Successful operation
           content:
-            application/json:
+            application/json: 
               schema:
-                $ref: '#/components/schemas/Image'
+                type: string
+                example: "Successful operation"
         '400':
           description: Invalid ID supplied
         '404':
@@ -123,7 +125,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Image'
+              type: object
+              properties:
+                title:
+                  type: string
+                  description: A title for the image
+                text:
+                  type: string
+                  description: A description of the image
   /images/{imageId}/annotations:
     post:
       summary: Create a new annotation for an angiographic image
@@ -342,7 +351,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/User'
+              $ref: '#/components/schemas/User' # maybe not dont use the whole user object as response body 
     delete:
       summary: Delete user
       description: Can only be done by the user that is logged in

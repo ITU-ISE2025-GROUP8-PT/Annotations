@@ -20,7 +20,7 @@
 	</a>
 	<a href="https://github.com/ITU-ISE2025-GROUP8-PT/Annotations/issues?q=is%3Aclosed">
     <img src="https://img.shields.io/github/issues-pr-closed/ITU-ISE2025-GROUP8-PT/Annotations.svg?style=flat-square&logo=github&logoColor=white"
-         alt="GitHub closed pull requests">
+         alt="GitHub total closed pull requests">
 	</a>
 </p>
       

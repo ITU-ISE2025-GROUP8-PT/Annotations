@@ -18,9 +18,10 @@ if (app.Environment.IsDevelopment())
 */
 
 app.UseStaticFiles();
+
 app.UseRouting();
+
 app.UseAuthorization();
-app.MapControllers();
 
 app.UseHttpsRedirection();
 
@@ -46,6 +47,8 @@ app.MapGet("/weatherforecast", () =>
 .WithOpenApi();
 
 */
+
+app.MapControllers();
 
 app.Run();
 

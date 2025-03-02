@@ -1,0 +1,478 @@
+openapi: 3.1.0
+info:
+  title: Annotations PerfusionTech
+  description: |
+    This API allows medical professionals to annotate angiographic image,
+    and allows the admin user to upload and delete angiographic images.
+  version: 1.0.0
+tags:
+  - name: Reviews
+    description: Operations related to the reviewing angiographic images.
+  - name: Annotations
+    description: Operations related to the annotating angiographic images.
+  - name: Images
+    description: Operations related to managing the angiographic images.
+  - name: Users
+    description: Operations related to managing users and user roles.
+paths:
+  /images: # If admin ID is required for this endpoint, maybe add it to path: /{adminId}/uploadImage
+    post:
+      summary: Upload an image
+      description: Admin can upload angiographic images for reviewers and annotators to use.
+      tags:
+        - Images
+      operationId: postImage # Used to make method names, when generating code
+      # TODO: identify security measures for such operations
+      requestBody:
+        content:
+          multipart/form-data: # Swagger Docs for file upload
+            schema:
+              $ref: '#/components/schemas/Image'
+      responses:
+        '200':
+          description: Image uploaded successfully
+          content:
+            application/json: 
+              schema:
+                type: int64
+                description: Image ID
+        '403':
+          description: Forbidden (user not authorized)
+          content:
+            application/json:
+              schema:
+                type: string
+                example: "You are not authorized to upload this image"
+        '401':
+          description: Unauthorized (authentication required)
+          content:
+            application/json:
+              schema:
+                type: string
+                example: "Authentication required"
+  /images/{imageId}:
+    delete:
+      summary: Delete an image
+      description: An admin user role, can delete angiographic images if needed.
+      tags:
+        - Images
+      operationId: deleteImage
+      # TODO: identify security measures for such operations
+      parameters:
+        - name: imageId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The unique image ID for the specified image
+      responses:
+        '204': # Successful request, with nothing to be returned to the client
+          description: Image was successfully deleted
+        '404':
+          description: Image not found
+          content:
+            application/json:
+              schema:
+                type: string
+                example: "Image not found"
+        '403':
+          description: Forbidden (user not authorized)
+          content:
+            application/json:
+              schema:
+                type: string
+                example: "You are not authorized to delete this image"
+        '401':
+          description: Unauthorized (authentication required)
+          content:
+            application/json:
+              schema:
+                type: string
+                example: "Authentication required"
+    get:
+      summary: Get an image by imageId
+      description: All user roles will be able to access an image by imageId
+      tags:
+        - Images
+      operationId: getImage
+      parameters:
+        - name: imageId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The unique image ID for the specified image
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json: 
+              schema:
+                type: string
+                example: "Successful operation"
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Image not found
+    patch:
+      summary: Update an image
+      description: Partially update an already existing image's description
+      operationId: updateImage
+      tags:
+        - Images
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  description: A title for the image
+                text:
+                  type: string
+                  description: A description of the image
+  /images/{imageId}/annotations:
+    post:
+      summary: Create a new annotation for an angiographic image
+      operationId: createAnnotation
+      tags:
+        - Annotations
+      requestBody:
+        description: One Annotation object made by the user
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Annotation'
+    get:
+      summary: Retrieve all annotations for a specific image
+      description: ""
+      operationId: getAnnotations
+      tags:
+        - Annotations
+      parameters:
+        - in: path
+          name: imageId
+          description: The image ID of the image on which the annotations where made
+          required: true
+          schema:
+            type: integer
+            format: "int64"
+      responses:
+        '200':
+          description: The annotations were successfully retrieved
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Annotation'
+        '400':
+          description: Invalid image ID supplied
+  /annotations/{annotationId}:
+    patch:
+      summary: Update an annotation
+      operationId: updateAnnotation
+      tags:
+        - Annotations
+      parameters:
+        - in: path
+          name: annotationId
+          description: The annotation ID of the annotation to be updated
+          required: true
+          schema:
+            type: integer
+            format: "int64"
+      requestBody:
+        description: The updated Annotation object
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Annotation'
+    delete:
+      summary: Delete an annotation
+      description: Can only be done by the Admin user role, or the annotator of the annotation
+      tags:
+        - Annotations
+      operationId: deleteAnnotation
+      parameters:
+        - name: annotationId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: "int64"
+          description: Annotation ID of the annotation that needs to be deleted
+      responses:
+        '204':
+          description: Annotation was successfully deleted, nothing to return
+        '400':
+          description: Invalid annotation ID supplied
+        '404':
+          description: Annotation not found
+  /annotations/{annotationId}/reviews:
+    post:
+      summary: Add a review to an annotation
+      operationId: createReview
+      tags:
+        - Reviews
+      requestBody:
+        description: The review object 
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Review'
+      responses:
+        '200':
+          description: Review was created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Review'
+  /reviews/{reviewId}:              
+    patch:
+      summary: Update a review
+      operationId: updateReview
+      tags:
+        - Reviews
+      parameters:
+        - in: path
+          name: reviewId
+          description: The review ID of the review to be updated
+          required: true
+          schema:
+            type: integer
+            format: "int64"
+      requestBody:
+        description: The updated Review object
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Review'
+    delete:
+      summary: Delete a review
+      description: Can only be done by the Admin user role, or the reviewer of the annotation
+      tags:
+        - Reviews
+      operationId: deleteReview
+      parameters:
+        - name: reviewId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: "int64"
+          description: Review ID of the review that needs to be deleted
+      responses:
+        '204':
+          description: Review was successfully deleted, nothing to return
+        '400':
+          description: Invalid review ID supplied
+        '404':
+          description: Review not found
+  /user:
+    post:
+      summary: Create user
+      description: User registration by the logged in user.
+      operationId: createUser
+      tags:
+        - Users
+      requestBody:
+        description: The newly created user object
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '200':
+          description: User was created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+  /user/login:
+    get:
+      summary: User login
+      description: User can login to an already created account.
+      operationId: userLogin
+      tags:
+        - Users
+      parameters:
+        - in: query
+          name: username
+          description: The username of the user for login
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: password
+          description: The user's password for login
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: User successfully logged in
+        '400':
+          description: Invalid username/password supplied
+  /user/logout:
+    get:
+      summary: Logs out current logged in user session
+      description: ""
+      operationId: userLogout
+      tags:
+        - Users
+      responses:
+        '200':
+          description: The user was successfully logged out
+  /user/{username}:
+    patch:
+      summary: Update the user, with the specified username
+      description: ""
+      operationId: updateUser
+      tags:
+        - Users
+      parameters:
+      - in: path
+        name: username
+        description: Username that needs to be updated
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: Updated user object
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User' # maybe not dont use the whole user object as response body 
+    delete:
+      summary: Delete user
+      description: Can only be done by the user that is logged in
+      tags:
+        - Users
+      operationId: deleteUser
+      parameters:
+        - name: username
+          in: path
+          required: true
+          schema:
+            type: string
+          description: User name that needs to be deleted
+      responses:
+        '204':
+          description: User was successfully deleted, nothing to return
+        '400':
+          description: Invalid username supplied
+        '404':
+          description: User not found
+    get:
+      summary: Get user by user name
+      tags:
+        - Users
+      operationId: getUser
+      parameters:
+        - in: path
+          name: username
+          required: true
+          schema:
+            type: string
+          description: The user being queried
+      responses:
+        '200':
+          description: The user was successfully found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        
+
+components: 
+  schemas:
+    User:
+      type: object
+      properties: 
+        id:
+          type: integer
+          format: "int64"
+        username:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+        phone:
+          type: string
+        jobTitle:
+          type: string
+        affiliation:
+          type: string
+        profilePicture:
+          type: object
+        userRole:
+          type: string
+          description: The specified user's authorization
+          enum: [ "admin", "annotator", "reviewer" ]
+      required:
+        - id
+        - username
+        - email
+        - password
+        - phone
+        - userRole
+    Image:
+      type: object
+      properties:
+        file:
+          type: string
+          format: binary
+          description: The image file to upload
+        title:
+          type: string
+          description: A title for the image
+        text:
+          type: string
+          description: A description of the image    
+      required:
+        - file
+    Annotation:
+      type: object
+      properties: 
+        imageId:
+          type: integer
+          format: "int64"
+        userId:
+          type: integer
+          format: "int64"
+        annotationType:
+          type: string
+          description: The type of annotation made by the user
+          # TODO: make enum of different annotation types
+        annotations:
+          type: string
+          description: The annotations made by the user on the specific image
+      required:
+        - imageId
+        - userId
+    Review:
+      type: object
+      properties:
+        annotationId:
+          type: integer
+          format: "int64"
+        review:
+          type: string
+          description: The body of the user's review 
+      required:
+        - annotationId
+        - review

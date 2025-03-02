@@ -1,0 +1,51 @@
+﻿{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "PerfusionTech's Web API",
+    "version": "v1"
+  },
+  "paths": {
+    "/weatherforecast": {
+      "get": {
+        "summary": "Get Weather Forecast",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/WeatherForecast"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "WeatherForecast": {
+        "type": "object",
+        "properties": {
+          "date": {
+            "type": "string",
+            "format": "date"
+          },
+          "temperatureC": {
+            "type": "integer"
+          },
+          "temperatureF": {
+            "type": "integer"
+          },
+          "summary": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 
-namespace Annotations.API
+namespace Annotations.API.Controllers
 {
     [ApiController]
     [Route("[controller]")]

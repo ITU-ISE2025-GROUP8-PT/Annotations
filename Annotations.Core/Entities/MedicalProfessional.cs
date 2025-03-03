@@ -1,4 +1,4 @@
-﻿namespace Domain;
+﻿namespace Annotations.Core.Entities;
 
 public class MedicalProfessional : User 
 {

@@ -5,7 +5,7 @@ namespace Annotations.API.Tests;
 public class UserDataAPITest
 {
     [Fact]
-    public void userTest()
+    public void UserTest()
     {
         //arrange
         string firstName = "Mester";

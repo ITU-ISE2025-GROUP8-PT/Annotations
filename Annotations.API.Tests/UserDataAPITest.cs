@@ -1,6 +1,4 @@
-﻿using Xunit;
-
-namespace DefaultNamespace;
+namespace Annotations.API.Tests;
 
 public class UserDataAPITest
 {
@@ -15,5 +13,4 @@ public class UserDataAPITest
         //assert
         Assert.Equal("Mester Jakob Sover du? Sover du?", lyrics);
     }
-    
 }

@@ -31,17 +31,24 @@
 
 # Installation
 
-## Downloading and installing steps:
+## Downloading and installing steps
 1. **[Download](https://github.com/ITU-ISE2025-GROUP8-PT/Annotations)** the latest version available.
 2. **Navigate** to the Annotations root directory<br>
-	Choose here to navigate to either Annotations.Blazor directory, which is the application, or the Annotations.API directory<br>
+	Choose here to navigate to either Annotations.Blazor directory, which is the application, or the Annotations.API directory.<br>
 	Certain functions will require both to run individually to be fully function.
 3. **Launch** the API or GUI by **typing** in the _console_ the following command: `dotnet run`
-   * If needed then do the exact same for the other directory
+   * If needed then do the exact same for the other directory.
       
        
 > [!NOTE]  
-> You can run the API with `dotnet watch` which will trigger Swagger debug tool to help in the development process.
+> You can run the projects with `dotnet watch` to have "rot reload" available for development. When working with the API, this automatically opens the Swagger UI debug tool to help in the development process.
+
+## Solution Structure
+
+The runnable projects within the solution are:
+
+- `Annotations.API` : Backend of Annotations with endpoints for the various functions. 
+- `Annotations.Blazor` : Frontend for Annotations as a Blazor web application. 
 
 # Contribution guidelines
 

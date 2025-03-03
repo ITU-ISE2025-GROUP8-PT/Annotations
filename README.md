@@ -41,7 +41,7 @@
       
        
 > [!NOTE]  
-> You can run the projects with `dotnet watch` to have "rot reload" available for development. When working with the API, this automatically opens the Swagger UI debug tool to help in the development process.
+> You can run the projects with `dotnet watch` to have "hot reload" available for development. When working with the API, this automatically opens the Swagger UI debug tool to help in the development process.
 
 ## Solution Structure
 

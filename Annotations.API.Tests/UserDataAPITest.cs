@@ -1,3 +1,5 @@
+using Xunit;
+
 namespace Annotations.API.Tests;
 
 public class UserDataAPITest

@@ -8,12 +8,12 @@ public class UserDataAPITest
     public void userTest()
     {
         //arrange
-        String firstName = "Mester";
-        String lastName = "Jakob";
+        string firstName = "Mester";
+        string lastName = "Jakob";
         //act
-        String lyrics = firstName + " " + lastName + " Sover du? Sover du?";
+        string lyrics = firstName + " " + lastName + " Sover du? Sover du?";
         //assert
-        Assert.Equal("mester Jakob Sover du? Sover du?", lyrics);
+        Assert.Equal("Mester Jakob Sover du? Sover du?", lyrics);
     }
     
 }

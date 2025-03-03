@@ -5,7 +5,7 @@ namespace DefaultNamespace;
 public class UserDataAPITest
 {
     [Fact]
-    public userTest()
+    public void userTest()
     {
         //arrange
         String firstName = "Mester";
@@ -13,7 +13,7 @@ public class UserDataAPITest
         //act
         String lyrics = firstName + " " + lastName + " Sover du? Sover du?";
         //assert
-        
+        Assert.Equal("mester Jakob Sover du? Sover du?", lyrics);
     }
     
 }

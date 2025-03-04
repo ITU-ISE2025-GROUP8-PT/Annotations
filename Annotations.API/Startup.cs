@@ -38,13 +38,29 @@ public class Startup(IConfiguration configuration)
 
             context.Database.Migrate();
             
-            if (!context.Userz.Any())
+            if (!context.Admins.Any())
             {
                 context.Add(new Admin
                 {
                     UserId = 0,
                     FirstName = "Admin",
-                    LastName = "Adminsen"
+                    LastName = "Adminsen",
+                    Email = "admin@adminsen.com"
+                }); 
+                context.SaveChanges();
+            }
+            else if (!context.MedicalProfessionals.Any())
+            {
+                context.Add(new MedicalProfessional
+                {
+                    UserId = 1,
+                    FirstName = "Medical",
+                    LastName = "Professional",
+                    Email = "med@prof.com",
+                    Affiliation = "Rigshospitalet",
+                    JobTitle = "Surgeon",
+                    TotalAssignmentsFinished = 0,
+                    ProfilePictureID = 123
                 });
                 context.SaveChanges();
             }

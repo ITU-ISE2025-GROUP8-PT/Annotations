@@ -1,6 +1,6 @@
 namespace Annotations.API.Models;
 
-public class UserDto
+public class AdminDto
 {
     public required int Id { get; set; }
     public required string FirstName { get; set; }

@@ -6,13 +6,13 @@ namespace Annotations.API;
 
 public class AnnotationsDbContext : IdentityDbContext<User>
 {
-    public DbSet<User> Users { get; set; } // an issue might occur with the naming Users
+    public DbSet<User> Userz { get; set; } // name Users causes issues. Userz is a temporary name
     public DbSet<Admin> Admins { get; set; }
     public DbSet<MedicalProfessional> MedicalProfessionals { get; set; }
 
     public AnnotationsDbContext(DbContextOptions<AnnotationsDbContext> options) : base(options)
     {
-        Users = Set<User>();
+        Userz = Set<User>();
         Admins = Set<Admin>();
         MedicalProfessionals = Set<MedicalProfessional>();
     }

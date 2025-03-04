@@ -38,7 +38,7 @@ public class Startup(IConfiguration configuration)
 
             context.Database.Migrate();
             
-            if (!context.Users.Any())
+            if (!context.Userz.Any())
             {
                 context.Add(new Admin
                 {

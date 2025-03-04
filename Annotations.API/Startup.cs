@@ -18,8 +18,8 @@ public class Startup(IConfiguration configuration, IHostEnvironment environment)
             configuration.GetConnectionString("DefaultConnection")
                 ?? throw new InvalidOperationException("Connection string"
                 + "'DefaultConnection' not found.");
-
-        services.AddDbContext<AnnotationsDBContext>((serviceProvider, options) =>
+                
+        services.AddDbContext<AnnotationsDbContext>(options =>
         {
             options.UseSqlite(connectionString);
         });
@@ -35,7 +35,7 @@ public class Startup(IConfiguration configuration, IHostEnvironment environment)
 
         using (var scope = app.Services.CreateScope())
         {
-            using var context = scope.ServiceProvider.GetRequiredService<AnnotationsDBContext>();
+            using var context = scope.ServiceProvider.GetRequiredService<AnnotationsDbContext>();
 
             /*context.Database.Migrate();
 

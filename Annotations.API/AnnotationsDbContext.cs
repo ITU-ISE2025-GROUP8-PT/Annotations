@@ -2,15 +2,15 @@ using Annotations.Core.Entities;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-namespace Annotations.Core;
+namespace Annotations.API;
 
-public class AnnotationsDBContext : IdentityDbContext<User>
+public class AnnotationsDbContext : IdentityDbContext<User>
 {
     public DbSet<User> Users { get; set; } // an issue might occur with the naming Users
     public DbSet<Admin> Admins { get; set; }
     public DbSet<MedicalProfessional> MedicalProfessionals { get; set; }
 
-    public AnnotationsDBContext(DbContextOptions<AnnotationsDBContext> options) : base(options)
+    public AnnotationsDbContext(DbContextOptions<AnnotationsDbContext> options) : base(options)
     {
         Users = Set<User>();
         Admins = Set<Admin>();

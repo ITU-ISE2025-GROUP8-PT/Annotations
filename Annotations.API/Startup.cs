@@ -1,12 +1,10 @@
-using Annotations.Core;
-
+using Annotations.Core.Entities;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 
 namespace Annotations.API;
 
-public class Startup(IConfiguration configuration, IHostEnvironment environment)
+public class Startup(IConfiguration configuration)
 {
     public void ConfigureServices(IServiceCollection services)
     {
@@ -25,7 +23,7 @@ public class Startup(IConfiguration configuration, IHostEnvironment environment)
         });
     }
 
-    public async Task Configure(WebApplication app)
+    public Task Configure(WebApplication app)
     {
         if (app.Environment.IsDevelopment())
         {
@@ -37,15 +35,19 @@ public class Startup(IConfiguration configuration, IHostEnvironment environment)
         {
             using var context = scope.ServiceProvider.GetRequiredService<AnnotationsDbContext>();
 
-            /*context.Database.Migrate();
+            context.Database.Migrate();
 
             // Seeds with default dataset if starting with an empty DB.
-            if (!context.Authors.Any() && !context.Cheeps.Any())
+            if (!context.Users.Any())
             {
-                var initializer = new DbInitializer(context, userManager);
-                await initializer.SeedDatabase();
+                context.Add(new Admin
+                {
+                    UserId = 0,
+                    FirstName = "Admin",
+                    LastName = "Adminsen"
+                });
+                context.SaveChanges();
             }
-            */
         }
 
         app.UseStaticFiles();
@@ -54,6 +56,7 @@ public class Startup(IConfiguration configuration, IHostEnvironment environment)
         app.UseHttpsRedirection();
 
         app.MapControllers();
+        return Task.FromResult(Task.CompletedTask);
     }
 
     

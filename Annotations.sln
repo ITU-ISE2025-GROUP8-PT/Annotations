@@ -8,6 +8,7 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Annotations.API", "Annotations.API\Annotations.API.csproj", "{ADCF5A69-D0B7-4FF5-BA10-6A53131F03C6}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Annotations.Core", "Annotations.Core\Annotations.Core.csproj", "{826D1077-5E5B-43BD-B29A-52A5E188DE14}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Annotations.API.Tests", "Annotations.API.Tests\Annotations.API.Tests.csproj", "{AEE9141E-7161-4A7A-A210-45ACEAEF6633}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -30,5 +31,9 @@ Global
 		{826D1077-5E5B-43BD-B29A-52A5E188DE14}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{826D1077-5E5B-43BD-B29A-52A5E188DE14}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{826D1077-5E5B-43BD-B29A-52A5E188DE14}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AEE9141E-7161-4A7A-A210-45ACEAEF6633}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AEE9141E-7161-4A7A-A210-45ACEAEF6633}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AEE9141E-7161-4A7A-A210-45ACEAEF6633}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AEE9141E-7161-4A7A-A210-45ACEAEF6633}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

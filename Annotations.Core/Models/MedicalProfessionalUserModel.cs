@@ -1,6 +1,6 @@
-namespace Annotations.API.Models;
+namespace Annotations.Core.Models;
 
-public class MedicalProfessionalDto
+public class MedicalProfessionalUserModel
 {
     public required int Id { get; set; }
     public required string FirstName { get; set; }

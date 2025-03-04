@@ -6,5 +6,5 @@
 
 public record UserData(string? UserNames, int Age, DateOnly Date, string? Occupation)
 {
-    //public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
+    
 }

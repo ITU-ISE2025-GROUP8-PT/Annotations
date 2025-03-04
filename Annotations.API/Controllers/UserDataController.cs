@@ -24,9 +24,9 @@ namespace Annotations.API.Controllers
         }
 
         [HttpGet]
-        public IEnumerable<UserData> Get(int days = 7)
+        public IEnumerable<UserData> Get(int users = 7)
         {
-            return Enumerable.Range(1, days).Select(index => new UserData
+            return Enumerable.Range(1, users).Select(index => new UserData
                 (
                     UserNames[Random.Shared.Next(UserNames.Length)],
                     Random.Shared.Next(1, 55),

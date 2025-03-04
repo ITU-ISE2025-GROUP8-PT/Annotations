@@ -16,13 +16,4 @@ public class AnnotationsDBContext : IdentityDbContext<User>
         Admins = Set<Admin>();
         MedicalProfessionals = Set<MedicalProfessional>();
     }
-
-    protected override void OnModelCreating(ModelBuilder builder)
-    {
-        base.OnModelCreating(builder);
-
-        builder.Entity<MedicalProfessional>().HasKey(u => u.UserId);
-
-        builder.Entity<Admin>().HasKey(u => u.UserId);
-    }
 }

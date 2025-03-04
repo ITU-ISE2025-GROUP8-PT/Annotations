@@ -10,4 +10,8 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="7.3.1" />
   </ItemGroup>
 
+    <ItemGroup>
+        <ProjectReference Include="../Annotations.Core/Annotations.Core.csproj" /> 
+    </ItemGroup>
+
 </Project>

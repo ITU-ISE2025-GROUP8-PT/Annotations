@@ -1,4 +1,6 @@
-﻿namespace Annotations.Core.Entities;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Annotations.Core.Entities;
 
 public class MedicalProfessional : User 
 {

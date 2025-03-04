@@ -47,7 +47,7 @@ namespace Annotations.API.Controllers
                     Affiliation = u.Affiliation,
                     JobTitle = u.JobTitle,
                     TotalAssignmentsFinished = u.TotalAssignmentsFinished,
-                    ProfilePictureID = u.ProfilePictureID
+                    ProfilePictureID = u.ProfilePictureId
                 })
                 .ToListAsync();
             

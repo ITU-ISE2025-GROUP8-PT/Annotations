@@ -13,7 +13,6 @@ public class MedicalProfessional : User
     [Required]
     public required int TotalAssignmentsFinished  { get; set; }
     [Required]
-    [StringLength(50)]
-    public required int ProfilePictureID  { get; set; }
+    public required int ProfilePictureId  { get; set; }
     
 }

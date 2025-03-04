@@ -60,7 +60,7 @@ public class Startup(IConfiguration configuration)
                     Affiliation = "Rigshospitalet",
                     JobTitle = "Surgeon",
                     TotalAssignmentsFinished = 0,
-                    ProfilePictureID = 123
+                    ProfilePictureId = 123
                 });
                 context.SaveChanges();
             }

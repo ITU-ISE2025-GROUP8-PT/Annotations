@@ -105,7 +105,7 @@ Co-authored-by: Hans Christiansen <hc@gmail.com>
 ```
 
 ## Database Migration
-If you wish to add new migrations to the database, you need to run the following commands:
+If you wish to add new migrations to the database, you need to run the following commands in the Annotations.API directory:
 
 ```bash
 dotnet ef Migrations add <name>

@@ -36,8 +36,7 @@ public class Startup(IConfiguration configuration)
             using var context = scope.ServiceProvider.GetRequiredService<AnnotationsDbContext>();
 
             context.Database.Migrate();
-
-            // Seeds with default dataset if starting with an empty DB.
+            
             if (!context.Users.Any())
             {
                 context.Add(new Admin

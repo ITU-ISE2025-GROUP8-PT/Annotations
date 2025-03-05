@@ -104,3 +104,13 @@ A user can now upload their Images through the specified user interface.
 Co-authored-by: Hans Christiansen <hc@gmail.com>
 ```
 
+## Database Migration
+If you wish to add new migrations to the database, you need to run the following commands in the Annotations.API directory:
+
+```bash
+dotnet ef Migrations add <name>
+dotnet ef database update
+```
+When running the program all pending migrations will be added to the database.
+
+

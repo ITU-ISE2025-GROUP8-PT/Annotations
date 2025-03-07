@@ -1,4 +1,5 @@
 using Annotations.API;
+using Annotations.API.Groups;
 using Annotations.Core.Entities;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
@@ -36,6 +37,9 @@ builder.Services.AddDbContext<AnnotationsDbContext>((serviceProvider, options) =
 
 var app = builder.Build();
 
+var usersMapRoute = app.MapGroup("/users");
+
+UsersGroup.MapEndpoints(usersMapRoute);
 
 // Development/Debugging middleware.
 if (app.Environment.IsDevelopment())
@@ -50,9 +54,6 @@ app.UseStaticFiles();
 app.UseRouting();
 app.UseAuthorization();
 app.UseHttpsRedirection();
-
-// Automatic controller route mapping.
-app.MapControllers();
 
 app.Run();
 

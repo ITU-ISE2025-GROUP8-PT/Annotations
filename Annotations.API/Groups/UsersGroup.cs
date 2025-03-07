@@ -2,16 +2,32 @@ using Annotations.Core.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace Annotations.API.Controllers
+namespace Annotations.API.Groups;
+
+public static class UsersGroup
+{
+    public static void MapEndpoints(RouteGroupBuilder pathBuilder)
+    {
+        pathBuilder.MapGet("/", () => "Hello Kitty!");
+        pathBuilder.MapGet("/GetAdmins", (
+            
+            
+            
+            ) => "Hello Kitty!");
+    }
+}
+
+
+/*
 {
     [ApiController]
     [Route("[controller]")]
-    public class UserController : ControllerBase
+    public class UsersGroup : ControllerBase
     {
         private readonly AnnotationsDbContext _context;
-        private readonly ILogger<UserController> _logger;
+        private readonly ILogger<UsersGroup> _logger;
 
-        public UserController(AnnotationsDbContext context, ILogger<UserController> logger)
+        public UsersGroup(AnnotationsDbContext context, ILogger<UsersGroup> logger)
         {
             _context = context;
             _logger = logger;
@@ -55,3 +71,4 @@ namespace Annotations.API.Controllers
         }
     }
 }
+*/

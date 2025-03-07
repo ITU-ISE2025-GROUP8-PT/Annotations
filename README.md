@@ -59,7 +59,7 @@ The runnable projects within the solution are:
 Development of new code is produced in feature branches, which is added to the development branch when meeting acceptance criteria.
 The development branch gets merged with the main branch upon review and approval by the stakeholders and the company. <p></p> The main and development branch is kept safe by only allowing merges through reviewed pull requests.
 
-Once we have suffient material...
+Once we have suffient material... (continue text here)
 
 Image Source: https://blog.levelupcoding.com/p/luc-68-navigating-software-updates-a-closer-look-at-deployment-strategies
 

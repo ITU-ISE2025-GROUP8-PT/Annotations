@@ -9,11 +9,19 @@ public static class UsersGroup
     public static void MapEndpoints(RouteGroupBuilder pathBuilder)
     {
         pathBuilder.MapGet("/", () => "Hello Kitty!");
-        pathBuilder.MapGet("/GetAdmins", (
-            
-            
-            
-            ) => "Hello Kitty!");
+        pathBuilder.MapGet("/GetAdmins", async (AnnotationsDbContext context) =>
+            {
+                var admins = await context.Admins
+                    .Select(u => new AdminUserModel
+                    {
+                        Id = u.UserId,
+                        FirstName = u.FirstName,
+                        LastName = u.LastName,
+                        Email = u.Email
+                    })
+                    .ToListAsync();
+                return admins;
+            });
     }
 }
 

@@ -30,6 +30,7 @@ builder.Services.AddDbContext<AnnotationsDbContext>((serviceProvider, options) =
 var app = builder.Build();
 
 var usersMapRoute = app.MapGroup("/users");
+app.MapGet("/error", () => "Dette er en 400-599 eller værre");
 
 UsersGroup.MapEndpoints(usersMapRoute);
 
@@ -42,6 +43,7 @@ if (app.Environment.IsDevelopment())
 }
 
 // Middleware pipeline.
+app.UseExceptionHandler("/error");
 app.UseStaticFiles();
 app.UseRouting();
 app.UseAuthorization();

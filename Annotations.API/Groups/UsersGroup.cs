@@ -24,7 +24,7 @@ public static class UsersGroup
             });
         pathBuilder.MapGet("/exception", () => 
         {
-            throw new InvalidOperationException("Sample Exception");
+            throw new InvalidOperationException("Exception has been raised in the API. Look for further details in the log.");
         });
     }
 }

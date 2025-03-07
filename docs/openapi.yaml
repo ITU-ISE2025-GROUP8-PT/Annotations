@@ -275,20 +275,20 @@ paths:
           description: Invalid review ID supplied
         '404':
           description: Review not found
-  /user:
+  /admin/users:
     post:
-      summary: Create user
-      description: User registration by the logged in user.
+      summary: Create a new user (Admin only)
+      description: Only users with the admin role can access this endpoint.
       operationId: createUser
       tags:
         - Users
       requestBody:
-        description: The newly created user object
+        description: A user create request with necessary metadata for the user
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/User'
+              $ref: '#/components/schemas/UserCreateRequest'
       responses:
         '200':
           description: User was created successfully
@@ -296,7 +296,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/User'
-  /user/login:
+  /auth/login:
     get:
       summary: User login
       description: User can login to an already created account.
@@ -321,7 +321,7 @@ paths:
           description: User successfully logged in
         '400':
           description: Invalid username/password supplied
-  /user/logout:
+  /auth/logout:
     get:
       summary: Logs out current logged in user session
       description: ""
@@ -331,7 +331,7 @@ paths:
       responses:
         '200':
           description: The user was successfully logged out
-  /user/{username}:
+  /users/{username}:
     patch:
       summary: Update the user, with the specified username
       description: ""
@@ -395,6 +395,21 @@ paths:
 
 components: 
   schemas:
+    UserCreateRequest:
+      type: object
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+          description: Some generated password, that can later be changed by the user
+        role:
+          type: string
+          enum: [ "admin", "annotator", "reviewer" ]
+      required:
+        - username
+        - password
+        - role
     User:
       type: object
       properties: 

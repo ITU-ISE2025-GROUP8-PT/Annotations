@@ -56,10 +56,10 @@ The runnable projects within the solution are:
 
 ![Example of gitflow branching strategy](https://raw.githubusercontent.com/ITU-ISE2025-GROUP8-PT/Annotations/bf03ac84a553c1dc77d78d41ace43b4f3a55bb8f/gitflow_branching_strategy.png)
 
-Development of new code is produced in feature branches, which is added to the development branch when meeting acceptance criteria.
-The development branch gets merged with the main branch upon review and approval by the stakeholders and the company. <p></p> The main and development branch is kept safe by only allowing merges through reviewed pull requests.
-
-Once we have suffient material... (continue text here)
+- Development of new code is produced in feature branches. Features are continuously added to the development branch through pull requests with reviews made by other team members.
+- Typically we will demonstrate the state of the project at Sprint reviews using the development branch. 
+- Once we have sufficient material to warrant a release. We will work to stage an increment of mature features. We will create a special branch for this purpose. 
+- The increment goes through additional testing and review before we agree to deploy it to production. 
 
 Image Source: https://blog.levelupcoding.com/p/luc-68-navigating-software-updates-a-closer-look-at-deployment-strategies
 

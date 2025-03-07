@@ -22,6 +22,10 @@ public static class UsersGroup
                     .ToListAsync();
                 return admins;
             });
+        pathBuilder.MapGet("/exception", () => 
+        {
+            throw new InvalidOperationException("Sample Exception");
+        });
     }
 }
 

@@ -382,12 +382,12 @@ paths:
         - Users
       operationId: deleteUser
       parameters:
-        - name: username
+        - name: userID
           in: path
           required: true
           schema:
             type: string
-          description: User name that needs to be deleted
+          description: User ID that needs to be deleted
       responses:
         '204':
           description: User was successfully deleted, nothing to return
@@ -396,13 +396,13 @@ paths:
         '404':
           description: User not found
     get:
-      summary: Get user by user name
+      summary: Get user by user ID
       tags:
         - Users
       operationId: getUser
       parameters:
         - in: path
-          name: username
+          name: userID
           required: true
           schema:
             type: string

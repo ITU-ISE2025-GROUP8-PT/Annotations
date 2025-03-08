@@ -215,7 +215,7 @@ paths:
           description: Invalid annotation ID supplied
         '404':
           description: Annotation not found
-  /annotations/{annotationId}/reviews:
+  /annotations/{annotationId}/review:
     post:
       summary: Add a review to an annotation
       operationId: createReview
@@ -277,7 +277,7 @@ paths:
           description: Invalid review ID supplied
         '404':
           description: Review not found
-  /admin/users:
+  /admin/user:
     post:
       summary: Create a new user (Admin only)
       description: Only users with the admin role can access this endpoint.

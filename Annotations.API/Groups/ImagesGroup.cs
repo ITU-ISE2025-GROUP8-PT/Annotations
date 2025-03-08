@@ -9,7 +9,7 @@ public static class ImagesGroup
     public static void MapEndpoints(RouteGroupBuilder pathBuilder)
     {
         pathBuilder.MapGet("/", () => "Upload an image here!");
-        //Delete an image (kun image ID), Get an image by imageId (kun image ID), Update / PATCH an image (title og text) 
+        //Husk: Delete an image (kun image ID), Get an image by imageId (kun image ID), Update / PATCH an image (title og text) fra openapi dokumentet
         
         // hvis JSON objektet skal returneres brug da:
         /*
@@ -24,13 +24,19 @@ public static class ImagesGroup
         pathBuilder.MapGet("/{imageId}", async ([FromRoute] int imageId, AnnotationsDbContext context) =>
         {
             //indsæt adgangskontol her 🐿️
-            var image = await context.Images.FindAsync(imageId);
-            if (image is null)
-            {
-                return Results.NotFound();
-            }
+            var cts = new CancellationTokenSource(5000);
 
-            return Results.File(image.ImageData, "image/png");
+            try
+            {
+                var image = await context.Images.FindAsync(imageId, cts.Token);
+                if (image is null)
+                {
+                    return Results.NotFound();
+                }
+                return Results.File(image.ImageData, "image/png");
+            }
+            catch (OperationCanceledException)
+            { return Results.StatusCode(408); }
         });
 
         pathBuilder.MapGet("/exception",

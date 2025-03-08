@@ -477,7 +477,8 @@ components:
         affiliation:
           type: string
         profilePicture:
-          type: object
+          type: string
+          format: binary
         userRole:
           type: string
           description: The specified user's authorization (Can only be changed by Admin)
@@ -505,7 +506,10 @@ components:
         affiliation:
           type: string
         profilePicture:
-          type: object
+          type: string
+          format: binary
+        totalAssignmentsFinished:
+          type: integer
         userRole:
           type: string
           description: The specified user's authorization

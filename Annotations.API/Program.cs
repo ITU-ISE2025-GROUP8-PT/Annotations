@@ -38,9 +38,11 @@ builder.Services.AddDbContext<AnnotationsDbContext>((serviceProvider, options) =
 var app = builder.Build();
 
 var usersMapRoute = app.MapGroup("/users");
+var imagesMapRoute = app.MapGroup("/images");
 app.MapGet("/error", () => "Dette er en 400-599 eller værre");
 
 UsersGroup.MapEndpoints(usersMapRoute);
+ImagesGroup.MapEndpoints(imagesMapRoute);
 
 // Development/Debugging middleware.
 if (app.Environment.IsDevelopment())
@@ -86,6 +88,13 @@ void InitializeTempDatabase()
         JobTitle = "Surgeon",
         TotalAssignmentsFinished = 0,
         ProfilePictureId = 123
+    });
+    context.Add(new Image
+    {
+        Id = 1,
+        Title = "Sample Image",
+        Text = "This is a sample image.",
+        ImageData = File.ReadAllBytes("../docs/images/Perfusiontech_sampleimage.png")
     });
     context.SaveChanges();
 }

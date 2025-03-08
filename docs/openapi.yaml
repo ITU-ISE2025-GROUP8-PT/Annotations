@@ -2,8 +2,10 @@ openapi: 3.1.0
 info:
   title: Annotations PerfusionTech
   description: |
-    This API allows medical professionals to annotate angiographic image,
-    and allows the admin user to upload and delete angiographic images.
+    This API allows medical professionals to annotate angiographic images, and review other users' annotations.
+    The API allows the Admin user role to upload and delete angiographic images.
+    Users can only be created or deleted by any user with the Admin user role, following RBAC principles.
+    
   version: 1.0.0
 tags:
   - name: Reviews

@@ -445,11 +445,24 @@ components:
     UserCreateRequest:
       type: object
       properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
         email:
           type: string
         password:
           type: string
           description: Some generated password, that can later be changed by the user
+        phone:
+          type: string
+        jobTitle:
+          type: string
+        affiliation:
+          type: string
+        profilePicture:
+          type: string
+          format: binary
         userRole:
           type: string
           enum: [ "admin", "annotator", "reviewer" ]

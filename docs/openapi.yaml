@@ -29,15 +29,14 @@ paths:
         content:
           multipart/form-data: # Swagger Docs for file upload
             schema:
-              $ref: '#/components/schemas/Image'
+              $ref: '#/components/schemas/ImageRequest'
       responses:
         '200':
           description: Image uploaded successfully
           content:
             application/json: 
               schema:
-                type: int64
-                description: Image ID
+                $ref: '#/components/schemas/Image'
         '403':
           description: Forbidden (user not authorized)
           content:
@@ -135,6 +134,13 @@ paths:
                 text:
                   type: string
                   description: A description of the image
+      responses:
+        '200':
+          description: Image updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Image'            
   /images/{imageId}/annotations:
     post:
       summary: Create a new annotation for an angiographic image
@@ -512,6 +518,17 @@ components:
     Image:
       type: object
       properties:
+        imageId:
+          type: integer
+          format: "int64"
+        uploadedBy:
+          type: integer
+          format: "int64"
+          description: The ID of the Admin that uploaded the image
+        deletedBy:
+          type: integer
+          format: "int64"
+          description: The ID of the Admin that deleted the image
         file:
           type: string
           format: binary
@@ -522,6 +539,22 @@ components:
         text:
           type: string
           description: A description of the image    
+      required:
+        - imageId
+        - file
+    ImageRequest:
+      type: object
+      properties:
+        file:
+          type: string
+          format: binary
+          description: The image file to upload
+        title:
+          type: string
+          description: A title for the image
+        text:
+          type: string
+          description: A description of the image
       required:
         - file
     Annotation:

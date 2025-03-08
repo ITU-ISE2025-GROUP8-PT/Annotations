@@ -15,6 +15,7 @@ builder.Services.AddScoped(sp =>
 builder.Services.AddHttpClient();
 
 // General services.
+builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddControllers();
 

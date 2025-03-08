@@ -241,8 +241,8 @@ paths:
         content:
           application/json:
             schema:
-              type: string
-              description: The body of the user's review
+              $ref: '#/components/schemas/ReviewRequest'
+              
       responses:
         '200':
           description: Review was created successfully
@@ -571,7 +571,19 @@ components:
         review:
           type: string
           description: The body of the user's review 
+        accepted:
+          type: boolean
+          description: Whether or not the review has been accepted
       required:
         - annotationId
         - userId
         - review
+    ReviewRequest:
+      type: object
+      properties:
+        review:
+          type: string
+          description: The body of the user's review
+        accepted:
+          type: boolean
+          description: Whether or not the review has been accepted

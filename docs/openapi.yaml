@@ -147,7 +147,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Annotation'
+              $ref: '#/components/schemas/AnnotationRequest'
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Annotation'
     get:
       summary: Retrieve all annotations for a specific image
       description: ""
@@ -193,7 +200,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Annotation'
+              $ref: '#/components/schemas/AnnotationRequest'
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Annotation'        
     delete:
       summary: Delete an annotation
       description: Can only be done by the Admin user role, or the annotator of the annotation
@@ -227,7 +241,8 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Review'
+              type: string
+              description: The body of the user's review
       responses:
         '200':
           description: Review was created successfully
@@ -255,7 +270,8 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Review'
+              type: string
+              description: The body of the updated review
     delete:
       summary: Delete a review
       description: Can only be done by the Admin user role, or the reviewer of the annotation
@@ -517,6 +533,9 @@ components:
         userId:
           type: integer
           format: "int64"
+        annotationId:
+          type: integer
+          format: "int64"
         annotationType:
           type: string
           description: The type of annotation made by the user
@@ -527,10 +546,26 @@ components:
       required:
         - imageId
         - userId
+    AnnotationRequest:
+      type: object
+      properties:
+        annotationType:
+          type: string
+          description: The type of annotation made by the user
+          # TODO: make enum of different annotation types
+        annotations:
+          type: string
+          description: The annotations made by the user on the specific image
     Review:
       type: object
       properties:
         annotationId:
+          type: integer
+          format: "int64"
+        userId:
+          type: integer
+          format: "int64"
+        reviewId:
           type: integer
           format: "int64"
         review:
@@ -538,4 +573,5 @@ components:
           description: The body of the user's review 
       required:
         - annotationId
+        - userId
         - review

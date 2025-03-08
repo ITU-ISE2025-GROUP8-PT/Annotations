@@ -17,7 +17,7 @@ tags:
   - name: Users
     description: Operations related to managing users and user roles.
 paths:
-  /images: # If admin ID is required for this endpoint, maybe add it to path: /{adminId}/uploadImage
+  /images/upload: # If admin ID is required for this endpoint, maybe add it to path: /{adminId}/uploadImage
     post:
       summary: Upload an image
       description: Admin can upload angiographic images for reviewers and annotators to use.

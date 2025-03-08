@@ -1,4 +1,4 @@
-openapi: 3.1.0
+openapi: 3.0.3
 info:
   title: Annotations PerfusionTech
   description: |
@@ -279,6 +279,13 @@ paths:
             schema:
               type: string
               description: The body of the updated review
+      responses:
+        '200':
+          description: Review was updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Review'        
     delete:
       summary: Delete a review
       description: Can only be done by the Admin user role, or the reviewer of the annotation

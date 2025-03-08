@@ -9,9 +9,9 @@ info:
   version: 1.0.0
 tags:
   - name: Reviews
-    description: Operations related to the reviewing angiographic images.
+    description: Operations related to reviewing angiographic images.
   - name: Annotations
-    description: Operations related to the annotating angiographic images.
+    description: Operations related to annotating angiographic images.
   - name: Images
     description: Operations related to managing the angiographic images.
   - name: Users

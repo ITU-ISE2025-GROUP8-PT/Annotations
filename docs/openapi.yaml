@@ -402,7 +402,7 @@ paths:
           description: Invalid input
     delete:
       summary: Delete user
-      description: Can only be done by the user that is logged in
+      description: Can only be done by the user that is logged in, or users with the Admin role
       tags:
         - Users
       operationId: deleteUser

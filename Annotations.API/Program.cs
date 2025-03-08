@@ -37,12 +37,11 @@ builder.Services.AddDbContext<AnnotationsDbContext>((serviceProvider, options) =
 
 var app = builder.Build();
 
-var usersMapRoute = app.MapGroup("/users");
-var imagesMapRoute = app.MapGroup("/images");
-app.MapGet("/error", () => "Dette er en 400-599 eller værre");
 
-UsersGroup.MapEndpoints(usersMapRoute);
-ImagesGroup.MapEndpoints(imagesMapRoute);
+UsersGroup.MapEndpoints(app.MapGroup("/users"));
+ImagesGroup.MapEndpoints(app.MapGroup("/images"));
+
+app.MapGet("/error", () => "Dette er en 400-599 eller værre");
 
 // Development/Debugging middleware.
 if (app.Environment.IsDevelopment())

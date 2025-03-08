@@ -339,12 +339,12 @@ paths:
             schema:
               type: object
               properties:
-                username:
+                email:
                   type: string
                 password:
                   type: string
               required:
-                - username
+                - email
                 - password
       responses:
         '200':
@@ -357,7 +357,7 @@ paths:
                   token:
                     type: string
         '400':
-          description: Invalid username/password supplied
+          description: Invalid email/password supplied
   /auth/logout:
     post: # post instead of get, becuase both login and logout change the state of the program in some way
       summary: Logs out current logged in user session
@@ -370,7 +370,7 @@ paths:
           description: The user was successfully logged out
   /users/{userId}:
     patch:
-      summary: Update the user, with the specified username
+      summary: Update the user, with the specified user ID
       description: ""
       operationId: updateUser
       tags:
@@ -417,7 +417,7 @@ paths:
         '204':
           description: User was successfully deleted, nothing to return
         '400':
-          description: Invalid username supplied
+          description: Invalid user ID supplied
         '404':
           description: User not found
     get:
@@ -440,13 +440,12 @@ paths:
               schema:
                 $ref: '#/components/schemas/User'
         
-
 components: 
   schemas:
     UserCreateRequest:
       type: object
       properties:
-        username:
+        email:
           type: string
         password:
           type: string
@@ -455,14 +454,12 @@ components:
           type: string
           enum: [ "admin", "annotator", "reviewer" ]
       required:
-        - username
+        - email
         - password
         - role
     UserUpdateRequest:
       type: object
       properties:
-        username:
-          type: string
         firstName:
           type: string
         lastName:
@@ -490,8 +487,6 @@ components:
         id:
           type: integer
           format: "int64"
-        username:
-          type: string
         firstName:
           type: string
         lastName:
@@ -517,13 +512,12 @@ components:
           enum: [ "admin", "annotator", "reviewer" ]
       required:
         - id
-        - username
         - password
         - userRole
     Image:
       type: object
       properties:
-        imageId:
+        id:
           type: integer
           format: "int64"
         uploadedBy:
@@ -534,7 +528,7 @@ components:
           type: integer
           format: "int64"
           description: The ID of the Admin that deleted the image
-        file:
+        imageString:
           type: string
           format: binary
           description: The image file to upload
@@ -545,12 +539,12 @@ components:
           type: string
           description: A description of the image    
       required:
-        - imageId
-        - file
+        - id
+        - imageString
     ImageRequest:
       type: object
       properties:
-        file:
+        imageString:
           type: string
           format: binary
           description: The image file to upload
@@ -561,17 +555,17 @@ components:
           type: string
           description: A description of the image
       required:
-        - file
+        - imageString
     Annotation:
       type: object
       properties: 
-        imageId:
+        imgId:
           type: integer
           format: "int64"
-        userId:
+        mpId:
           type: integer
           format: "int64"
-        annotationId:
+        id:
           type: integer
           format: "int64"
         annotationType:
@@ -582,8 +576,9 @@ components:
           type: string
           description: The annotations made by the user on the specific image
       required:
-        - imageId
-        - userId
+        - imgId
+        - mpId
+        - id
     AnnotationRequest:
       type: object
       properties:
@@ -597,13 +592,13 @@ components:
     Review:
       type: object
       properties:
-        annotationId:
+        aId:
           type: integer
           format: "int64"
-        userId:
+        mpId:
           type: integer
           format: "int64"
-        reviewId:
+        id:
           type: integer
           format: "int64"
         review:
@@ -613,8 +608,9 @@ components:
           type: boolean
           description: Whether or not the review has been accepted
       required:
-        - annotationId
-        - userId
+        - aId
+        - mpId
+        - id
         - review
     ReviewRequest:
       type: object

@@ -93,7 +93,7 @@ void InitializeTempDatabase()
     {
         Id = 1,
         Title = "Sample Image",
-        Text = "This is a sample image.",
+        Description = "This is a sample image.",
         ImageData = File.ReadAllBytes("../docs/images/Perfusiontech_sampleimage.png")
     });
     context.SaveChanges();

@@ -259,6 +259,7 @@ paths:
   /reviews/{reviewId}:              
     patch:
       summary: Update a review
+      description: Can only be done by the Admin user role, or the reviewer of the annotation
       operationId: updateReview
       tags:
         - Reviews

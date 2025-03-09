@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Annotations.API.Migrations
 {
     [DbContext(typeof(AnnotationsDbContext))]
-    [Migration("20250308120242_AddEntity")]
-    partial class AddEntity
+    [Migration("20250309171934_RenameTextToDescription")]
+    partial class RenameTextToDescription
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -26,16 +26,18 @@ namespace Annotations.API.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("TEXT");
+
                     b.Property<byte[]>("ImageData")
                         .IsRequired()
                         .HasColumnType("BLOB");
 
-                    b.Property<string>("Text")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
                     b.Property<string>("Title")
                         .IsRequired()
+                        .HasMaxLength(100)
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");

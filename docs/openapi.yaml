@@ -1,21 +1,23 @@
-openapi: 3.1.0
+openapi: 3.0.3
 info:
   title: Annotations PerfusionTech
   description: |
-    This API allows medical professionals to annotate angiographic image,
-    and allows the admin user to upload and delete angiographic images.
-  version: 1.0.0
+    This API allows medical professionals to annotate angiographic images, and review other users' annotations.
+    The API allows the Admin user role to upload and delete angiographic images.
+    Users can only be created or deleted by any user with the Admin user role, following RBAC principles.
+    
+  version: 1.1.0
 tags:
   - name: Reviews
-    description: Operations related to the reviewing angiographic images.
+    description: Operations related to reviewing angiographic images.
   - name: Annotations
-    description: Operations related to the annotating angiographic images.
+    description: Operations related to annotating angiographic images.
   - name: Images
     description: Operations related to managing the angiographic images.
   - name: Users
     description: Operations related to managing users and user roles.
 paths:
-  /images: # If admin ID is required for this endpoint, maybe add it to path: /{adminId}/uploadImage
+  /images/upload: # If admin ID is required for this endpoint, maybe add it to path: /{adminId}/uploadImage
     post:
       summary: Upload an image
       description: Admin can upload angiographic images for reviewers and annotators to use.
@@ -27,15 +29,14 @@ paths:
         content:
           multipart/form-data: # Swagger Docs for file upload
             schema:
-              $ref: '#/components/schemas/Image'
+              $ref: '#/components/schemas/ImageRequest'
       responses:
         '200':
           description: Image uploaded successfully
           content:
             application/json: 
               schema:
-                type: int64
-                description: Image ID
+                $ref: '#/components/schemas/Image'
         '403':
           description: Forbidden (user not authorized)
           content:
@@ -133,6 +134,13 @@ paths:
                 text:
                   type: string
                   description: A description of the image
+      responses:
+        '200':
+          description: Image updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Image'            
   /images/{imageId}/annotations:
     post:
       summary: Create a new annotation for an angiographic image
@@ -145,7 +153,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Annotation'
+              $ref: '#/components/schemas/AnnotationRequest'
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Annotation'
     get:
       summary: Retrieve all annotations for a specific image
       description: ""
@@ -191,7 +206,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Annotation'
+              $ref: '#/components/schemas/AnnotationRequest'
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Annotation'        
     delete:
       summary: Delete an annotation
       description: Can only be done by the Admin user role, or the annotator of the annotation
@@ -213,7 +235,7 @@ paths:
           description: Invalid annotation ID supplied
         '404':
           description: Annotation not found
-  /annotations/{annotationId}/reviews:
+  /annotations/{annotationId}/review:
     post:
       summary: Add a review to an annotation
       operationId: createReview
@@ -225,7 +247,8 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Review'
+              $ref: '#/components/schemas/ReviewRequest'
+              
       responses:
         '200':
           description: Review was created successfully
@@ -236,6 +259,7 @@ paths:
   /reviews/{reviewId}:              
     patch:
       summary: Update a review
+      description: Can only be done by the Admin user role, or the reviewer of the annotation
       operationId: updateReview
       tags:
         - Reviews
@@ -253,7 +277,15 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Review'
+              type: string
+              description: The body of the updated review
+      responses:
+        '200':
+          description: Review was updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Review'        
     delete:
       summary: Delete a review
       description: Can only be done by the Admin user role, or the reviewer of the annotation
@@ -275,20 +307,20 @@ paths:
           description: Invalid review ID supplied
         '404':
           description: Review not found
-  /user:
+  /admin/user:
     post:
-      summary: Create user
-      description: User registration by the logged in user.
+      summary: Create a new user (Admin only)
+      description: Only users with the admin role can access this endpoint.
       operationId: createUser
       tags:
         - Users
       requestBody:
-        description: The newly created user object
+        description: A user create request with necessary metadata for the user
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/User'
+              $ref: '#/components/schemas/UserCreateRequest'
       responses:
         '200':
           description: User was created successfully
@@ -296,33 +328,45 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/User'
-  /user/login:
-    get:
+        '403':
+          description: Forbidden (user does not have admin role)
+        '401':
+          description: Unauthorized (invalid or missing token)        
+  /auth/login:
+    post:
       summary: User login
-      description: User can login to an already created account.
+      description: User can login to an already created account and receive a user token using Oauth or JWT.
       operationId: userLogin
       tags:
         - Users
-      parameters:
-        - in: query
-          name: username
-          description: The username of the user for login
-          required: true
-          schema:
-            type: string
-        - in: query
-          name: password
-          description: The user's password for login
-          required: true
-          schema:
-            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+              required:
+                - email
+                - password
       responses:
         '200':
           description: User successfully logged in
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
         '400':
-          description: Invalid username/password supplied
-  /user/logout:
-    get:
+          description: Invalid email/password supplied
+  /auth/logout:
+    post: # post instead of get, becuase both login and logout change the state of the program in some way
       summary: Logs out current logged in user session
       description: ""
       operationId: userLogout
@@ -331,17 +375,17 @@ paths:
       responses:
         '200':
           description: The user was successfully logged out
-  /user/{username}:
+  /users/{userId}:
     patch:
-      summary: Update the user, with the specified username
+      summary: Update the user, with the specified user ID
       description: ""
       operationId: updateUser
       tags:
         - Users
       parameters:
       - in: path
-        name: username
-        description: Username that needs to be updated
+        name: userID
+        description: User ID that needs to be updated
         required: true
         schema:
           type: string
@@ -351,35 +395,46 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/User' # maybe not dont use the whole user object as response body 
+              $ref: '#/components/schemas/UserUpdateRequest'
+      responses:
+        '200':
+          description: User updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '404':
+          description: User not found
+        '400':
+          description: Invalid input
     delete:
       summary: Delete user
-      description: Can only be done by the user that is logged in
+      description: Can only be done by the user that is logged in, or users with the Admin role
       tags:
         - Users
       operationId: deleteUser
       parameters:
-        - name: username
+        - name: userID
           in: path
           required: true
           schema:
             type: string
-          description: User name that needs to be deleted
+          description: User ID that needs to be deleted
       responses:
         '204':
           description: User was successfully deleted, nothing to return
         '400':
-          description: Invalid username supplied
+          description: Invalid user ID supplied
         '404':
           description: User not found
     get:
-      summary: Get user by user name
+      summary: Get user by user ID
       tags:
         - Users
       operationId: getUser
       parameters:
         - in: path
-          name: username
+          name: userID
           required: true
           schema:
             type: string
@@ -392,17 +447,39 @@ paths:
               schema:
                 $ref: '#/components/schemas/User'
         
-
 components: 
   schemas:
-    User:
+    UserCreateRequest:
       type: object
-      properties: 
-        id:
-          type: integer
-          format: "int64"
-        username:
+      properties:
+        firstName:
           type: string
+        lastName:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+          description: Some generated password, that can later be changed by the user
+        phone:
+          type: string
+        jobTitle:
+          type: string
+        affiliation:
+          type: string
+        profilePicture:
+          type: string
+          format: binary
+        userRole:
+          type: string
+          enum: [ "admin", "annotator", "reviewer" ]
+      required:
+        - email
+        - password
+        - role
+    UserUpdateRequest:
+      type: object
+      properties:
         firstName:
           type: string
         lastName:
@@ -418,40 +495,97 @@ components:
         affiliation:
           type: string
         profilePicture:
-          type: object
+          type: string
+          format: binary
+        userRole:
+          type: string
+          description: The specified user's authorization (Can only be changed by Admin)
+          enum: [ "admin", "annotator", "reviewer" ]
+    User:
+      type: object
+      properties: 
+        id:
+          type: integer
+          format: "int64"
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+        phone:
+          type: string
+        jobTitle:
+          type: string
+        affiliation:
+          type: string
+        profilePicture:
+          type: string
+          format: binary
+        totalAssignmentsFinished:
+          type: integer
         userRole:
           type: string
           description: The specified user's authorization
           enum: [ "admin", "annotator", "reviewer" ]
       required:
         - id
-        - username
-        - email
         - password
-        - phone
         - userRole
     Image:
       type: object
       properties:
-        file:
+        id:
+          type: integer
+          format: "int64"
+        uploadedBy:
+          type: integer
+          format: "int64"
+          description: The ID of the Admin that uploaded the image
+        deletedBy:
+          type: integer
+          format: "int64"
+          description: The ID of the Admin that deleted the image
+        imageString:
           type: string
           format: binary
           description: The image file to upload
         title:
           type: string
           description: A title for the image
-        text:
+        description: #name of the field
           type: string
           description: A description of the image    
       required:
-        - file
+        - id
+        - imageString
+    ImageRequest:
+      type: object
+      properties:
+        imageString:
+          type: string
+          format: binary
+          description: The image file to upload
+        title:
+          type: string
+          description: A title for the image
+        description: #name of the field
+          type: string
+          description: A description of the image
+      required:
+        - imageString
     Annotation:
       type: object
       properties: 
-        imageId:
+        imgId:
           type: integer
           format: "int64"
-        userId:
+        mpId:
+          type: integer
+          format: "int64"
+        id:
           type: integer
           format: "int64"
         annotationType:
@@ -462,17 +596,48 @@ components:
           type: string
           description: The annotations made by the user on the specific image
       required:
-        - imageId
-        - userId
+        - imgId
+        - mpId
+        - id
+    AnnotationRequest:
+      type: object
+      properties:
+        annotationType:
+          type: string
+          description: The type of annotation made by the user
+          # TODO: make enum of different annotation types
+        annotations:
+          type: string
+          description: The annotations made by the user on the specific image
     Review:
       type: object
       properties:
-        annotationId:
+        aId:
+          type: integer
+          format: "int64"
+        mpId:
+          type: integer
+          format: "int64"
+        id:
           type: integer
           format: "int64"
         review:
           type: string
           description: The body of the user's review 
+        accepted:
+          type: boolean
+          description: Whether or not the review has been accepted
       required:
-        - annotationId
+        - aId
+        - mpId
+        - id
         - review
+    ReviewRequest:
+      type: object
+      properties:
+        review:
+          type: string
+          description: The body of the user's review
+        accepted:
+          type: boolean
+          description: Whether or not the review has been accepted

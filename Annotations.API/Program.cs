@@ -1,4 +1,5 @@
 using Annotations.API;
+using Annotations.API.Groups;
 using Annotations.Core.Entities;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
@@ -28,6 +29,10 @@ builder.Services.AddDbContext<AnnotationsDbContext>((serviceProvider, options) =
 
 var app = builder.Build();
 
+var usersMapRoute = app.MapGroup("/users");
+app.MapGet("/error", () => "Dette er en 400-599 eller værre");
+
+UsersGroup.MapEndpoints(usersMapRoute);
 
 // Development/Debugging middleware.
 if (app.Environment.IsDevelopment())
@@ -38,13 +43,11 @@ if (app.Environment.IsDevelopment())
 }
 
 // Middleware pipeline.
+app.UseExceptionHandler("/error");
 app.UseStaticFiles();
 app.UseRouting();
 app.UseAuthorization();
 app.UseHttpsRedirection();
-
-// Automatic controller route mapping.
-app.MapControllers();
 
 app.Run();
 

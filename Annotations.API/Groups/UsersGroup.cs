@@ -9,7 +9,7 @@ public static class UsersGroup
     public static void MapEndpoints(RouteGroupBuilder pathBuilder)
     {
         pathBuilder.MapGet("/", () => "Hello Kitty!");
-        pathBuilder.MapGet("/GetAdmins", async (AnnotationsDbContext context) =>
+        pathBuilder.MapGet("/Admins", async (AnnotationsDbContext context) =>
             {
                 var admins = await context.Admins
                     .Select(u => new AdminUserModel
@@ -22,7 +22,7 @@ public static class UsersGroup
                     .ToListAsync();
                 return admins;
             });
-        pathBuilder.MapGet("/GetMedicalProfessionals", async (AnnotationsDbContext context) =>
+        pathBuilder.MapGet("/medicalprofessionals", async (AnnotationsDbContext context) =>
             {
                 var medicalProfessionals = await context.MedicalProfessionals
                     .Select(u => new MedicalProfessionalUserModel

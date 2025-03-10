@@ -89,6 +89,8 @@
     display: block;
 }
 
+.SubmitButton { background: lightcoral !important; }
+
 @media (min-width: 641px) {
     .navbar-toggler {
         display: none;

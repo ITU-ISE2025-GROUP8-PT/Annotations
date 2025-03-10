@@ -9,7 +9,7 @@ public static class UsersGroup
     public static void MapEndpoints(RouteGroupBuilder pathBuilder)
     {
         pathBuilder.MapGet("/", () => "Hello Kitty!");
-        pathBuilder.MapGet("/admins", async (AnnotationsDbContext context) =>
+        pathBuilder.MapGet("/Admins", async (AnnotationsDbContext context) =>
             {
                 var admins = await context.Admins
                     .Select(u => new AdminUserModel

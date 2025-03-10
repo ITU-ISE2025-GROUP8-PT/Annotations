@@ -10,9 +10,9 @@
     <img src="https://img.shields.io/github/last-commit/ITU-ISE2025-GROUP8-PT/Annotations.svg?style=flat-square&logo=github&logoColor=white"
          alt="GitHub last commit">
 	</a>
-    <a href="https://github.com/ITU-ISE2025-GROUP8-PT/Annotations/issues">
-    <img src="https://img.shields.io/github/issues-raw/ITU-ISE2025-GROUP8-PT/Annotations.svg?style=flat-square&logo=github&logoColor=white"
-         alt="GitHub issues">
+    <a href="https://team8-itu-2025.atlassian.net/jira/software/projects/PT/summary">
+    <img src="https://img.shields.io/badge/Jira-Gruppe 8-blue?style=flat-square&logo=jira&logoColor=white"
+         alt="Jira">
 	</a>
     <a href="https://github.com/ITU-ISE2025-GROUP8-PT/Annotations/pulls">
     <img src="https://img.shields.io/github/issues-pr-raw/ITU-ISE2025-GROUP8-PT/Annotations.svg?style=flat-square&logo=github&logoColor=white"
@@ -56,8 +56,12 @@ The runnable projects within the solution are:
 
 ![Example of gitflow branching strategy](https://raw.githubusercontent.com/ITU-ISE2025-GROUP8-PT/Annotations/bf03ac84a553c1dc77d78d41ace43b4f3a55bb8f/gitflow_branching_strategy.png)
 
-Development of new code is produced in feature branches, which is added to the development branch when meeting acceptance criteria.
-The development branch gets merged with the main branch upon review and approval by the stakeholders and the company. <p></p> The main and development branch is kept safe by only allowing merges through reviewed pull requests.
+- Development of new code is produced in feature branches. Features are continuously added to the development branch through pull requests with reviews made by other team members.
+- Typically we will demonstrate the state of the project at Sprint reviews using the development branch. 
+- Once we have sufficient material to warrant a release. We will work to stage an increment of mature features. We will create a special branch for this purpose. 
+- The increment goes through additional testing and review before we agree to deploy it to production. 
+
+Image Source: https://blog.levelupcoding.com/p/luc-68-navigating-software-updates-a-closer-look-at-deployment-strategies
 
 ## Branch Naming Conventions
 

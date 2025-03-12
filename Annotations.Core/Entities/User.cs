@@ -6,12 +6,9 @@ namespace Annotations.Core.Entities;
 
 public class User : IdentityUser
 {
-    [Key]
-    public required int UserId {get; set; }
-    [Required]
+    // Primary key is provided by ID provider!
     [StringLength(50)]
     public required string FirstName { get; set; }
-    [Required]
     [StringLength(50)]
     public required string LastName { get; set; }
 }

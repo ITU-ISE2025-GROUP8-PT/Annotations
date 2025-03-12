@@ -2,6 +2,8 @@ using Annotations.API;
 using Annotations.API.Groups;
 using Annotations.Core.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
+using Swashbuckle.AspNetCore.Filters;
 // using Azure.Storage.Blobs;
 // using System.Threading.Tasks;
 
@@ -9,8 +11,20 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Services for development using SwaggerUI.
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
 builder.Services.AddControllers();
+
+builder.Services.AddSwaggerGen(options =>
+{
+    var securityScheme = new OpenApiSecurityScheme
+    {
+        In = ParameterLocation.Header,
+        Name = "Authorization",
+        Type = SecuritySchemeType.ApiKey
+    };
+
+    options.AddSecurityDefinition("oauth2", securityScheme);
+    options.OperationFilter<SecurityRequirementsOperationFilter>();
+});
 
 // Database context service.
 builder.Services.AddDbContext<AnnotationsDbContext>(options =>
@@ -34,7 +48,7 @@ var app = builder.Build();
 // Blob container name string HUSK ""
 //BlobContainerClient containerClient = blobServiceClient.GetBlobContainerClient(containerName); <-- indsæt string her i enden og intet andet i linjen
 
-app.MapGroup("/Auth").MapIdentityApi<AnnotationsUser>();
+app.MapGroup("/Auth").MapIdentityApi<AnnotationsUser>(); // Can be customized further with endpoint configuration builder.
 
 UsersGroup.MapEndpoints(app.MapGroup("/Users"));
 ImagesGroup.MapEndpoints(app.MapGroup("/Images"));

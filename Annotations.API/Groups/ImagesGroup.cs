@@ -1,8 +1,4 @@
-﻿using Annotations.Core.Models;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-
-namespace Annotations.API.Groups;
+﻿namespace Annotations.API.Groups;
 
 public static class ImagesGroup
 {
@@ -21,6 +17,7 @@ public static class ImagesGroup
         */
 
         //ellers ved billedfil brug da
+        /*
         pathBuilder.MapGet("/{imageId}", async ([FromRoute] int imageId, AnnotationsDbContext context) =>
         {
             //indsæt adgangskontol her 🐿️
@@ -38,6 +35,7 @@ public static class ImagesGroup
             catch (OperationCanceledException)
             { return Results.StatusCode(408); }
         });
+        */
 
         pathBuilder.MapGet("/exception",
             () =>

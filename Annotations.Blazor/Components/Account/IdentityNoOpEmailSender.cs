@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
-using Annotations.Blazor.Data;
 using Annotations.Core.Entities;
 
 namespace Annotations.Blazor.Components.Account;

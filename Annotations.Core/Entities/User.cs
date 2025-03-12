@@ -8,7 +8,7 @@ public class AnnotationsUser : IdentityUser
 {
     // Primary key is provided by ID provider!
     [StringLength(50)]
-    public required string FirstName { get; set; }
+    public required string FirstName { get; set; } = "";
     [StringLength(50)]
-    public required string LastName { get; set; }
+    public required string LastName { get; set; } = "";
 }

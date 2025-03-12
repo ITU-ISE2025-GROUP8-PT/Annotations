@@ -1,11 +1,11 @@
 using Microsoft.AspNetCore.Identity;
-using Annotations.Blazor.Data;
+using Annotations.Core.Entities;
 
 namespace Annotations.Blazor.Components.Account;
 
-internal sealed class IdentityUserAccessor(UserManager<ApplicationUser> userManager, IdentityRedirectManager redirectManager)
+internal sealed class IdentityUserAccessor(UserManager<AnnotationsUser> userManager, IdentityRedirectManager redirectManager)
 {
-    public async Task<ApplicationUser> GetRequiredUserAsync(HttpContext context)
+    public async Task<AnnotationsUser> GetRequiredUserAsync(HttpContext context)
     {
         var user = await userManager.GetUserAsync(context.User);
 

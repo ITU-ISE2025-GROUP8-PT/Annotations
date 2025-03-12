@@ -6,5 +6,4 @@ namespace Annotations.Core.Entities;
 
 public class AnnotationsUser : IdentityUser
 {
-    
 }

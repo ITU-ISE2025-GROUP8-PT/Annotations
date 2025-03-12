@@ -12,7 +12,7 @@ public static class ImagesGroup
     {
         pathBuilder.MapGet("/", () => "Upload an image here!");
 
-        pathBuilder.MapPost("/images", async (HttpRequest request) =>
+        pathBuilder.MapPost("/imagess", async (HttpRequest request) =>
         {
             IFormFile file = request.Form.Files[0];
             if (file.ContentType != "image/jpeg" || file.ContentType != "image/png")
@@ -50,9 +50,11 @@ public static class ImagesGroup
             return image is not null ? Results.Ok(image) : Results.NotFound();
         });
         */
-        pathBuilder.MapPost("/upload/{url}", async ([FromRoute] string url, AnnotationsDbContext context) =>
+        pathBuilder.MapPost("/upload/{url}", async ([FromRoute] Uri url, AnnotationsDbContext context) =>
         {
-            byte[] response = new System.Net.WebClient().DownloadData(url);
+            using HttpClient client = new HttpClient(); 
+            byte[] response = client.GetByteArrayAsync(url.ToString()).Result;
+            
             var image = new Image
             {
                 Id = 02,
@@ -61,6 +63,8 @@ public static class ImagesGroup
                 ImageData = response
             };
             await context.Images.AddAsync(image);
+            await context.SaveChangesAsync();
+            return Results.Ok(new { message = "Image uploaded successfully" });
         });
         //ellers ved billedfil brug da
         pathBuilder.MapGet("/{imageId}", async ([FromRoute] int imageId, AnnotationsDbContext context) =>

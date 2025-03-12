@@ -3,6 +3,8 @@ using Annotations.API.Groups;
 using Annotations.Core.Entities;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
+// using Azure.Storage.Blobs;
+// using System.Threading.Tasks;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,6 +32,10 @@ builder.Services.AddDbContext<AnnotationsDbContext>((serviceProvider, options) =
 
 var app = builder.Build();
 
+// Blob Storage connection string HUSK ""
+//BlobServiceClient blobServiceClient = new BlobServiceClient(connectionString); <-- indsæt string her i enden og intet andet i linjen
+// Blob container name string HUSK ""
+//BlobContainerClient containerClient = blobServiceClient.GetBlobContainerClient(containerName); <-- indsæt string her i enden og intet andet i linjen
 
 UsersGroup.MapEndpoints(app.MapGroup("/users"));
 ImagesGroup.MapEndpoints(app.MapGroup("/images"));
@@ -87,6 +93,18 @@ void InitializeTempDatabase()
         Title = "Sample Image",
         Description = "This is a sample image.",
         ImageData = File.ReadAllBytes("../docs/images/Perfusiontech_sampleimage.png")
+        // ImageData = await GetImageDataAsync("Perfusiontech_sampleimage.png"); <-- Eller hvad den nu kommer til at hedde når den smides op
     });
     context.SaveChanges();
 }
+
+/*
+// Helper metode til at hive billeder ud som Byte[] fra blob
+async Task<byte[]> GetImageDataAsync(string blobName)
+{
+    BlobClient blobClient = containerClient.GetBlobClient(blobName);
+    using var memoryStream = new MemoryStream();
+    await blobClient.DownloadToAsync(memoryStream);
+    return memoryStream.ToArray();
+}
+*/

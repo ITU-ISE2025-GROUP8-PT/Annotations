@@ -2,7 +2,7 @@
 
 namespace Annotations.Core.Entities;
 
-public class MedicalProfessional : User 
+public class MedicalProfessional : AnnotationsUser 
 {
     [Required]
     [StringLength(50)]

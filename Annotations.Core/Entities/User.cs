@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace Annotations.Core.Entities;
 
-public class User : IdentityUser
+public class AnnotationsUser : IdentityUser
 {
     // Primary key is provided by ID provider!
     [StringLength(50)]

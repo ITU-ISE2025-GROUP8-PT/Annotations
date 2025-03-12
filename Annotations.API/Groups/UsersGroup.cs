@@ -1,3 +1,4 @@
+using Annotations.Core.Entities;
 using Annotations.Core.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -9,6 +10,11 @@ public static class UsersGroup
     public static void MapEndpoints(RouteGroupBuilder pathBuilder)
     {
         pathBuilder.MapGet("/", () => "Hello Kitty!");
+
+        pathBuilder.MapGet("/SeeAll", (AnnotationsDbContext context) => {
+            return context.Users.ToListAsync();
+        }).RequireAuthorization();
+        
         pathBuilder.MapGet("/exception", () => 
         {
             throw new InvalidOperationException("Exception has been raised in the API. Look for further details in the log.");

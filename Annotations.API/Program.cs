@@ -3,10 +3,13 @@ using Annotations.API.Groups;
 using Annotations.Core.Entities;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
+// using Azure.Storage.Blobs;
+// using System.Threading.Tasks;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // General services.
+builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddControllers();
 
@@ -29,10 +32,15 @@ builder.Services.AddDbContext<AnnotationsDbContext>((serviceProvider, options) =
 
 var app = builder.Build();
 
-var usersMapRoute = app.MapGroup("/users");
-app.MapGet("/error", () => "Dette er en 400-599 eller værre");
+// Blob Storage connection string HUSK ""
+//BlobServiceClient blobServiceClient = new BlobServiceClient(connectionString); <-- indsæt string her i enden og intet andet i linjen
+// Blob container name string HUSK ""
+//BlobContainerClient containerClient = blobServiceClient.GetBlobContainerClient(containerName); <-- indsæt string her i enden og intet andet i linjen
 
-UsersGroup.MapEndpoints(usersMapRoute);
+UsersGroup.MapEndpoints(app.MapGroup("/users"));
+ImagesGroup.MapEndpoints(app.MapGroup("/images"));
+
+app.MapGet("/error", () => "Dette er en 400-599 eller værre");
 
 // Development/Debugging middleware.
 if (app.Environment.IsDevelopment())
@@ -79,5 +87,24 @@ void InitializeTempDatabase()
         TotalAssignmentsFinished = 0,
         ProfilePictureId = 123
     });
+    context.Add(new Image
+    {
+        Id = 1,
+        Title = "Sample Image",
+        Description = "This is a sample image.",
+        ImageData = File.ReadAllBytes("../docs/images/Perfusiontech_sampleimage.png")
+        // ImageData = await GetImageDataAsync("Perfusiontech_sampleimage.png"); <-- Eller hvad den nu kommer til at hedde når den smides op
+    });
     context.SaveChanges();
 }
+
+/*
+// Helper metode til at hive billeder ud som Byte[] fra blob
+async Task<byte[]> GetImageDataAsync(string blobName)
+{
+    BlobClient blobClient = containerClient.GetBlobClient(blobName);
+    using var memoryStream = new MemoryStream();
+    await blobClient.DownloadToAsync(memoryStream);
+    return memoryStream.ToArray();
+}
+*/

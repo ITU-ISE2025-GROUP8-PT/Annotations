@@ -1,4 +1,4 @@
-﻿using Annotations.Core.Models;
+﻿using Annotations.Core.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -19,7 +19,18 @@ public static class ImagesGroup
             return image is not null ? Results.Ok(image) : Results.NotFound();
         });
         */
-
+        pathBuilder.MapPost("/upload/{url}", async ([FromRoute] string url, AnnotationsDbContext context) =>
+        {
+            byte[] response = new System.Net.WebClient().DownloadData(url);
+            var image = new Image
+            {
+                Id = 02,
+                Title = "idk",
+                Description = "idk2",
+                ImageData = response
+            };
+            await context.Images.AddAsync(image);
+        });
         //ellers ved billedfil brug da
         pathBuilder.MapGet("/{imageId}", async ([FromRoute] int imageId, AnnotationsDbContext context) =>
         {

@@ -49,3 +49,12 @@ h1:focus {
 .darker-border-checkbox.form-check-input {
     border-color: #929292;
 }
+
+.SignUpButton {
+    display: block; 
+    margin: 0 auto;
+    text-align: center;
+    background-color: aliceblue;
+    border-color: #929292;
+    color:black
+}

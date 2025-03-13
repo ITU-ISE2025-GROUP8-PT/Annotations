@@ -6,31 +6,17 @@
 
 <h1>Login</h1>
 
-<p>Please provide the following information, and we will get back to you about your user.</p>
-
 <p>
-    <MatStringField @bind-Value="@FirstName" Label="First Name"></MatStringField>
+    <MatStringField @bind-Value="@Email" Label="E-mail"></MatStringField>
 </p>
 <p>
-    <MatStringField @bind-Value="@LastName" Label="Last Name"></MatStringField>
-</p>
-<p>
-    <MatStringField @bind-Value="@Email" Label="E-mail address"></MatStringField>
-</p>
-<p>
-    <MatStringField @bind-Value="@Affiliation" Label="Place of work"></MatStringField>
-</p>
-<p>
-    <MatStringField @bind-Value="@JobTitle" Label="Jobtitle"></MatStringField>
+    <MatStringField @bind-Value="@Password" Label="Password"></MatStringField>
 </p>
 
-<MatButton OnClick="@Click" Raised="true">Sign up</MatButton>
+<MatButton OnClick="@Click" Raised="true">Login</MatButton>
 @code{
-    string FirstName;
-    string LastName;
     string Email;
-    string Affiliation;
-    string JobTitle;
+    string Password;
 
 
     string ButtonState = "";
@@ -39,16 +25,5 @@
         ButtonState = "Clicked";
     }
         
-    /* Call some service that calls a repo, or just call a repo?
-    MedicalProfessionalUserModel MPUser = new MedicalProfessionalUserModel{
-        Id = 0;//get data somehow, autoincrement
-        FirstName = FirstName;
-        LastName = LastName;
-        Email = Email;
-        Affiliation = Affiliation;
-        JobTitle = JobTitle;
-        TotalAssignmentsFinished = 0;
-        ProfilePictureID = 0; //this should probably not be an ID but instead be a direct image upload.
-    }
-   */
+    /* send login request to the backend? */
 }

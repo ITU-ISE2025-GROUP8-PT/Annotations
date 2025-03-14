@@ -1,8 +1,13 @@
 #.preconfig file for pre commit workflow
 repos:
--   repo: https://github.com/pre-commit/pre-commit-hooks
+-   repo: pre-commit autoupdate --repo https://github.com/pre-commit/pre-commit-hooks
     rev: v4.0.1
     hooks:
+    -   id: check-case-conflict
+    -   id: check-docstring-first
+    -   id: check-illegal-windows-names
+    -   id: check-json
+    -   id: check-merge-conflict
     -   id: check-yaml
-    -   id: end-of-file-fixer
+    -   id: pretty-format-json
     -   id: trailing-whitespace

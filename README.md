@@ -58,22 +58,22 @@ Annotations follows a structure with 3 kinds of branches
 - Integration
 - Feature
 
-There is only _one_ Main branch and _one_ Integration branch.
+There is only _one_ **Main** branch and _one_ **Integration** branch.
 
-If you wish to develop on the project, you need to create a Feature branch - following below Branch Naming Conventions.
+If you wish to develop on the project, you need to create a **Feature** branch - following below Branch Naming Conventions.
 
-If your Feature branch needs integration with other Feature branches in order to be deployable, you need to merge these branches using the Integration branch.
+If your **Feature** branch needs integration with other **Feature** branches in order to be deployable, you need to merge these branches using the **Integration** branch.
 
-When the Integration branch is ready (up to date with Main, and with working additions from the Feature branches), the Integration branch can be merged into main.
+When the **Integration** branch is ready (up to date with **Main**, and with working additions from the **Feature** branches), the **Integration** branch can be merged into **Main**.
 
-If a Feature branch _does not_ need integration with other Feature branches and is deployable, it can be merged directly into the Main branch.
+If a **Feature** branch _does not_ need integration with other **Feature** branches and is deployable, it can be merged directly into the **Main** branch.
 
 ### Code Review Rules
-- When merging directly into Main from a Feature branch, at least 2 detailed peer code reviews are required on the Pull Request.
+- When merging directly into **Main** from a **Feature** branch, at least 2 detailed peer code reviews are required on the Pull Request.
 
-- When merging into the Integration branch, at least 2 detailed peer code reviews are needed for each merge.
+- When merging into the **Integration** branch, at least 2 detailed peer code reviews are needed for each merge.
 
-- When merging from the Integration branch, 2 peer code reviews are still needed, but do not need to be detailed, as they have already been reviewed in detail when merging to the Integration branch.
+- When merging into **Main** _from the **Integration** branch_, 2 peer code reviews are still needed, but do not need to be detailed, as they have already been reviewed in detail when merging to the **Integration** branch.
 
 ## Branch Naming Conventions
 

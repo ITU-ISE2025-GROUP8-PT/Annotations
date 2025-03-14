@@ -1,0 +1,8 @@
+#.preconfig file for pre commit workflow
+repos:
+-   repo: https://github.com/ITU-ISE2025-GROUP8-PT/Annotations.git
+    rev: pre-commit autoupdate #auto-get the latest rev
+    hooks:
+    -   id: check-yaml
+    -   id: end-of-file-fixer
+    -   id: trailing-whitespace

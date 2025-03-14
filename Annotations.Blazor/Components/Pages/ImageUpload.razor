@@ -1,5 +1,5 @@
 @using MatBlazor
-@using 
+@using Annotations.Core.Entities 
 @page "/images/upload"
 @inject ILogger<Image> Logger
 
@@ -7,7 +7,7 @@
 
 <h1>Upload images:</h1>
 
-<EditForm Model="Model" OnValidSubmit="submit" FormName="ImagesUpload"> 
+<EditForm Model="Model" OnValidSubmit="Post" FormName="ImagesUpload"> 
 <p>
     <MatStringField @bind-Value="@ImgTitle" placeholder="Image title"></MatStringField>
 </p>
@@ -15,42 +15,62 @@
     <MatStringField @bind-Value="@ImgDescription" placeholder="Image description"></MatStringField>
 </p>
 <!--Later: we will need a field for dataset membership-->
- <MatFileUpload @bind-Value="@ImgFiles" OnChange="@MultipleFilesReady" AllowMultiple="true"
- Label="Select image(s) to upload"></MatFileUpload>
+ <label>
+    Select image(s) to upload:
+    <InputFile OnChange="@ImgFiles" multiple/>
+ </label>
  <div>
- <MatButton class="SignUpButton" type="submit" OnClick="@Post" Raised="true">Upload</MatButton>
+ <MatButton class="UploadButton" type="Post" OnClick="@Post" Raised="true">Upload</MatButton>
     </div>
 </EditForm>
 
-        @foreach (var f in multiplelist)
-        {
-            <div>@f</div>
-        }
+
+  
  
         @code
         { 
             string ImgTitle;
             string ImgDescription;
-            List<string> multiplelist = new List<string>();
+            static List<IBrowserFile> multiplelist = new List<IBrowserFile>();
  
-            void MultipleFilesReady(IMatFileUploadEntry[] files)
+            private async Task ImgFiles(InputFileChangeEventArgs e)
             {
-                foreach (var file in files)
+            foreach (var f in e.GetMultipleFiles(10))
                 {
-                    multiplelist.Add($"Name: {file.Name} - Size: {file.Size} - Title: {ImgTitle} - Decription: {ImgDescription}");
+                    multiplelist.Add(f);
                 }
+            }
+            public byte[] ConvertIBrowserFileToByteArray(IBrowserFile file)
+            {
+                using (MemoryStream ms = new MemoryStream())
+                {
+                await file.OpenReadStream().CopyTo(ms);
+                return ms.ToArray();
+                }
+            
             }
 
             
+            /*void ImgFiles(IMatFileUploadEntry[] files)
+            {
+                files = files;
+                foreach (var file in files)
+                {
+                    multiplelist.Add($"Id: 0 - Title: {ImgTitle} - Decription: {ImgDescription} - ImageData: {file}");
+                }
+            }
+
+            */
             [SupplyParameterFromForm]
             private Image? Model { get; set; }
             protected override void OnInitialized() =>
-            Model ??= new() { ProductionDate = DateTime.UtcNow }; //?
+            Model ??= new() {Id = 0 , Title = ImgTitle , Description = ImgDescription , ImageData = ConvertIBrowserFileToByteArray(multiplelist.FirstOrDefault())};
+            //first or default should not stay here
             
             void Post() {
-                Logger.LogInformation("Title = {ImgTitle}" + " Description = {ImgDescription} " +
-                "Files = {ImgFiles}",
-                Model?.Title, Model?.Description, Model?.Files);
+                Logger.LogInformation("Id = {Id}" + "Title = {ImgTitle}" + " Description = {ImgDescription} " +
+                "ImageData = {ImageData}",
+                Model?.Id, Model?.Title, Model?.Description, Model?.ImageData);
             } 
         }
  

@@ -5,6 +5,14 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddScoped(sp =>
+    new HttpClient
+    {
+        BaseAddress = new Uri(builder.Configuration["/images/upload"] ?? "https://localhost:5254")
+        //above localhost address needs to be changes when project is deployed
+    });
+builder.Services.AddHttpClient();
+
 // General services.
 builder.Services.AddSwaggerGen();
 builder.Services.AddControllers();

@@ -5,7 +5,7 @@ repos:
     hooks:
     -   id: check-case-conflict
     -   id: check-docstring-first
-    -   id: check-json
+#    -   id: check-json not sure we have ant json files yet, but this could be used later
     -   id: check-merge-conflict
     -   id: check-yaml
     -   id: pretty-format-json

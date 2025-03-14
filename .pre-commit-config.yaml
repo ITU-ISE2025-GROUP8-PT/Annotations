@@ -1,7 +1,7 @@
 #.preconfig file for pre commit workflow
 repos:
--   repo: https://github.com/ITU-ISE2025-GROUP8-PT/Annotations.git
-    rev: pre-commit autoupdate #auto-get the latest rev
+-   repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.0.1
     hooks:
     -   id: check-yaml
     -   id: end-of-file-fixer

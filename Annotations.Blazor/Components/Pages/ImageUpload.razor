@@ -1,0 +1,56 @@
+@using MatBlazor
+@using 
+@page "/images/upload"
+@inject ILogger<Image> Logger
+
+<PageTitle>Upload images</PageTitle>
+
+<h1>Upload images:</h1>
+
+<EditForm Model="Model" OnValidSubmit="submit" FormName="ImagesUpload"> 
+<p>
+    <MatStringField @bind-Value="@ImgTitle" placeholder="Image title"></MatStringField>
+</p>
+<p>
+    <MatStringField @bind-Value="@ImgDescription" placeholder="Image description"></MatStringField>
+</p>
+<!--Later: we will need a field for dataset membership-->
+ <MatFileUpload @bind-Value="@ImgFiles" OnChange="@MultipleFilesReady" AllowMultiple="true"
+ Label="Select image(s) to upload"></MatFileUpload>
+ <div>
+ <MatButton class="SignUpButton" type="submit" OnClick="@Post" Raised="true">Upload</MatButton>
+    </div>
+</EditForm>
+
+        @foreach (var f in multiplelist)
+        {
+            <div>@f</div>
+        }
+ 
+        @code
+        { 
+            string ImgTitle;
+            string ImgDescription;
+            List<string> multiplelist = new List<string>();
+ 
+            void MultipleFilesReady(IMatFileUploadEntry[] files)
+            {
+                foreach (var file in files)
+                {
+                    multiplelist.Add($"Name: {file.Name} - Size: {file.Size} - Title: {ImgTitle} - Decription: {ImgDescription}");
+                }
+            }
+
+            
+            [SupplyParameterFromForm]
+            private Image? Model { get; set; }
+            protected override void OnInitialized() =>
+            Model ??= new() { ProductionDate = DateTime.UtcNow }; //?
+            
+            void Post() {
+                Logger.LogInformation("Title = {ImgTitle}" + " Description = {ImgDescription} " +
+                "Files = {ImgFiles}",
+                Model?.Title, Model?.Description, Model?.Files);
+            } 
+        }
+ 

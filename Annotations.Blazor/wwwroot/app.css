@@ -51,20 +51,39 @@ h1:focus {
 }
 
 .SignUpButton {
-    display: block; 
-    margin: 0 auto;
-    text-align: center;
-    background-color: aliceblue;
-    border-color: #929292;
-    color:black
+    position:fixed;
+    background-color: green;
+   
+    top: 5%;
+    right: 5%;
+    border-color: black;
+    padding: 0.3% 1%;
+    border-radius: 7%;
+    color: white;
 }
 
 
 .loginbutton{
     position:fixed;
+    background-color: green;
    
     top: 2%;
     right: 3%;
-    
-    color :blue;   
+    border-color: black;
+    padding: 0.3% 1%;
+    border-radius: 7%;
+    color: white;   
+ }
+
+.registerbutton{
+    position:fixed;
+    background-color: green;
+   
+    top: 5%;
+    right: 5%;
+    border-color: black;
+    padding: 0.3% 1%;
+    border-radius: 7%;
+    color: white;
+
  }

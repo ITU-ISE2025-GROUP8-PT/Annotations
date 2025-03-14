@@ -8,7 +8,7 @@ public class AccountsGroup
 {
     public static void MapEndpoints(RouteGroupBuilder pathBuilder)
     {
-        pathBuilder.MapPost("/register", async (UserManager<AnnotationsUser> userManager, RegisterModel model) =>
+        pathBuilder.MapPost("/register", async (RegisterModel model, UserManager<AnnotationsUser> userManager) =>
         {
             var newUser = new AnnotationsUser { UserName = model.Email, Email = model.Email };
 

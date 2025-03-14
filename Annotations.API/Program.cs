@@ -25,7 +25,7 @@ builder.Services.AddSwaggerGen(options =>
         Type = SecuritySchemeType.ApiKey
     };
 
-    options.AddSecurityDefinition("oauth2", securityScheme);
+    options.AddSecurityDefinition("jwt", securityScheme);
     options.OperationFilter<SecurityRequirementsOperationFilter>();
 });
 
@@ -46,7 +46,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateIssuerSigningKey = true,
             ValidIssuer = builder.Configuration["JwtIssuer"],
             ValidAudience = builder.Configuration["JwtAudience"],
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JwtSecurityKey"]))
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JwtSecurityKey"] ?? throw new NullReferenceException("Missing JWT security key.")))
         };
     });
 builder.Services.AddAuthorization();
@@ -64,8 +64,9 @@ var app = builder.Build();
 // Blob container name string HUSK ""
 //BlobContainerClient containerClient = blobServiceClient.GetBlobContainerClient(containerName); <-- indsæt string her i enden og intet andet i linjen
 
-app.MapGroup("/Auth").MapIdentityApi<AnnotationsUser>(); // Can be customized further with endpoint configuration builder.
+//app.MapGroup("/Auth").MapIdentityApi<AnnotationsUser>(); // Can be customized further with endpoint configuration builder.
 
+AccountsGroup.MapEndpoints(app.MapGroup("Accounts"));
 UsersGroup.MapEndpoints(app.MapGroup("/Users"));
 ImagesGroup.MapEndpoints(app.MapGroup("/Images"));
 

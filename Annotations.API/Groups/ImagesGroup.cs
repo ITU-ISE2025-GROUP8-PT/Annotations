@@ -14,10 +14,8 @@ public static class ImagesGroup
     private record ValidationResponse(bool Success, string ErrorMessage);
     private static ValidationResponse ValidateImage(IFormFile file)//temporary location
     {
-        Console.WriteLine("validating image");
         if (file.ContentType != "image/jpeg" && file.ContentType != "image/png" &&  file.ContentType != "image/jpg")
         {
-            Console.WriteLine("Invalid image format");
             return new ValidationResponse(false, "File is not a valid image.");
         } 
         if (file.Length > 5 * 1024 * 1024) {
@@ -58,19 +56,30 @@ public static class ImagesGroup
             }
             else
             {
-                Console.WriteLine("Image uploading.");
                 var connectionString =
                     "AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;DefaultEndpointsProtocol=http;BlobEndpoint=http://127.0.0.1:10000/devstoreaccount1;QueueEndpoint=http://127.0.0.1:10001/devstoreaccount1;TableEndpoint=http://127.0.0.1:10002/devstoreaccount1;";
                 BlobServiceClient blobServiceClient = new BlobServiceClient(connectionString);
                 BlobContainerClient containerClient = blobServiceClient.GetBlobContainerClient("images");
-            
-            
-                BlobClient imageBlobClient = containerClient.GetBlobClient($"{counter}.jpg");
+
+                string fileExtension = "empty";//nobody will know, maybe improvement in future
+                switch (image.ContentType)
+                {
+                    case "image/jpeg":
+                        fileExtension = ".jpeg";
+                        break;
+                    case "image/png":
+                        fileExtension = ".png";
+                        break;
+                    case "image/jpg":
+                        fileExtension = ".jpg";
+                        break;
+                }
+                
+                BlobClient imageBlobClient = containerClient.GetBlobClient($"{counter}{fileExtension}");
                 counter++;
                 using (var fileStream = image.OpenReadStream())
                 {
                     await imageBlobClient.UploadAsync(fileStream, overwrite: true);
-                    Console.WriteLine("Uploaded image successfully.");
                 }
             }
 

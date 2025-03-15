@@ -50,16 +50,17 @@ public static class ImagesGroup
             return image is not null ? Results.Ok(image) : Results.NotFound();
         });
         */
-        pathBuilder.MapPost("/upload/{url}", async ([FromRoute] Uri url, AnnotationsDbContext context) =>
+        pathBuilder.MapPost("/upload", async (string url, AnnotationsDbContext context) =>
         {
             using HttpClient client = new HttpClient(); 
-            byte[] response = client.GetByteArrayAsync(url.ToString()).Result;
+            Uri uri = new Uri(url);
+            byte[] response = client.GetByteArrayAsync(uri).Result;
             
             var image = new Image
             {
-                Id = 02,
-                Title = "idk",
-                Description = "idk2",
+                Id = 03,
+                Title = "idk3",
+                Description = "idk4",
                 ImageData = response
             };
             await context.Images.AddAsync(image);

@@ -27,6 +27,8 @@ public class ApiAuthenticationStateProvider : AuthenticationStateProvider
      */
     public override async Task<AuthenticationState> GetAuthenticationStateAsync()
     {
+        // Check if we're running in a prerendering context. Return empty authentication state if true
+        if (!OperatingSystem.IsBrowser()) return new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity()));
         var savedToken = await _localStorage.GetItemAsync<string>("authToken");
 
         if (string.IsNullOrWhiteSpace(savedToken))
@@ -38,7 +40,9 @@ public class ApiAuthenticationStateProvider : AuthenticationStateProvider
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", savedToken);
 
         // new claims principal containing the claims from the token
-        return new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity(ParseClaimsFromJwt(savedToken), "jwt")));
+        return new AuthenticationState(
+            new ClaimsPrincipal(new ClaimsIdentity(ParseClaimsFromJwt(savedToken), "jwt")));
+        // During prerendering, return an empty authentication state
     }
 
     /*

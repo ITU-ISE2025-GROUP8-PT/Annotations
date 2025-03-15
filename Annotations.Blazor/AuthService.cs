@@ -38,7 +38,7 @@ public class AuthService : IAuthService
      */
     public async Task<RegisterResult> Register(RegisterModel registerModel)
     {
-        var response = await _httpClient.PostAsJsonAsync("api/accounts", registerModel);
+        var response = await _httpClient.PostAsJsonAsync("accounts/register", registerModel);
         response.EnsureSuccessStatusCode();
         
         var result = await response.Content.ReadFromJsonAsync<RegisterResult>();
@@ -53,7 +53,7 @@ public class AuthService : IAuthService
     public async Task<LoginResult> Login(LoginModel loginModel)
     {
         var loginAsJson = JsonSerializer.Serialize(loginModel);
-        var response = await _httpClient.PostAsync("api/Login", new StringContent(loginAsJson, Encoding.UTF8, "application/json"));
+        var response = await _httpClient.PostAsync("accounts/login", new StringContent(loginAsJson, Encoding.UTF8, "application/json"));
         var loginResult = JsonSerializer.Deserialize<LoginResult>(await response.Content.ReadAsStringAsync(), new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
 
         if (!response.IsSuccessStatusCode)

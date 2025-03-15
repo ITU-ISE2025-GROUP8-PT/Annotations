@@ -1,0 +1,64 @@
+@*
+* https://chrissainty.com/securing-your-blazor-apps-authentication-with-clientside-blazor-using-webapi-aspnet-core-identity/
+*@
+
+@page "/login"
+@using Annotations.Core.Models
+@inject IAuthService AuthService
+@inject NavigationManager NavigationManager
+
+<h1>Login</h1>
+
+@if (_showErrors)
+{
+    <div class="alert alert-danger" role="alert">
+        <p>@_error</p>
+    </div>
+}
+
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title">Please enter your details</h5>
+        <EditForm Model="_loginModel" OnValidSubmit="HandleLogin" FormName="loginForm">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+
+            <div class="form-group">
+                <label for="email">Email address</label>
+                <InputText Id="email" Class="form-control" @bind-Value="_loginModel.Email" />
+                <ValidationMessage For="@(() => _loginModel.Email)" />
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <InputText Id="password" type="password" Class="form-control" @bind-Value="_loginModel.Password" />
+                <ValidationMessage For="@(() => _loginModel.Password)" />
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </EditForm>
+    </div>
+</div>
+
+@code {
+
+    private readonly LoginModel _loginModel = new();
+    private bool _showErrors;
+    private string _error = "";
+
+    private async Task HandleLogin()
+    {
+        _showErrors = false;
+
+        var result = await AuthService.Login(_loginModel);
+
+        if (result.Successful)
+        {
+            NavigationManager.NavigateTo("/");
+        }
+        else
+        {
+            _error = result.Error;
+            _showErrors = true;
+        }
+    }
+
+}

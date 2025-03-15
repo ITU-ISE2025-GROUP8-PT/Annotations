@@ -29,13 +29,9 @@ builder.Services.AddDbContext<AnnotationsDbContext>((serviceProvider, options) =
     options.UseSqlite(connection);
 });
 
-
+builder.Services.AddAntiforgery();
 var app = builder.Build();
 
-// Blob Storage connection string HUSK ""
-//BlobServiceClient blobServiceClient = new BlobServiceClient(connectionString); <-- indsæt string her i enden og intet andet i linjen
-// Blob container name string HUSK ""
-//BlobContainerClient containerClient = blobServiceClient.GetBlobContainerClient(containerName); <-- indsæt string her i enden og intet andet i linjen
 
 UsersGroup.MapEndpoints(app.MapGroup("/users"));
 ImagesGroup.MapEndpoints(app.MapGroup("/images"));
@@ -56,6 +52,7 @@ app.UseStaticFiles();
 app.UseRouting();
 app.UseAuthorization();
 app.UseHttpsRedirection();
+app.UseAntiforgery();
 
 app.Run();
 
@@ -98,13 +95,4 @@ void InitializeTempDatabase()
     context.SaveChanges();
 }
 
-/*
-// Helper metode til at hive billeder ud som Byte[] fra blob
-async Task<byte[]> GetImageDataAsync(string blobName)
-{
-    BlobClient blobClient = containerClient.GetBlobClient(blobName);
-    using var memoryStream = new MemoryStream();
-    await blobClient.DownloadToAsync(memoryStream);
-    return memoryStream.ToArray();
-}
-*/
+

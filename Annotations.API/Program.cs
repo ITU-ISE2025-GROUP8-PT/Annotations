@@ -29,7 +29,7 @@ builder.Services.AddDbContext<AnnotationsDbContext>((serviceProvider, options) =
     options.UseSqlite(connection);
 });
 
-
+builder.Services.AddAntiforgery();
 var app = builder.Build();
 
 // Blob Storage connection string HUSK ""
@@ -56,6 +56,7 @@ app.UseStaticFiles();
 app.UseRouting();
 app.UseAuthorization();
 app.UseHttpsRedirection();
+app.UseAntiforgery();
 
 app.Run();
 

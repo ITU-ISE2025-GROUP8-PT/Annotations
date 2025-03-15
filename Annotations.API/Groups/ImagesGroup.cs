@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http.Extensions;
 using Annotations.Core.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Azure.Storage.Blobs;
 
 namespace Annotations.API.Groups;
 
@@ -50,13 +51,25 @@ public static class ImagesGroup
             return image is not null ? Results.Ok(image) : Results.NotFound();
         });
         */
-        pathBuilder.MapPost("/upload", async (string url, AnnotationsDbContext context) =>
+        pathBuilder.MapPost("/upload", async (IFormFile image, AnnotationsDbContext context) =>
         {
-            using HttpClient client = new HttpClient(); 
-            Uri uri = new Uri(url);
-            byte[] response = client.GetByteArrayAsync(uri).Result;
+            /*using HttpClient client = new HttpClient(); 
+            Uri uri = new Uri(url);*/
             
-            var image = new Image
+            var connectionString =
+                "AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;DefaultEndpointsProtocol=http;BlobEndpoint=http://127.0.0.1:10000/devstoreaccount1;QueueEndpoint=http://127.0.0.1:10001/devstoreaccount1;TableEndpoint=http://127.0.0.1:10002/devstoreaccount1;";
+            BlobServiceClient blobServiceClient = new BlobServiceClient(connectionString);
+            BlobContainerClient containerClient = blobServiceClient.GetBlobContainerClient("images");
+            
+            
+            BlobClient imageBlobClient = containerClient.GetBlobClient("idk");
+            using (var fileStream = image.OpenReadStream())
+            {
+                await imageBlobClient.UploadAsync(fileStream, overwrite: true);
+                Console.WriteLine("Uploaded image successfully.");
+            }
+            
+            /*var image = new Image
             {
                 Id = 03,
                 Title = "idk3",
@@ -65,8 +78,10 @@ public static class ImagesGroup
             };
             await context.Images.AddAsync(image);
             await context.SaveChangesAsync();
-            return Results.Ok(new { message = "Image uploaded successfully" });
-        });
+            return Results.Ok(new { message = "Image uploaded successfully" });*/
+
+
+        }).DisableAntiforgery();
         //ellers ved billedfil brug da
         pathBuilder.MapGet("/{imageId}", async ([FromRoute] int imageId, AnnotationsDbContext context) =>
         {

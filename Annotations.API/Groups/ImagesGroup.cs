@@ -18,7 +18,7 @@ public static class ImagesGroup
         {
             return new ValidationResponse(false, "File is not a valid image.");
         } 
-        if (file.Length > 5 * 1024 * 1024) {
+        if (file.Length > 50 * 1024 * 1024) {//50MB
             return new ValidationResponse(false, "File is too large.");
         }
         if (file.Length == 0) 

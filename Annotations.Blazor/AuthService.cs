@@ -33,6 +33,9 @@ public class AuthService : IAuthService
         _localStorage = localStorage;
     }
 
+    /*
+     * Posts the RegisterModel to the accounts group and then returns the RegisterResult to the caller.
+     */
     public async Task<RegisterResult> Register(RegisterModel registerModel)
     {
         var response = await _httpClient.PostAsJsonAsync("api/accounts", registerModel);
@@ -42,6 +45,11 @@ public class AuthService : IAuthService
         return result ?? throw new InvalidOperationException("Failed to register user");
     }
 
+    /*
+     * Posts the LoginModel to the accounts group and then returns the LoginResult to the caller.
+     * When a successful result is returned it strips out the auth token and persists it to local storage.
+     * It then marks the user as authenticated and sets the default authorization header on the HttpClient.
+     */
     public async Task<LoginResult> Login(LoginModel loginModel)
     {
         var loginAsJson = JsonSerializer.Serialize(loginModel);
@@ -60,6 +68,9 @@ public class AuthService : IAuthService
         return loginResult;
     }
 
+    /*
+     * Reverse of Login method
+     */
     public async Task Logout()
     {
         await _localStorage.RemoveItemAsync("authToken");

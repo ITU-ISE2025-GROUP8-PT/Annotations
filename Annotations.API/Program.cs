@@ -54,6 +54,16 @@ builder.Services.AddAuthorization();
 builder.Services.AddIdentityApiEndpoints<AnnotationsUser>()
                 .AddEntityFrameworkStores<AnnotationsDbContext>();
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAllOrigins",
+        build =>
+        {
+            build.AllowAnyOrigin()
+                .AllowAnyMethod()
+                .AllowAnyHeader();
+        });
+});
 
 // Build application.
 var app = builder.Build();
@@ -87,6 +97,8 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
+
+app.UseCors("AllowAllOrigins");
 
 app.UseAuthentication();
 

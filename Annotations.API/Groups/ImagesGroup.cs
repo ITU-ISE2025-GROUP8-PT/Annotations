@@ -89,22 +89,23 @@ public static class ImagesGroup
 
         }).DisableAntiforgery();
         //ellers ved billedfil brug da
-        pathBuilder.MapGet("/{imageId}", async ([FromRoute] string imageId, AnnotationsDbContext context) =>
+        pathBuilder.MapGet("/{imageId}", async ([FromRoute] string imageId) =>
         {
-            //indsæt adgangskontol her 🐿️
+            //insert password restrictions here 🐿️
             var cts = new CancellationTokenSource(5000);
 
-            foreach (string fileExtension in ArrayOfFileExtension)
+            foreach (string fileExtension in ArrayOfFileExtension)//takes all of the types of files we allow and see if an image of that format exists with the id
             {
                 BlobClient blobClient = containerClient.GetBlobClient(imageId + "." + fileExtension);
-                if (!blobClient.Exists(cts.Token).ToString().Contains("404"))
+                if (!blobClient.Exists(cts.Token).ToString().Contains("404"))//checks if the blobClient is empty/couldn't find the image of that format
                 {
                     using var memoryStream = new MemoryStream();
                     await blobClient.DownloadToAsync(memoryStream);
-                    return Results.File(memoryStream.ToArray(), "image/" + fileExtension);
+                    return Results.File(memoryStream.ToArray(), "image/" + fileExtension);//because it is a return statement the for-loop will not continue after finding the image
                 }
 
             }
+            //will only reach here if it cannot find an image with the id of the correct file type, or else the request will terminate inside the for-loop
             Console.WriteLine("Cannot retrieve image because it doesn't exist");
             return Results.StatusCode(404);
             

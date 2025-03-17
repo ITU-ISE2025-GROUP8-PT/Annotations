@@ -9,6 +9,13 @@
     top: 0rem;  
 }
 
+#logo {
+    position: absolute;
+    height: 2rem;
+    left: 1rem;
+    top: 1rem;
+}
+
 .page {
     position: relative;
     display: flex;

@@ -12,6 +12,11 @@ public static class ImagesGroup
 {
     private static int counter = 0;//change this - it gets reset every time the program resets
     private record ValidationResponse(bool Success, string Message);
+    //TODO: DONT DO THIS
+    private static string connectionString =
+        "AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://127.0.0.1:10000/devstoreaccount1;";
+    static BlobServiceClient blobServiceClient = new BlobServiceClient(connectionString);
+    static BlobContainerClient containerClient = blobServiceClient.GetBlobContainerClient("images");
     /// <summary>
     /// Helping method that validates an image based on type, size, and also checks if it even contains anything
     /// Images can be JPEG, PNG and JPG, and everything else gets rejected
@@ -57,10 +62,7 @@ public static class ImagesGroup
             {
                 //this connectionString was based on Nickie's own local Azurite - replace this with your own connection string
                 //TODO: make connectionString not local
-                var connectionString =
-                    "AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;DefaultEndpointsProtocol=http;BlobEndpoint=http://127.0.0.1:10000/devstoreaccount1;QueueEndpoint=http://127.0.0.1:10001/devstoreaccount1;TableEndpoint=http://127.0.0.1:10002/devstoreaccount1;";
-                BlobServiceClient blobServiceClient = new BlobServiceClient(connectionString);
-                BlobContainerClient containerClient = blobServiceClient.GetBlobContainerClient("images");
+                
 
                 //fileExtension will always be a proper fileExtension because of the ValidateImage method
                 string fileExtension = "empty";//TODO: dont do this
@@ -88,7 +90,7 @@ public static class ImagesGroup
 
         }).DisableAntiforgery();
         //ellers ved billedfil brug da
-        pathBuilder.MapGet("/{imageId}", async ([FromRoute] int imageId, AnnotationsDbContext context) =>
+        pathBuilder.MapGet("/{imageId}", async ([FromRoute] string imageId, AnnotationsDbContext context) =>
         {
             //indsæt adgangskontol her 🐿️
             var cts = new CancellationTokenSource(5000);
@@ -104,6 +106,7 @@ public static class ImagesGroup
             }
             catch (OperationCanceledException)
             { return Results.StatusCode(408); }
+            
         });
 
         pathBuilder.MapGet("/exception",

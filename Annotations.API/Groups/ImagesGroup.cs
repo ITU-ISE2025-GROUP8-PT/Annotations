@@ -104,7 +104,7 @@ public static class ImagesGroup
                 }
 
             }
-            Console.WriteLine("Cannot find file");
+            Console.WriteLine("Cannot retrieve image because it doesn't exist");
             return Results.StatusCode(404);
             
         });
@@ -119,12 +119,12 @@ public static class ImagesGroup
                 if (!blobClient.Exists(cts.Token).ToString().Contains("404"))
                 {
                     await blobClient.DeleteAsync(snapshotsOption: DeleteSnapshotsOption.IncludeSnapshots);
-                    Console.WriteLine("deleted");
+                    Console.WriteLine("image deleted successfully");
                     return Results.StatusCode(204);
                 }
 
             }
-            Console.WriteLine("Cannot find file");
+            Console.WriteLine("Cannot delete image because it doesn't exist");
             return Results.StatusCode(404);
 
         }).DisableAntiforgery();

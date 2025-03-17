@@ -68,7 +68,7 @@ h1:focus {
     background-color: green;
    
     top: 2%;
-    right: 3%;
+    right: 1.5%;
     border-color: black;
     padding: 0.3% 1%;
     border-radius: 7%;
@@ -78,9 +78,9 @@ h1:focus {
 .registerbutton{
     position:fixed;
     background-color: green;
-   
-    top: 5%;
-    right: 5%;
+    
+    top: 2%;
+    right: 6.5%;
     border-color: black;
     padding: 0.3% 1%;
     border-radius: 7%;

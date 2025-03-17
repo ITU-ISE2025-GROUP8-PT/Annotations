@@ -1,7 +1,19 @@
+.topnav {
+    background-color: rgb(16, 30, 45);
+    opacity: 90%;
+    height: 4rem;
+
+    position: absolute;
+    left: 0rem;
+    right: 0rem;
+    top: 0rem;  
+}
+
 .page {
     position: relative;
     display: flex;
     flex-direction: column;
+    top: 4rem;
 }
 
 main {

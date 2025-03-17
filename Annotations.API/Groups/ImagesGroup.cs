@@ -77,7 +77,7 @@ public static class ImagesGroup
                 {
                     if (image.ContentType == "image/" + Filename)
                     {
-                        fileExtension = Filename;
+                        fileExtension = "." + Filename;
                         break;
                     }
                 }

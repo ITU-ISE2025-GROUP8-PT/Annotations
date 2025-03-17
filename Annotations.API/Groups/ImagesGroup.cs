@@ -60,9 +60,6 @@ public static class ImagesGroup
             }
             else
             {
-                //this connectionString was based on Nickie's own local Azurite - replace this with your own connection string
-                //TODO: make connectionString not local
-                
 
                 //fileExtension will always be a proper fileExtension because of the ValidateImage method
                 string fileExtension = "empty";//TODO: dont do this

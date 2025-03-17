@@ -10,9 +10,9 @@
     <img src="https://img.shields.io/github/last-commit/ITU-ISE2025-GROUP8-PT/Annotations.svg?style=flat-square&logo=github&logoColor=white"
          alt="GitHub last commit">
 	</a>
-    <a href="https://github.com/ITU-ISE2025-GROUP8-PT/Annotations/issues">
-    <img src="https://img.shields.io/github/issues-raw/ITU-ISE2025-GROUP8-PT/Annotations.svg?style=flat-square&logo=github&logoColor=white"
-         alt="GitHub issues">
+    <a href="https://team8-itu-2025.atlassian.net/jira/software/projects/PT/summary">
+    <img src="https://img.shields.io/badge/Jira-Gruppe 8-blue?style=flat-square&logo=jira&logoColor=white"
+         alt="Jira">
 	</a>
     <a href="https://github.com/ITU-ISE2025-GROUP8-PT/Annotations/pulls">
     <img src="https://img.shields.io/github/issues-pr-raw/ITU-ISE2025-GROUP8-PT/Annotations.svg?style=flat-square&logo=github&logoColor=white"
@@ -53,18 +53,34 @@ The runnable projects within the solution are:
 # Contribution guidelines
 
 ## Branching Strategy
+Annotations follows a structure with 3 kinds of branches
+- Main
+- Integration
+- Feature
 
-![Example of gitflow branching strategy](https://raw.githubusercontent.com/ITU-ISE2025-GROUP8-PT/Annotations/bf03ac84a553c1dc77d78d41ace43b4f3a55bb8f/gitflow_branching_strategy.png)
+There is only _one_ **Main** branch and _one_ **Integration** branch.
 
-Development of new code is produced in feature branches, which is added to the development branch when meeting acceptance criteria.
-The development branch gets merged with the main branch upon review and approval by the stakeholders and the company. <p></p> The main and development branch is kept safe by only allowing merges through reviewed pull requests.
+If you wish to develop on the project, you need to create a **Feature** branch - following below Branch Naming Conventions.
+
+If your **Feature** branch needs integration with other **Feature** branches in order to be deployable, you need to merge these branches using the **Integration** branch.
+
+When the **Integration** branch is ready (up to date with **Main**, and with working additions from the **Feature** branches), the **Integration** branch can be merged into **Main**.
+
+If a **Feature** branch _does not_ need integration with other **Feature** branches and is deployable, it can be merged directly into the **Main** branch.
+
+### Code Review Rules
+- When merging directly into **Main** from a **Feature** branch, at least 2 detailed peer code reviews are required on the Pull Request.
+
+- When merging into the **Integration** branch, at least 2 detailed peer code reviews are needed for each merge.
+
+- When merging into **Main** _from the **Integration** branch_, 2 peer code reviews are still needed, but do not need to be detailed, as they have already been reviewed in detail when merging to the **Integration** branch.
 
 ## Branch Naming Conventions
 
 All branches follow the convention of
 
 ```bash
-feature/[function_of_the_feature]/[possible_version_number]
+feature/[function_of_the_feature_and_ticket_id]/[possible_version_number]
 
 bugfix/[what_to_fix]
 
@@ -75,7 +91,7 @@ test/[what_to_test]
 
 Examples of naming branches: 
 
-- `feature/upload-image`
+- `feature/upload-image-pt-1`
 - `bugfix/misplaced-css-5`
 - `refactor/file-system`
 - `test/user-registration`

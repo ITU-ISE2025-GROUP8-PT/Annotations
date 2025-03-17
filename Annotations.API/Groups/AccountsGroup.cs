@@ -23,7 +23,6 @@ public class AccountsGroup
             var newUser = new AnnotationsUser { UserName = model.Email, Email = model.Email };
 
             var result = await userManager.CreateAsync(newUser, model.Password);
-
             if (!result.Succeeded)
             {
                 var errors = result.Errors.Select(x => x.Description);

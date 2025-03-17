@@ -60,7 +60,6 @@ public static class ImagesGroup
             }
             else
             {
-
                 //fileExtension will always be a proper fileExtension because of the ValidateImage method
                 string fileExtension = "empty";//TODO: dont do this
                 switch (image.ContentType)

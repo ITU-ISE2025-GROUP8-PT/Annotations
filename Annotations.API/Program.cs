@@ -50,7 +50,7 @@ var app = builder.Build();
 
 app.MapGroup("/Auth").MapIdentityApi<AnnotationsUser>(); // Can be customized further with endpoint configuration builder.
 
-UsersGroup.MapEndpoints(app.MapGroup("/Users"));
+TestGroup.MapEndpoints(app.MapGroup("/Tests"));
 ImagesGroup.MapEndpoints(app.MapGroup("/Images"));
 
 app.MapGet("/Error", () => "Dette er en 400-599 eller værre");

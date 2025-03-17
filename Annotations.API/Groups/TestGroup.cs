@@ -1,6 +1,6 @@
 namespace Annotations.API.Groups;
 
-public static class UsersGroup
+public static class TestGroup
 {
     public static void MapEndpoints(RouteGroupBuilder pathBuilder)
     {

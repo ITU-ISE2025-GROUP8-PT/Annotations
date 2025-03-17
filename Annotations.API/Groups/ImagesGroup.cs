@@ -18,7 +18,7 @@ public static class ImagesGroup
         "AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://127.0.0.1:10000/devstoreaccount1;";
     private static BlobServiceClient blobServiceClient = new BlobServiceClient(connectionString);
     private static BlobContainerClient containerClient = blobServiceClient.GetBlobContainerClient("images");
-    private static string[] ArrayOfFileExtension = {"jpg", "jpeg", "png"};
+    private static string[] ArrayOfFileExtension = {"png", "jpg", "jpeg"};
 
     /// <summary>
     /// Helping method that validates an image based on type, size, and also checks if it even contains anything
@@ -28,10 +28,7 @@ public static class ImagesGroup
     /// <returns>ValidationResponse - a record that contains a boolean of whether the image is validated, and a message that describes either what went wrong, or that it was successful</returns>
     private static ValidationResponse ValidateImage(IFormFile file)//temporary location
     {
-        if (file.ContentType != "image/jpeg" && file.ContentType != "image/png" &&  file.ContentType != "image/jpg")
-        {
-            return new ValidationResponse(false, "File is not a valid image.");
-        } 
+        
         if (file.Length > 50 * 1024 * 1024) {//50MB
             return new ValidationResponse(false, "File is too large.");
         }
@@ -39,8 +36,17 @@ public static class ImagesGroup
         { 
             return new ValidationResponse(false, "File doesn't exist.");
         }
-        //upload image to db
-        return new ValidationResponse(true ,"Uploaded image successfully.");
+        foreach (string FileExtension in ArrayOfFileExtension)
+        {
+            if (file.ContentType.Contains(FileExtension))
+            {
+                //if the image is the correct type, it will be uploaded, since it fulfills the other criterias
+                //upload image to db
+                return new ValidationResponse(true ,"Uploaded image successfully.");
+            }
+        }
+        //if the code reaches this point, then the file type is none of the permitted file types, so an error is thrown
+        return new ValidationResponse(false, "File is not a valid image.");
         
     }
     public static void MapEndpoints(RouteGroupBuilder pathBuilder)
@@ -59,6 +65,7 @@ public static class ImagesGroup
             if (!response.Success)
             {
                 Console.WriteLine("rejecting image");
+                Console.WriteLine(response.Message);
                 //TODO: how should the end user see this?
             }
             else

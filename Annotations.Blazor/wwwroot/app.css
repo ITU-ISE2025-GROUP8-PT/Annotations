@@ -2,6 +2,15 @@ html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
+#signuppage {
+    display: flex;
+    width: fit-content;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+
 a, .btn-link {
     color: #006bb7;
 }
@@ -87,3 +96,9 @@ h1:focus {
     color: white;
 
  }
+
+
+.SignUpButton2 {
+    background-color: white;
+    border-color: rgb(180, 180, 180);
+}

@@ -95,17 +95,20 @@ public static class ImagesGroup
             //indsæt adgangskontol her 🐿️
             var cts = new CancellationTokenSource(5000);
 
-            try
+            string[] ArrayOfFileExtension = {"jpg", "jpeg", "png"};
+            foreach (string fileExtension in ArrayOfFileExtension)
             {
-                var image = await context.Images.FindAsync(imageId, cts.Token);
-                if (image is null)
+                BlobClient blobClient = containerClient.GetBlobClient(imageId + "." + fileExtension);
+                if (!blobClient.Exists(cts.Token).ToString().Contains("404"))
                 {
-                    return Results.NotFound();
+                    using var memoryStream = new MemoryStream();
+                    await blobClient.DownloadToAsync(memoryStream);
+                    return Results.File(memoryStream.ToArray(), "image/" + fileExtension);
                 }
-                return Results.File(image.ImageData, "image/png");
+
             }
-            catch (OperationCanceledException)
-            { return Results.StatusCode(408); }
+            Console.WriteLine("Cannot find file");
+            return Results.StatusCode(408);
             
         });
 

@@ -15,8 +15,8 @@ public static class ImagesGroup
     //TODO: DONT DO THIS
     private static string connectionString =
         "AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://127.0.0.1:10000/devstoreaccount1;";
-    static BlobServiceClient blobServiceClient = new BlobServiceClient(connectionString);
-    static BlobContainerClient containerClient = blobServiceClient.GetBlobContainerClient("images");
+    private static BlobServiceClient blobServiceClient = new BlobServiceClient(connectionString);
+    private static BlobContainerClient containerClient = blobServiceClient.GetBlobContainerClient("images");
     /// <summary>
     /// Helping method that validates an image based on type, size, and also checks if it even contains anything
     /// Images can be JPEG, PNG and JPG, and everything else gets rejected
@@ -107,6 +107,26 @@ public static class ImagesGroup
             return Results.StatusCode(408);
             
         });
+        pathBuilder.MapPost("/delete", async (string imageId) =>
+        {
+            var cts = new CancellationTokenSource(5000);
+
+            string[] ArrayOfFileExtension = {"jpg", "jpeg", "png"};
+            foreach (string fileExtension in ArrayOfFileExtension)
+            {
+                BlobClient blobClient = containerClient.GetBlobClient(imageId + "." + fileExtension);
+                if (!blobClient.Exists(cts.Token).ToString().Contains("404"))
+                {
+                    await blobClient.DeleteAsync();
+                    Console.WriteLine("deleted");
+                    return Results.StatusCode(204);
+                }
+
+            }
+            Console.WriteLine("Cannot find file");
+            return Results.StatusCode(408);
+
+        }).DisableAntiforgery();
 
         pathBuilder.MapGet("/exception",
             () =>

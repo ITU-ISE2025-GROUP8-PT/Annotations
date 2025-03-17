@@ -5,6 +5,7 @@ using Annotations.Core.Entities;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.Net.Http.Headers;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Filters;
 // using Azure.Storage.Blobs;
@@ -20,12 +21,18 @@ builder.Services.AddSwaggerGen(options =>
 {
     var securityScheme = new OpenApiSecurityScheme
     {
+        Name = HeaderNames.Authorization,
         In = ParameterLocation.Header,
-        Name = "Authorization",
-        Type = SecuritySchemeType.ApiKey
+        Type = SecuritySchemeType.ApiKey,
+        Description = "JWT Authorization header",
+        Reference = new OpenApiReference
+        {
+            Id = JwtBearerDefaults.AuthenticationScheme,
+            Type = ReferenceType.SecurityScheme
+        }
     };
 
-    options.AddSecurityDefinition("jwt", securityScheme);
+    options.AddSecurityDefinition(securityScheme.Reference.Id, securityScheme);
     options.OperationFilter<SecurityRequirementsOperationFilter>();
 });
 

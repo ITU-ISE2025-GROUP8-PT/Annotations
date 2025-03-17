@@ -110,6 +110,7 @@ public static class ImagesGroup
             return Results.StatusCode(404);
             
         });
+        
         pathBuilder.MapPost("/delete", async (string imageId) =>
         {
             var cts = new CancellationTokenSource(5000);
@@ -119,6 +120,8 @@ public static class ImagesGroup
                 BlobClient blobClient = containerClient.GetBlobClient(imageId + "." + fileExtension);
                 if (!blobClient.Exists(cts.Token).ToString().Contains("404"))
                 {
+                    /*A snapshot is a read-only version of a blob that's taken at a point in time. 
+                    As of right now, we do not make snapshots of blobs, but it is still possible to manually create.*/
                     await blobClient.DeleteAsync(snapshotsOption: DeleteSnapshotsOption.IncludeSnapshots);
                     Console.WriteLine("image deleted successfully");
                     return Results.StatusCode(204);

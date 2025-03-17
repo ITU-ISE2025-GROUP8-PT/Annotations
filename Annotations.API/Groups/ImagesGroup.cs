@@ -4,6 +4,7 @@ using Annotations.Core.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Azure.Storage.Blobs;
+using Azure.Storage.Blobs.Models;
 using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace Annotations.API.Groups;
@@ -104,7 +105,7 @@ public static class ImagesGroup
 
             }
             Console.WriteLine("Cannot find file");
-            return Results.StatusCode(408);
+            return Results.StatusCode(404);
             
         });
         pathBuilder.MapPost("/delete", async (string imageId) =>
@@ -117,14 +118,14 @@ public static class ImagesGroup
                 BlobClient blobClient = containerClient.GetBlobClient(imageId + "." + fileExtension);
                 if (!blobClient.Exists(cts.Token).ToString().Contains("404"))
                 {
-                    await blobClient.DeleteAsync();
+                    await blobClient.DeleteAsync(snapshotsOption: DeleteSnapshotsOption.IncludeSnapshots);
                     Console.WriteLine("deleted");
                     return Results.StatusCode(204);
                 }
 
             }
             Console.WriteLine("Cannot find file");
-            return Results.StatusCode(408);
+            return Results.StatusCode(404);
 
         }).DisableAntiforgery();
 

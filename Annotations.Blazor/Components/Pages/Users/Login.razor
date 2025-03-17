@@ -4,7 +4,9 @@
 
 <PageTitle>Login</PageTitle>
 
-<h1>Login</h1>
+<h1>Login to annotations</h1>
+
+
 
 <p>
     <MatStringField @bind-Value="@Email" placeholder="Email"></MatStringField>
@@ -13,7 +15,17 @@
     <MatStringField @bind-Value="@Password" placeholder="Password"></MatStringField>
 </p>
 
-<MatButton OnClick="@Click" Raised="true">Login</MatButton>
+<p>
+Not signed up? Sign up here
+</p>
+
+
+
+
+
+
+
+<MatButton class="login" OnClick="@Click" Raised="true">Login</MatButton>
 @code{
     string Email;
     string Password;

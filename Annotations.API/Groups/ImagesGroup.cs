@@ -18,6 +18,8 @@ public static class ImagesGroup
         "AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://127.0.0.1:10000/devstoreaccount1;";
     private static BlobServiceClient blobServiceClient = new BlobServiceClient(connectionString);
     private static BlobContainerClient containerClient = blobServiceClient.GetBlobContainerClient("images");
+    private static string[] ArrayOfFileExtension = {"jpg", "jpeg", "png"};
+
     /// <summary>
     /// Helping method that validates an image based on type, size, and also checks if it even contains anything
     /// Images can be JPEG, PNG and JPG, and everything else gets rejected
@@ -92,7 +94,6 @@ public static class ImagesGroup
             //indsæt adgangskontol her 🐿️
             var cts = new CancellationTokenSource(5000);
 
-            string[] ArrayOfFileExtension = {"jpg", "jpeg", "png"};
             foreach (string fileExtension in ArrayOfFileExtension)
             {
                 BlobClient blobClient = containerClient.GetBlobClient(imageId + "." + fileExtension);
@@ -112,7 +113,6 @@ public static class ImagesGroup
         {
             var cts = new CancellationTokenSource(5000);
 
-            string[] ArrayOfFileExtension = {"jpg", "jpeg", "png"};
             foreach (string fileExtension in ArrayOfFileExtension)
             {
                 BlobClient blobClient = containerClient.GetBlobClient(imageId + "." + fileExtension);

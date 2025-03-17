@@ -72,17 +72,14 @@ public static class ImagesGroup
             {
                 //fileExtension will always be a proper fileExtension because of the ValidateImage method
                 string fileExtension = "empty";//TODO: dont do this
-                switch (image.ContentType)
+
+                foreach (string Filename in ArrayOfFileExtension)
                 {
-                    case "image/jpeg":
-                        fileExtension = ".jpeg";
+                    if (image.ContentType == "image/" + Filename)
+                    {
+                        fileExtension = Filename;
                         break;
-                    case "image/png":
-                        fileExtension = ".png";
-                        break;
-                    case "image/jpg":
-                        fileExtension = ".jpg";
-                        break;
+                    }
                 }
                 
                 BlobClient imageBlobClient = containerClient.GetBlobClient($"{counter}{fileExtension}");

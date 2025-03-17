@@ -2,7 +2,7 @@
 
 namespace Annotations.Core.Models;
 
-public class LoginModel
+public class LoginRequest
 {
     [Required]
     public string Email { get; set; }

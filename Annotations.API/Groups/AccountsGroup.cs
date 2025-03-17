@@ -34,7 +34,7 @@ public class AccountsGroup
             return new RegisterResult { Successful = true };
         });
         
-        pathBuilder.MapPost("/login", async ([FromBody] LoginModel model, SignInManager<AnnotationsUser> signInManager, IConfiguration configuration) =>
+        pathBuilder.MapPost("/login", async ([FromBody] LoginRequest model, SignInManager<AnnotationsUser> signInManager, IConfiguration configuration) =>
         {
             var result = await signInManager.PasswordSignInAsync(model.Email, model.Password, false, false);
 

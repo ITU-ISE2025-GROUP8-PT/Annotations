@@ -1,11 +1,12 @@
 @*
-* https://chrissainty.com/securing-your-blazor-apps-authentication-with-clientside-blazor-using-webapi-aspnet-core-identity/
+https://chrissainty.com/securing-your-blazor-apps-authentication-with-clientside-blazor-using-webapi-aspnet-core-identity/
 *@
 
 @page "/login"
 @using Annotations.Core.Models
 @inject IAuthService AuthService
 @inject NavigationManager NavigationManager
+@inject ILogger<LoginRequest> Logger
 
 <h1>Login</h1>
 
@@ -19,19 +20,19 @@
 <div class="card">
     <div class="card-body">
         <h5 class="card-title">Please enter your details</h5>
-        <EditForm Model="_loginModel" OnValidSubmit="HandleLogin" FormName="loginForm">
+        <EditForm Model="_loginRequest" OnSubmit="HandleLogin" FormName="loginForm">
             <DataAnnotationsValidator />
             <ValidationSummary />
 
             <div class="form-group">
                 <label for="email">Email address</label>
-                <InputText Id="email" Class="form-control" @bind-Value="_loginModel.Email" />
-                <ValidationMessage For="@(() => _loginModel.Email)" />
+                <InputText Id="email" Class="form-control" @bind-Value="_loginRequest.Email" />
+                <ValidationMessage For="@(() => _loginRequest.Email)" />
             </div>
             <div class="form-group">
                 <label for="password">Password</label>
-                <InputText Id="password" type="password" Class="form-control" @bind-Value="_loginModel.Password" />
-                <ValidationMessage For="@(() => _loginModel.Password)" />
+                <InputText Id="password" type="password" Class="form-control" @bind-Value="_loginRequest.Password" />
+                <ValidationMessage For="@(() => _loginRequest.Password)" />
             </div>
             <button type="submit" class="btn btn-primary">Submit</button>
         </EditForm>
@@ -39,8 +40,8 @@
 </div>
 
 @code {
-
-    private readonly LoginModel _loginModel = new();
+    [SupplyParameterFromForm]
+    private LoginRequest _loginRequest { get; set; } = new();
     private bool _showErrors;
     private string _error = "";
 
@@ -48,7 +49,9 @@
     {
         _showErrors = false;
 
-        var result = await AuthService.Login(_loginModel);
+        Logger.LogInformation("LOGIN REQUEST: " + _loginRequest.Email + " " + _loginRequest.Password);
+
+        var result = await AuthService.Login(_loginRequest);
 
         if (result.Successful)
         {
@@ -59,6 +62,6 @@
             _error = result.Error;
             _showErrors = true;
         }
-    }
+   }
 
 }

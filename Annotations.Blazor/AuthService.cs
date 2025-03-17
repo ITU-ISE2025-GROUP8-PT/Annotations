@@ -14,7 +14,7 @@ namespace Annotations.Blazor;
 public interface IAuthService
 {
     Task<RegisterResult> Register(RegisterModel registerModel);
-    Task<LoginResult> Login(LoginModel loginModel);
+    Task<LoginResult> Login(LoginRequest loginModel);
     Task Logout();
 }
 
@@ -50,7 +50,7 @@ public class AuthService : IAuthService
      * When a successful result is returned it strips out the auth token and persists it to local storage.
      * It then marks the user as authenticated and sets the default authorization header on the HttpClient.
      */
-    public async Task<LoginResult> Login(LoginModel loginModel)
+    public async Task<LoginResult> Login(LoginRequest loginModel)
     {
         var loginAsJson = JsonSerializer.Serialize(loginModel);
         var response = await _httpClient.PostAsync("accounts/login", new StringContent(loginAsJson, Encoding.UTF8, "application/json"));

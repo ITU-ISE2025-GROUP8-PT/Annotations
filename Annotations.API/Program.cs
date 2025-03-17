@@ -1,11 +1,10 @@
 using Annotations.API;
 using Annotations.API.Groups;
 using Annotations.Core.Entities;
+using Microsoft.AspNetCore.Authentication.BearerToken;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Filters;
-// using Azure.Storage.Blobs;
-// using System.Threading.Tasks;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,7 +21,7 @@ builder.Services.AddSwaggerGen(options =>
         Type = SecuritySchemeType.ApiKey
     };
 
-    options.AddSecurityDefinition("oauth2", securityScheme);
+    options.AddSecurityDefinition("IdentityBearer", securityScheme);
     options.OperationFilter<SecurityRequirementsOperationFilter>();
 });
 
@@ -32,12 +31,17 @@ builder.Services.AddDbContext<AnnotationsDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 
-builder.Services.AddAuthentication();
+string defaultSchema = BearerTokenDefaults.AuthenticationScheme;
+builder.Services.AddAuthentication(defaultSchema)
+.AddBearerToken(o =>
+{
+    o.BearerTokenExpiration = TimeSpan.FromMinutes(30);
+});
+
 builder.Services.AddAuthorization();
 
 builder.Services.AddIdentityApiEndpoints<AnnotationsUser>()
                 .AddEntityFrameworkStores<AnnotationsDbContext>();
-
 
 // Build application.
 var app = builder.Build();
@@ -48,8 +52,7 @@ var app = builder.Build();
 // Blob container name string HUSK ""
 //BlobContainerClient containerClient = blobServiceClient.GetBlobContainerClient(containerName); <-- indsæt string her i enden og intet andet i linjen
 
-app.MapGroup("/Auth").MapIdentityApi<AnnotationsUser>(); // Can be customized further with endpoint configuration builder.
-
+AuthGroup.MapEndpoints(app.MapGroup("/Auth"));
 TestGroup.MapEndpoints(app.MapGroup("/Tests"));
 ImagesGroup.MapEndpoints(app.MapGroup("/Images"));
 

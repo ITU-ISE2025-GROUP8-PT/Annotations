@@ -1,3 +1,5 @@
+using System.Security.Claims;
+
 namespace Annotations.API.Groups;
 
 public static class UsersGroup

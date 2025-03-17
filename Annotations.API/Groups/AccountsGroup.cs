@@ -35,23 +35,22 @@ public class AccountsGroup
         
         pathBuilder.MapPost("/login", async ([FromBody] LoginRequest model, SignInManager<AnnotationsUser> signInManager, IConfiguration configuration) =>
         {
-            var result = await signInManager.PasswordSignInAsync(model.Email, model.Password, false, false);
+            var user = await signInManager.UserManager.FindByNameAsync(model.Email);
+            if (user == null) return Results.BadRequest(new LoginResult { Successful = false, Error = "Username and password are invalid." });
 
+            var result = await signInManager.PasswordSignInAsync(user, model.Password, true, false);
             if (!result.Succeeded) return Results.BadRequest(new LoginResult { Successful = false, Error = "Username and password are invalid." });
 
-            var claims = new[]
-            {
-                new Claim(ClaimTypes.Name, model.Email)
-            };
+            var claims = await signInManager.ClaimsFactory.CreateAsync(user);
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JwtSecurityKey"] ?? throw new InvalidOperationException()));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-            var expiry = DateTime.Now.AddDays(Convert.ToInt32(configuration["JwtExpiryInDays"]));
+            var expiry = DateTime.UtcNow.AddDays(Convert.ToInt32(configuration["JwtExpiryInDays"]));
 
             var token = new JwtSecurityToken(
                 configuration["JwtIssuer"],
                 configuration["JwtAudience"],
-                claims,
+                claims.Claims,
                 expires: expiry,
                 signingCredentials: creds
             );

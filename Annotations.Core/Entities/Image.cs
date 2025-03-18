@@ -16,4 +16,3 @@ public class Image
     UploadedBy (referencing AdminId)
     DeletedBy (referencing AdminId)
     */
-

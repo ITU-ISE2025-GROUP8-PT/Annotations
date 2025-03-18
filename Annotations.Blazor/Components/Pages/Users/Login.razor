@@ -4,28 +4,32 @@
 
 <PageTitle>Login</PageTitle>
 
-<h1>Login to annotations</h1>
-
-
-
+<div class="centerpage">
+    <h1>Login to annotations</h1>
+    <br>
 <p>
     <MatStringField @bind-Value="@Email" placeholder="Email"></MatStringField>
 </p>
+<br>
 <p>
     <MatStringField @bind-Value="@Password" placeholder="Password"></MatStringField>
 </p>
-
+<br>
 <p>
 Not signed up? Sign up here
 </p>
-
-
-
-
-
-
-
+<br>
 <MatButton class="login" OnClick="@Click" Raised="true">Login</MatButton>
+</div>
+
+<MatButtonLink class="SignUpButton" Href="/sign-up">Sign Up</MatButtonLink>
+
+
+
+
+
+
+
 @code{
     string Email;
     string Password;

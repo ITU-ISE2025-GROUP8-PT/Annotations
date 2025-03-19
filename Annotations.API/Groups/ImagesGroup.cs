@@ -66,6 +66,7 @@ public static class ImagesGroup
             {
                 Console.WriteLine("rejecting image");
                 Console.WriteLine(response.Message);
+                return Results.StatusCode(422);
                 //TODO: how should the end user see this?
             }
             else
@@ -97,6 +98,8 @@ public static class ImagesGroup
                 {
                     await imageBlobClient.UploadAsync(fileStream, overwrite: true);
                 }
+
+                return Results.StatusCode(200);
             }
 
 

@@ -1,15 +1,26 @@
+.header {
+    background-color: rgb(16, 30, 45);
+    opacity: 90%;
+    height: 4rem;
+
+    position: absolute;
+    left: 0rem;
+    right: 0rem;
+    top: 0rem;  
+}
+
+#logo {
+    position: absolute;
+    height: 2rem;
+    left: 1rem;
+    top: 1rem;
+}
+
 .page {
     position: relative;
     display: flex;
     flex-direction: column;
-}
-
-main {
-    flex: 1;
-}
-
-.sidebar {
-    background-image: linear-gradient(180deg, rgb(5, 39, 103) 0%, #3a0647 70%);
+    top: 4rem;
 }
 
 .top-row {
@@ -48,7 +59,7 @@ main {
 
 @media (min-width: 641px) {
     .page {
-        flex-direction: row;
+        flex-direction: column;
     }
 
     .sidebar {

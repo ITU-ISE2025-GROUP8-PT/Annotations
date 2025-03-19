@@ -124,7 +124,7 @@ public static class ImagesGroup
             
         });
         
-        pathBuilder.MapPost("/delete", async (string imageId) =>
+        pathBuilder.MapDelete("/{imageId}", async (string imageId) =>
         {
             var cts = new CancellationTokenSource(5000);
 

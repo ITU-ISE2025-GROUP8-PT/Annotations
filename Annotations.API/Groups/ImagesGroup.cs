@@ -12,6 +12,11 @@ public static class ImagesGroup
 {
     private static int counter = 0;//change this - it gets reset every time the program resets
     private record ValidationResponse(bool Success, string Message);
+    //TODO: DONT DO THIS
+    private static string connectionString =
+        "AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://127.0.0.1:10000/devstoreaccount1;";
+    static BlobServiceClient blobServiceClient = new BlobServiceClient(connectionString);
+    static BlobContainerClient containerClient = blobServiceClient.GetBlobContainerClient("images");
     /// <summary>
     /// Helping method that validates an image based on type, size, and also checks if it even contains anything
     /// Images can be JPEG, PNG and JPG, and everything else gets rejected
@@ -55,6 +60,7 @@ public static class ImagesGroup
             }
             else
             {
+
                 //this connectionString was based on Nickie's own local Azurite - replace this with your own connection string
                 //TODO: make connectionString not local
                 //defualt connectionstring you no longer need to change itto run azurite locally
@@ -90,22 +96,26 @@ public static class ImagesGroup
 
         }).DisableAntiforgery();
         //ellers ved billedfil brug da
-        pathBuilder.MapGet("/{imageId}", async ([FromRoute] int imageId, AnnotationsDbContext context) =>
+        pathBuilder.MapGet("/{imageId}", async ([FromRoute] string imageId, AnnotationsDbContext context) =>
         {
             //indsæt adgangskontol her 🐿️
             var cts = new CancellationTokenSource(5000);
 
-            try
+            string[] ArrayOfFileExtension = {"jpg", "jpeg", "png"};
+            foreach (string fileExtension in ArrayOfFileExtension)
             {
-                var image = await context.Images.FindAsync(imageId, cts.Token);
-                if (image is null)
+                BlobClient blobClient = containerClient.GetBlobClient(imageId + "." + fileExtension);
+                if (!blobClient.Exists(cts.Token).ToString().Contains("404"))
                 {
-                    return Results.NotFound();
+                    using var memoryStream = new MemoryStream();
+                    await blobClient.DownloadToAsync(memoryStream);
+                    return Results.File(memoryStream.ToArray(), "image/" + fileExtension);
                 }
-                return Results.File(image.ImageData, "image/png");
+
             }
-            catch (OperationCanceledException)
-            { return Results.StatusCode(408); }
+            Console.WriteLine("Cannot find file");
+            return Results.StatusCode(408);
+            
         });
 
         pathBuilder.MapGet("/exception",

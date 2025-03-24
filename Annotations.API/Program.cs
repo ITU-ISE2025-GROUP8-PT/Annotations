@@ -29,11 +29,12 @@ builder.Services.AddDbContext<AnnotationsDbContext>((serviceProvider, options) =
 });
 
 builder.Services.AddAntiforgery();
+
 builder.Services.AddAzureClients(clientBuilder =>
 {
-    clientBuilder.AddBlobServiceClient(builder.Configuration["AzureStorageConnection:blobServiceUri"]!).WithName("AzureStorageConnection");
-    clientBuilder.AddQueueServiceClient(builder.Configuration["AzureStorageConnection:queueServiceUri"]!).WithName("AzureStorageConnection");
-    clientBuilder.AddTableServiceClient(builder.Configuration["AzureStorageConnection:tableServiceUri"]!).WithName("AzureStorageConnection");
+    clientBuilder.AddBlobServiceClient(builder.Configuration["AzureStorageConnection"]!);
+    clientBuilder.AddQueueServiceClient(builder.Configuration["AzureStorageConnection"]!);
+    clientBuilder.AddTableServiceClient(builder.Configuration["AzureStorageConnection"]!);
 });
 var app = builder.Build();
 

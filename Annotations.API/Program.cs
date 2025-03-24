@@ -3,8 +3,7 @@ using Annotations.API.Groups;
 using Annotations.Core.Entities;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
-// using Azure.Storage.Blobs;
-// using System.Threading.Tasks;
+using Microsoft.Extensions.Azure;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,6 +29,13 @@ builder.Services.AddDbContext<AnnotationsDbContext>((serviceProvider, options) =
 });
 
 builder.Services.AddAntiforgery();
+
+builder.Services.AddAzureClients(clientBuilder =>
+{
+    clientBuilder.AddBlobServiceClient(builder.Configuration["AzureStorageConnection"]!);
+    clientBuilder.AddQueueServiceClient(builder.Configuration["AzureStorageConnection"]!);
+    clientBuilder.AddTableServiceClient(builder.Configuration["AzureStorageConnection"]!);
+});
 var app = builder.Build();
 
 

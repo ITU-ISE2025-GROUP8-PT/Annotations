@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.Extensions.Azure;
 
 namespace Annotations.API.Groups;
 
@@ -13,11 +14,7 @@ public static class ImagesGroup
 {
     private static int counter = 0;//change this - it gets reset every time the program resets
     private record ValidationResponse(bool Success, string Message);
-    //TODO: DONT DO THIS
-    private static string connectionString =
-        "AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://127.0.0.1:10000/devstoreaccount1;";
-    private static BlobServiceClient blobServiceClient = new BlobServiceClient(connectionString);
-    private static BlobContainerClient containerClient = blobServiceClient.GetBlobContainerClient("images");
+    
     private static string[] ArrayOfFileExtension = {"png", "jpg", "jpeg"};
 
     /// <summary>
@@ -58,7 +55,7 @@ public static class ImagesGroup
         
         //This is the upload endpoint where the image first gets validated, and then gets uploaded into your local Azurite BlobStorage
         //The image gets saved in the database as the same file type it was uploaded as
-        pathBuilder.MapPost("/upload", async (IFormFile image) =>
+        pathBuilder.MapPost("/upload", async (IFormFile image, [FromServices] IAzureClientFactory<BlobServiceClient> clientFactory) =>
         {
           
             ValidationResponse response = ValidateImage(image);
@@ -71,13 +68,7 @@ public static class ImagesGroup
             }
             else
             {
-                //this connectionString was based on Nickie's own local Azurite - replace this with your own connection string
-                //TODO: make connectionString not local
-                //defualt connectionstring you no longer need to change itto run azurite locally
-                var connectionString =
-                    "AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://127.0.0.1:10000/devstoreaccount1;";
-                //connect to the the azurite storage container
-                BlobServiceClient blobServiceClient = new BlobServiceClient(connectionString);
+                var blobServiceClient = clientFactory.CreateClient("Default");
                 BlobContainerClient containerClient = blobServiceClient.GetBlobContainerClient("images");
 
                 //fileExtension will always be a proper fileExtension because of the ValidateImage method
@@ -105,10 +96,13 @@ public static class ImagesGroup
 
         }).DisableAntiforgery();
         //ellers ved billedfil brug da
-        pathBuilder.MapGet("/{imageId}", async ([FromRoute] string imageId) =>
+        pathBuilder.MapGet("/{imageId}", async ([FromRoute] string imageId, [FromServices] IAzureClientFactory<BlobServiceClient> clientFactory) =>
         {
             //insert password restrictions here 🐿️
             var cts = new CancellationTokenSource(5000);
+
+            var blobServiceClient = clientFactory.CreateClient("Default");
+            BlobContainerClient containerClient = blobServiceClient.GetBlobContainerClient("images");
 
             foreach (string fileExtension in ArrayOfFileExtension)//takes all of the types of files we allow and see if an image of that format exists with the id
             {
@@ -127,9 +121,12 @@ public static class ImagesGroup
             
         });
         
-        pathBuilder.MapDelete("/{imageId}", async (string imageId) =>
+        pathBuilder.MapDelete("/{imageId}", async (string imageId, [FromServices] IAzureClientFactory<BlobServiceClient> clientFactory) =>
         {
             var cts = new CancellationTokenSource(5000);
+
+            var blobServiceClient = clientFactory.CreateClient("Default");
+            BlobContainerClient containerClient = blobServiceClient.GetBlobContainerClient("images");
 
             foreach (string fileExtension in ArrayOfFileExtension)
             {

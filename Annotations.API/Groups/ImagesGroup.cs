@@ -149,5 +149,10 @@ public static class ImagesGroup
                 throw new InvalidOperationException(
                     "Exception has been raised in the API. Look for further details in the log.");
             });
+
+        pathBuilder.MapGet("/APITest", () =>
+        {
+            return new string[] { "1", "2", "3", "Dette er en prøve" };
+        });
     }
 }

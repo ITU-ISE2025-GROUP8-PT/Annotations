@@ -48,10 +48,7 @@ public static class ImagesGroup
     }
     public static void MapEndpoints(RouteGroupBuilder pathBuilder)
     {
-        pathBuilder.MapGet("/", () => "Upload an image here!");
-
-       
-        
+        pathBuilder.RequireAuthorization();
         
         //This is the upload endpoint where the image first gets validated, and then gets uploaded into your local Azurite BlobStorage
         //The image gets saved in the database as the same file type it was uploaded as
@@ -94,7 +91,7 @@ public static class ImagesGroup
             }
 
 
-        }).DisableAntiforgery();
+        });
         //ellers ved billedfil brug da
         pathBuilder.MapGet("/{imageId}", async ([FromRoute] string imageId, [FromServices] IAzureClientFactory<BlobServiceClient> clientFactory) =>
         {
@@ -144,7 +141,7 @@ public static class ImagesGroup
             Console.WriteLine("Cannot delete image because it doesn't exist");
             return Results.StatusCode(404);
 
-        }).DisableAntiforgery();
+        });
 
         pathBuilder.MapGet("/exception",
             () =>

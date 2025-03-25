@@ -92,7 +92,7 @@ builder.Services.AddAuthentication(oidcScheme)
         oidcOptions.TokenValidationParameters.NameClaimType = JwtRegisteredClaimNames.Name;
         oidcOptions.TokenValidationParameters.RoleClaimType = "role";
 
-        ICollection<string> scopes = ["email", "roles"];
+        ICollection<string> scopes = ["email", "roles", "profile"];
         foreach (string scope in scopes) oidcOptions.Scope.Add(scope);
 
         /* Many OIDC providers work with the default issuer validator, but the

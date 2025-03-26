@@ -2,14 +2,18 @@
 @using MatBlazor
 
 <div class="header">
-    <a href="/">
-        <img id="logo" src="/img/perfusiontech_logo.png" alt="perfussiontech"/>
-    </a>
+    <div>
+        <a href="/">
+            <img id="logo" src="/img/perfusiontech_logo.png" alt="Perfusiontech home" />
+        </a>
+    </div>
+    <div>
+        <AvatarMenu />
+    </div>
 </div>
 <div class="page">
     
     <div class="main">
-        
         <article class="content px-4">
             @Body
         </article>

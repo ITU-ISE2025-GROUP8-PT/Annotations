@@ -5,10 +5,10 @@
 
 <PageTitle>Annotations</PageTitle>
 
-<MatThemeProvider>
+<MatThemeProvider Theme="@theme">
     <div class="mat-layout-grid">
         <div class="mat-layout-grid-inner">
-            <div class="mat-layout-grid-cell mat-layout-grid-cell-span-3">
+            <div class="mat-layout-grid-cell mat-layout-grid-cell-span-2">
                 <div style="display: flex; align-items: center; gap: 20px;">
                     <img src="img/billede1.png" alt="Profile Picture" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover;">
                     <div>
@@ -30,12 +30,8 @@
                     <MatCheckbox @bind-Value="@videoReviewed">Video reviewed</MatCheckbox>
                 </div>
             </div>
-            <div class="mat-layout-grid-cell mat-layout-grid-cell-span-9">
+            <div class="mat-layout-grid-cell mat-layout-grid-cell-span-10">
                 <div>
-                    <div style="display: flex; justify-content: flex-end; gap: 8px;">
-                        <MatButton>Skip</MatButton>
-                        <MatButton>Complete</MatButton>
-                    </div>
                     <div style="display: flex; justify-content: flex-start; gap: 8px;">
                         <MatTabGroup>
                             <MatTab Label="Vessels">
@@ -48,7 +44,7 @@
                                         <img
                                             src="img/Skærmbillede 2025-03-27 kl. 14.05.56.png"
                                             alt="Vessel Diagram"
-                                            style="width: 100%; max-width: 100%; border-radius: 4px;"
+                                            style="width: 1000px; height: 600px; border-radius: 4px;"
                                         >
                                     </div>
                                 </div>
@@ -70,6 +66,10 @@
                         </MatTabGroup>
                     </div>
                 </div>
+                <div style="display: flex; justify-content: flex-end; gap: 8px;">
+                    <MatButton>Skip</MatButton>
+                    <MatButton>Complete</MatButton>
+                </div>
             </div>
         </div>
     </div>
@@ -82,6 +82,11 @@
     private bool veinsMarked;
     private bool flowDirectionSet;
     private bool videoReviewed;
+    
+    MatTheme theme = new MatTheme()
+    {
+        Primary = MatThemeColors.Green._800.Value
+    };
     
     protected override void OnInitialized()
     {

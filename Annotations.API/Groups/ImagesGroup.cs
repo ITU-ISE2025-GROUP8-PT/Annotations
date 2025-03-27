@@ -74,21 +74,6 @@ public static class ImagesGroup
                     //fileExtension will always be a proper fileExtension because of the ValidateImage method
                     string fileExtension = "empty"; //TODO: dont do this
 
-                    foreach (string Filename in ArrayOfFileExtension)
-                    {
-                        if (image.ContentType == "image/" + Filename)
-                        {
-                            fileExtension = "." + Filename;
-                            break;
-                        }
-                    }
-
-                    BlobClient imageBlobClient = containerClient.GetBlobClient($"{counter}{fileExtension}");
-
-                    //var fileStream = image.OpenReadStream();
-                    
-                    //await imageBlobClient.UploadAsync(fileStream, overwrite: true);
-
 
                     using (MemoryStream ms = new MemoryStream())
                     {

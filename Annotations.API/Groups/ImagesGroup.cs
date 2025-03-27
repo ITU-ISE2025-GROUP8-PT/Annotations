@@ -133,21 +133,18 @@ public static class ImagesGroup
                 var blobServiceClient = clientFactory.CreateClient("Default");
                 BlobContainerClient containerClient = blobServiceClient.GetBlobContainerClient("images");
 
-                foreach (string fileExtension in
-                         ArrayOfFileExtension) //takes all of the types of files we allow and see if an image of that format exists with the id
+               
+                BlobClient blobClient = containerClient.GetBlobClient(imageId + ".json");
+                if (!blobClient.Exists(cts.Token).ToString()
+                        .Contains("404")) //checks if the blobClient is empty/couldn't find the image of that format
                 {
-                    BlobClient blobClient = containerClient.GetBlobClient(imageId + "." + fileExtension);
-                    if (!blobClient.Exists(cts.Token).ToString()
-                            .Contains("404")) //checks if the blobClient is empty/couldn't find the image of that format
-                    {
-                        using var memoryStream = new MemoryStream();
-                        await blobClient.DownloadToAsync(memoryStream);
-                        return Results.File(memoryStream.ToArray(),
-                            "image/" +
-                            fileExtension); //because it is a return statement the for-loop will not continue after finding the image
-                    }
-
+                    using var memoryStream = new MemoryStream();
+                    await blobClient.DownloadToAsync(memoryStream);
+                    return Results.File(memoryStream.ToArray(),
+                        "application/json"); //because it is a return statement the for-loop will not continue after finding the image
                 }
+
+                
 
                 //will only reach here if it cannot find an image with the id of the correct file type, or else the request will terminate inside the for-loop
                 Console.WriteLine("Cannot retrieve image because it doesn't exist");
@@ -162,19 +159,17 @@ public static class ImagesGroup
             var blobServiceClient = clientFactory.CreateClient("Default");
             BlobContainerClient containerClient = blobServiceClient.GetBlobContainerClient("images");
 
-            foreach (string fileExtension in ArrayOfFileExtension)
+            BlobClient blobClient = containerClient.GetBlobClient(imageId + ".json");
+            if (!blobClient.Exists(cts.Token).ToString().Contains("404"))
             {
-                BlobClient blobClient = containerClient.GetBlobClient(imageId + "." + fileExtension);
-                if (!blobClient.Exists(cts.Token).ToString().Contains("404"))
-                {
-                    /*A snapshot is a read-only version of a blob that's taken at a point in time. 
-                    As of right now, we do not make snapshots of blobs, but it is still possible to manually create.*/
-                    await blobClient.DeleteAsync(snapshotsOption: DeleteSnapshotsOption.IncludeSnapshots);
-                    Console.WriteLine("image deleted successfully");
-                    return Results.StatusCode(204);
-                }
-
+                /*A snapshot is a read-only version of a blob that's taken at a point in time. 
+                As of right now, we do not make snapshots of blobs, but it is still possible to manually create.*/
+                await blobClient.DeleteAsync(snapshotsOption: DeleteSnapshotsOption.IncludeSnapshots);
+                Console.WriteLine("image deleted successfully");
+                return Results.StatusCode(204);
             }
+
+            
             Console.WriteLine("Cannot delete image because it doesn't exist");
             return Results.StatusCode(404);
 

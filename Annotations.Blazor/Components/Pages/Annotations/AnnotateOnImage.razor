@@ -3,40 +3,62 @@
 @implements IDisposable
 @inject NavigationManager Navigation
 
+<link href="_content/MatBlazor/dist/matBlazor.css" rel="stylesheet" />
+<script src="_content/MatBlazor/dist/matBlazor.js"></script>
+
 <PageTitle>Annotations</PageTitle>
 
-<h1>Blood Vessel Identification</h1>
-Mark blood vessels, directions, thickness and connectivity
-
-<div class="mat-layout-grid">
-    <div class="mat-layout-grid-inner">
-        <div class="mat-layout-grid-cell mat-layout-grid-cell-span-3">
-            <div style="display: flex; align-items: center; gap: 20px;">
-                <img src="img/billede1.png" alt="Profile Picture" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover;">
+<MatThemeProvider>
+    <div class="mat-layout-grid">
+        <div class="mat-layout-grid-inner">
+            <div class="mat-layout-grid-cell mat-layout-grid-cell-span-3">
+                <div style="display: flex; align-items: center; gap: 20px;">
+                    <img src="img/billede1.png" alt="Profile Picture" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover;">
+                    <div>
+                        <b style="margin: 0;">Jane Doe</b>
+                        <br/>
+                        <small style="margin: 0;">Surgeon</small>
+                    </div>
+                </div>
+                <div style="margin-top: 50px">
+                    <MatCheckbox @bind-Value="@arteriesMarked">Arteries marked</MatCheckbox>
+                </div>
                 <div>
-                    <b style="margin: 0;">Jane Doe</b>
-                    <br/>
-                    <small style="margin: 0;">Surgeon</small>
+                    <MatCheckbox @bind-Value="@veinsMarked">Veins marked</MatCheckbox>
+                </div>
+                <div>
+                    <MatCheckbox @bind-Value="@flowDirectionSet">Flow direction set</MatCheckbox>
+                </div>
+                <div>
+                    <MatCheckbox @bind-Value="@videoReviewed">Video reviewed</MatCheckbox>
                 </div>
             </div>
-            <div style="margin-top: 50px">
-                <MatCheckbox @bind-Value="@arteriesMarked">Arteries marked</MatCheckbox>
+            <div class="mat-layout-grid-cell mat-layout-grid-cell-span-9">
+                <MatTabGroup>
+                    <MatTab Label="Vessels">
+                        <div style="padding: 16px;">
+                            <b>Blood Vessel Identification</b>
+                            Mark blood vessels, directions, thickness and connectivity
+                        </div>
+                    </MatTab>
+                    <MatTab Label="Flow">
+                        <div style="padding: 16px;">
+                            <b>Blood Flow Identification</b>
+                            Which direction the blood is flowing; flow analysis tools, with various graphs and visualizations that can be used to determine the blood direction.
+                        </div>
+                    </MatTab>
+                    <MatTab Label="Organs">
+                        <div style="padding: 16px;">
+                            <b>Organ Identification</b>
+                            Annotation of organs in the image. white light image instead of sum-map (as shown), possibility to select organs from a list, "semantic segmentation" correction, "best guess" functionality.
+                        </div>
+                    </MatTab>
+                </MatTabGroup>
             </div>
-            <div>
-                <MatCheckbox @bind-Value="@veinsMarked">Veins marked</MatCheckbox>
-            </div>
-            <div>
-                <MatCheckbox @bind-Value="@flowDirectionSet">Flow direction set</MatCheckbox>
-            </div>
-            <div>
-                <MatCheckbox @bind-Value="@videoReviewed">Video reviewed</MatCheckbox>
-            </div>
-        </div>
-        <div class="mat-layout-grid-cell mat-layout-grid-cell-span-9">
-            
         </div>
     </div>
-</div>
+</MatThemeProvider>
+
 
 @code {
     private string? currentUrl;

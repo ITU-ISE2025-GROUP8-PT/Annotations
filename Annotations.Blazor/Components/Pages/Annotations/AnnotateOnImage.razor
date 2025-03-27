@@ -1,1 +1,45 @@
-@page "/images/{imageid}/annotations"
+@* @page "/images/{imageid}/annotations" *@
+@page "/images/annotations"
+@implements IDisposable
+@inject NavigationManager Navigation
+
+<PageTitle>Annotations</PageTitle>
+
+<h1>Blood Vessel Identification</h1>
+Mark blood vessels, directions, thickness and connectivity
+
+<div class="mat-layout-grid">
+    <div class="mat-layout-grid-inner">
+        <div class="mat-layout-grid-cell mat-layout-grid-cell-span-3">
+            <div style="display: flex; align-items: center; gap: 20px;">
+                <img src="img/billede1.png" alt="Profile Picture" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover;">
+                <div>
+                    <b style="margin: 0;">Jane Doe</b>
+                    <br/>
+                    <small style="margin: 0;">Surgeon</small>
+                </div>
+            </div>
+        </div>
+        <div class="mat-layout-grid-cell mat-layout-grid-cell-span-9">
+            
+        </div>
+    </div>
+</div>
+
+@code {
+    private string? currentUrl;
+
+    protected override void OnInitialized()
+    {
+        currentUrl = Navigation.Uri;
+        Navigation.LocationChanged += OnLocationChanged;
+    }
+
+    private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
+    {
+        currentUrl = Navigation.Uri;
+        StateHasChanged();
+    }
+
+    public void Dispose() => Navigation.LocationChanged -= OnLocationChanged;
+}

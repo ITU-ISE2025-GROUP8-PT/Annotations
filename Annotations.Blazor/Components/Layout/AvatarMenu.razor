@@ -1,0 +1,34 @@
+@using MatBlazor
+@implements IDisposable
+@inject NavigationManager Navigation
+
+<AuthorizeView>
+    <Authorized>
+        <form action="authentication/logout" method="post">
+            <AntiforgeryToken />
+            <input type="hidden" name="ReturnUrl" value="@currentUrl" />
+            <MatButton type="submit">Sign out</MatButton>
+        </form>
+    </Authorized>
+    <NotAuthorized>
+        <MatButtonLink Href="authentication/login">Sign in</MatButtonLink>
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    private string? currentUrl;
+
+    protected override void OnInitialized()
+    {
+        currentUrl = Navigation.Uri;
+        Navigation.LocationChanged += OnLocationChanged;
+    }
+
+    private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
+    {
+        currentUrl = Navigation.Uri;
+        StateHasChanged();
+    }
+
+    public void Dispose() => Navigation.LocationChanged -= OnLocationChanged;
+}

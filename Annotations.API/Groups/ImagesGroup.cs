@@ -17,12 +17,7 @@ public static class ImagesGroup
     
     private static string[] ArrayOfFileExtension = {"png", "jpg", "jpeg"};
 
-    public class Images
-    {
-        public string Title { get; set; }
-        public int Id { get; set; }
-        public string Author { get; set; }
-    }
+
 
     /// <summary>
     /// Helping method that validates an image based on type, size, and also checks if it even contains anything
@@ -90,36 +85,44 @@ public static class ImagesGroup
 
                     BlobClient imageBlobClient = containerClient.GetBlobClient($"{counter}{fileExtension}");
 
-                    using (var fileStream = image.OpenReadStream())
+                    //var fileStream = image.OpenReadStream();
+                    
+                    //await imageBlobClient.UploadAsync(fileStream, overwrite: true);
+
+
+                    using (MemoryStream ms = new MemoryStream())
                     {
-                        await imageBlobClient.UploadAsync(fileStream, overwrite: true);
+                        await image.OpenReadStream().CopyToAsync(ms);
+                        var thisImage = new ImageModel()
+                        {
+                            Id = counter,
+                            Title = "idk",
+                            Description = "description",
+                            ImageData = ms.ToArray(),
+                        
+                        };
+                        string jsonString = System.Text.Json.JsonSerializer.Serialize(thisImage);
+                        var byteContent = System.Text.Encoding.UTF8.GetBytes(jsonString);
+
+                        BlobClient thisImageBlobClient = containerClient.GetBlobClient($"{counter}.json");
+                        counter++;
+
+                        var blobHeaders = new BlobHttpHeaders
+                        {
+                            ContentType = "application/json"
+                        };
+
+                        // Trigger the upload function to push the data to blob
+                        await thisImageBlobClient.UploadAsync(new MemoryStream(byteContent), blobHeaders);
                     }
-
-                    var thisImage = new Images()
-                    {
-                        Title = "idk",
-                        Id = counter,
-                        Author = "Nickie"
-                    };
-                    string jsonString = System.Text.Json.JsonSerializer.Serialize(thisImage);
-                    var byteContent = System.Text.Encoding.UTF8.GetBytes(jsonString);
-
-                    BlobClient thisImageBlobClient = containerClient.GetBlobClient($"{counter}.json");
-                    counter++;
-
-                    var blobHeaders = new BlobHttpHeaders
-                    {
-                        ContentType = "application/json"
-                    };
-
-                    // Trigger the upload function to push the data to blob
-                    await thisImageBlobClient.UploadAsync(new MemoryStream(byteContent), blobHeaders);
+                   
+                    
 
                     return Results.StatusCode(200);
                 }
 
 
-            }).DisableAntiforgery();
+            }).DisableAntiforgery();//TODO: Disable antiforgery
         //ellers ved billedfil brug da
         pathBuilder.MapGet("/{imageId}",
             async ([FromRoute] string imageId, [FromServices] IAzureClientFactory<BlobServiceClient> clientFactory) =>

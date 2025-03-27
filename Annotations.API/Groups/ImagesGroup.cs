@@ -72,7 +72,6 @@ public static class ImagesGroup
                     BlobContainerClient containerClient = blobServiceClient.GetBlobContainerClient("images");
 
                     //fileExtension will always be a proper fileExtension because of the ValidateImage method
-                    string fileExtension = "empty"; //TODO: dont do this
 
 
                     using (MemoryStream ms = new MemoryStream())

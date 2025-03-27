@@ -17,6 +17,13 @@ public static class ImagesGroup
     
     private static string[] ArrayOfFileExtension = {"png", "jpg", "jpeg"};
 
+    public class Images
+    {
+        public string Title { get; set; }
+        public int Id { get; set; }
+        public string Author { get; set; }
+    }
+
     /// <summary>
     /// Helping method that validates an image based on type, size, and also checks if it even contains anything
     /// Images can be JPEG, PNG and JPG, and everything else gets rejected
@@ -81,11 +88,31 @@ public static class ImagesGroup
                 }
                 
                 BlobClient imageBlobClient = containerClient.GetBlobClient($"{counter}{fileExtension}");
-                counter++;
+                
                 using (var fileStream = image.OpenReadStream())
                 {
                     await imageBlobClient.UploadAsync(fileStream, overwrite: true);
                 }
+                
+                var thisImage = new Images()
+                {
+                    Title = "idk",
+                    Id = counter,
+                    Author = "Nickie"
+                };
+                string jsonString = System.Text.Json.JsonSerializer.Serialize(thisImage);
+                var byteContent = System.Text.Encoding.UTF8.GetBytes(jsonString);
+                
+                BlobClient thisImageBlobClient = containerClient.GetBlobClient($"{counter}.json");
+                counter++;
+               
+                var blobHeaders = new BlobHttpHeaders
+                {
+                    ContentType = "application/json"
+                };
+
+                // Trigger the upload function to push the data to blob
+                await thisImageBlobClient.UploadAsync(new MemoryStream(byteContent), blobHeaders);
 
                 return Results.StatusCode(200);
             }

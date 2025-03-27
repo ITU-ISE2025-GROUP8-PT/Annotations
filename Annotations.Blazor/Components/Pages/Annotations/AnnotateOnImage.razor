@@ -31,30 +31,45 @@
                 </div>
             </div>
             <div class="mat-layout-grid-cell mat-layout-grid-cell-span-9">
-                <MatButton OnClick="@ChangeTab">Change Tab</MatButton>
-                <MatTabGroup>
-                    <MatTab Label="Vessels">
-                        <div style="padding: 16px;">
-                            <b>Blood Vessel Identification</b>
-                            <br/>
-                            Mark blood vessels, directions, thickness and connectivity
-                        </div>
-                    </MatTab>
-                    <MatTab Label="Flow">
-                        <div style="padding: 16px;">
-                            <b>Blood Flow Identification</b>
-                            <br/>
-                            Which direction the blood is flowing; flow analysis tools, with various graphs and visualizations that can be used to determine the blood direction.
-                        </div>
-                    </MatTab>
-                    <MatTab Label="Organs">
-                        <div style="padding: 16px;">
-                            <b>Organ Identification</b>
-                            <br/>
-                            Annotation of organs in the image. white light image instead of sum-map (as shown), possibility to select organs from a list, "semantic segmentation" correction, "best guess" functionality.
-                        </div>
-                    </MatTab>
-                </MatTabGroup>
+                <div>
+                    <div style="display: flex; justify-content: flex-end; gap: 8px;">
+                        <MatButton>Skip</MatButton>
+                        <MatButton>Complete</MatButton>
+                    </div>
+                    <div style="display: flex; justify-content: flex-start; gap: 8px;">
+                        <MatTabGroup>
+                            <MatTab Label="Vessels">
+                                <div style="padding: 16px;">
+                                    <b>Blood Vessel Identification</b>
+                                    <br/>
+                                    Mark blood vessels, directions, thickness and connectivity
+                                    
+                                    <div style="margin-top: 16px; width: 100%;">
+                                        <img
+                                            src="img/Skærmbillede 2025-03-27 kl. 14.05.56.png"
+                                            alt="Vessel Diagram"
+                                            style="width: 100%; max-width: 100%; border-radius: 4px;"
+                                        >
+                                    </div>
+                                </div>
+                            </MatTab>
+                            <MatTab Label="Flow">
+                                <div style="padding: 16px;">
+                                    <b>Blood Flow Identification</b>
+                                    <br/>
+                                    Which direction the blood is flowing; flow analysis tools, with various graphs and visualizations that can be used to determine the blood direction.
+                                </div>
+                            </MatTab>
+                            <MatTab Label="Organs">
+                                <div style="padding: 16px;">
+                                    <b>Organ Identification</b>
+                                    <br/>
+                                    Annotation of organs in the image. white light image instead of sum-map (as shown), possibility to select organs from a list, "semantic segmentation" correction, "best guess" functionality.
+                                </div>
+                            </MatTab>
+                        </MatTabGroup>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -68,13 +83,6 @@
     private bool flowDirectionSet;
     private bool videoReviewed;
     
-    public int tabIndex = 0;
- 
-    void ChangeTab(MouseEventArgs e)
-    {
-        tabIndex = tabIndex < 3 ? tabIndex + 1 : 0;
-    }
-
     protected override void OnInitialized()
     {
         currentUrl = Navigation.Uri;

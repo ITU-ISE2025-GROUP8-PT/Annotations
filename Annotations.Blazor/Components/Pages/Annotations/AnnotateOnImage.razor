@@ -19,6 +19,18 @@ Mark blood vessels, directions, thickness and connectivity
                     <small style="margin: 0;">Surgeon</small>
                 </div>
             </div>
+            <div style="margin-top: 50px">
+                <MatCheckbox @bind-Value="@arteriesMarked">Arteries marked</MatCheckbox>
+            </div>
+            <div>
+                <MatCheckbox @bind-Value="@veinsMarked">Veins marked</MatCheckbox>
+            </div>
+            <div>
+                <MatCheckbox @bind-Value="@flowDirectionSet">Flow direction set</MatCheckbox>
+            </div>
+            <div>
+                <MatCheckbox @bind-Value="@videoReviewed">Video reviewed</MatCheckbox>
+            </div>
         </div>
         <div class="mat-layout-grid-cell mat-layout-grid-cell-span-9">
             
@@ -28,6 +40,10 @@ Mark blood vessels, directions, thickness and connectivity
 
 @code {
     private string? currentUrl;
+    private bool arteriesMarked;
+    private bool veinsMarked;
+    private bool flowDirectionSet;
+    private bool videoReviewed;
 
     protected override void OnInitialized()
     {

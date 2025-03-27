@@ -59,91 +59,98 @@ public static class ImagesGroup
         
         //This is the upload endpoint where the image first gets validated, and then gets uploaded into your local Azurite BlobStorage
         //The image gets saved in the database as the same file type it was uploaded as
-        pathBuilder.MapPost("/upload", async (IFormFile image, [FromServices] IAzureClientFactory<BlobServiceClient> clientFactory) =>
-        {
-          
-            ValidationResponse response = ValidateImage(image);
-            if (!response.Success)
+        pathBuilder.MapPost("/upload",
+            async (IFormFile image, [FromServices] IAzureClientFactory<BlobServiceClient> clientFactory) =>
             {
-                Console.WriteLine("rejecting image");
-                Console.WriteLine(response.Message);
-                return Results.StatusCode(422);
-                //TODO: how should the end user see this?
-            }
-            else
+
+                ValidationResponse response = ValidateImage(image);
+                if (!response.Success)
+                {
+                    Console.WriteLine("rejecting image");
+                    Console.WriteLine(response.Message);
+                    return Results.StatusCode(422);
+                    //TODO: how should the end user see this?
+                }
+                else
+                {
+                    var blobServiceClient = clientFactory.CreateClient("Default");
+                    BlobContainerClient containerClient = blobServiceClient.GetBlobContainerClient("images");
+
+                    //fileExtension will always be a proper fileExtension because of the ValidateImage method
+                    string fileExtension = "empty"; //TODO: dont do this
+
+                    foreach (string Filename in ArrayOfFileExtension)
+                    {
+                        if (image.ContentType == "image/" + Filename)
+                        {
+                            fileExtension = "." + Filename;
+                            break;
+                        }
+                    }
+
+                    BlobClient imageBlobClient = containerClient.GetBlobClient($"{counter}{fileExtension}");
+
+                    using (var fileStream = image.OpenReadStream())
+                    {
+                        await imageBlobClient.UploadAsync(fileStream, overwrite: true);
+                    }
+
+                    var thisImage = new Images()
+                    {
+                        Title = "idk",
+                        Id = counter,
+                        Author = "Nickie"
+                    };
+                    string jsonString = System.Text.Json.JsonSerializer.Serialize(thisImage);
+                    var byteContent = System.Text.Encoding.UTF8.GetBytes(jsonString);
+
+                    BlobClient thisImageBlobClient = containerClient.GetBlobClient($"{counter}.json");
+                    counter++;
+
+                    var blobHeaders = new BlobHttpHeaders
+                    {
+                        ContentType = "application/json"
+                    };
+
+                    // Trigger the upload function to push the data to blob
+                    await thisImageBlobClient.UploadAsync(new MemoryStream(byteContent), blobHeaders);
+
+                    return Results.StatusCode(200);
+                }
+
+
+            }).DisableAntiforgery();
+        //ellers ved billedfil brug da
+        pathBuilder.MapGet("/{imageId}",
+            async ([FromRoute] string imageId, [FromServices] IAzureClientFactory<BlobServiceClient> clientFactory) =>
             {
+                //insert password restrictions here 🐿️
+                var cts = new CancellationTokenSource(5000);
+
                 var blobServiceClient = clientFactory.CreateClient("Default");
                 BlobContainerClient containerClient = blobServiceClient.GetBlobContainerClient("images");
 
-                //fileExtension will always be a proper fileExtension because of the ValidateImage method
-                string fileExtension = "empty";//TODO: dont do this
-
-                foreach (string Filename in ArrayOfFileExtension)
+                foreach (string fileExtension in
+                         ArrayOfFileExtension) //takes all of the types of files we allow and see if an image of that format exists with the id
                 {
-                    if (image.ContentType == "image/" + Filename)
+                    BlobClient blobClient = containerClient.GetBlobClient(imageId + "." + fileExtension);
+                    if (!blobClient.Exists(cts.Token).ToString()
+                            .Contains("404")) //checks if the blobClient is empty/couldn't find the image of that format
                     {
-                        fileExtension = "." + Filename;
-                        break;
+                        using var memoryStream = new MemoryStream();
+                        await blobClient.DownloadToAsync(memoryStream);
+                        return Results.File(memoryStream.ToArray(),
+                            "image/" +
+                            fileExtension); //because it is a return statement the for-loop will not continue after finding the image
                     }
-                }
-                
-                BlobClient imageBlobClient = containerClient.GetBlobClient($"{counter}{fileExtension}");
-                
-                using (var fileStream = image.OpenReadStream())
-                {
-                    await imageBlobClient.UploadAsync(fileStream, overwrite: true);
-                }
-                
-                var thisImage = new Images()
-                {
-                    Title = "idk",
-                    Id = counter,
-                    Author = "Nickie"
-                };
-                string jsonString = System.Text.Json.JsonSerializer.Serialize(thisImage);
-                var byteContent = System.Text.Encoding.UTF8.GetBytes(jsonString);
-                
-                BlobClient thisImageBlobClient = containerClient.GetBlobClient($"{counter}.json");
-                counter++;
-               
-                var blobHeaders = new BlobHttpHeaders
-                {
-                    ContentType = "application/json"
-                };
 
-                // Trigger the upload function to push the data to blob
-                await thisImageBlobClient.UploadAsync(new MemoryStream(byteContent), blobHeaders);
-
-                return Results.StatusCode(200);
-            }
-
-
-        });
-        //ellers ved billedfil brug da
-        pathBuilder.MapGet("/{imageId}", async ([FromRoute] string imageId, [FromServices] IAzureClientFactory<BlobServiceClient> clientFactory) =>
-        {
-            //insert password restrictions here 🐿️
-            var cts = new CancellationTokenSource(5000);
-
-            var blobServiceClient = clientFactory.CreateClient("Default");
-            BlobContainerClient containerClient = blobServiceClient.GetBlobContainerClient("images");
-
-            foreach (string fileExtension in ArrayOfFileExtension)//takes all of the types of files we allow and see if an image of that format exists with the id
-            {
-                BlobClient blobClient = containerClient.GetBlobClient(imageId + "." + fileExtension);
-                if (!blobClient.Exists(cts.Token).ToString().Contains("404"))//checks if the blobClient is empty/couldn't find the image of that format
-                {
-                    using var memoryStream = new MemoryStream();
-                    await blobClient.DownloadToAsync(memoryStream);
-                    return Results.File(memoryStream.ToArray(), "image/" + fileExtension);//because it is a return statement the for-loop will not continue after finding the image
                 }
 
-            }
-            //will only reach here if it cannot find an image with the id of the correct file type, or else the request will terminate inside the for-loop
-            Console.WriteLine("Cannot retrieve image because it doesn't exist");
-            return Results.StatusCode(404);
-            
-        });
+                //will only reach here if it cannot find an image with the id of the correct file type, or else the request will terminate inside the for-loop
+                Console.WriteLine("Cannot retrieve image because it doesn't exist");
+                return Results.StatusCode(404);
+
+            }).DisableAntiforgery();
         
         pathBuilder.MapDelete("/{imageId}", async (string imageId, [FromServices] IAzureClientFactory<BlobServiceClient> clientFactory) =>
         {
@@ -168,7 +175,7 @@ public static class ImagesGroup
             Console.WriteLine("Cannot delete image because it doesn't exist");
             return Results.StatusCode(404);
 
-        });
+        }).DisableAntiforgery();
 
         pathBuilder.MapGet("/exception",
             () =>

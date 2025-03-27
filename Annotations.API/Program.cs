@@ -1,16 +1,40 @@
+using System.Net.Http.Headers;
 using Annotations.API;
 using Annotations.API.Groups;
 using Annotations.Core.Entities;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Azure;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.Net.Http.Headers;
+using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // General services.
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(x =>
+{
+    x.SwaggerDoc("v1", new OpenApiInfo {
+        Title = "Recipe App", Version = "v1" }); var security = new
+        OpenApiSecurityScheme 
+        {
+            Name = HeaderNames.Authorization, 
+            Type = SecuritySchemeType.ApiKey, 
+            In = ParameterLocation.Header, 
+            Description = "JWT Authorization header", 
+            Reference = new OpenApiReference
+            {
+                Id = JwtBearerDefaults.AuthenticationScheme, 
+                Type = ReferenceType.SecurityScheme 
+            }
+        };
+    x.AddSecurityDefinition(security.Reference.Id, security); 
+    x.AddSecurityRequirement(new OpenApiSecurityRequirement 
+        {{security, Array.Empty<string>()}}); 
+});
+
 builder.Services.AddControllers();
 
 // Temporary SQLite based database service.
@@ -54,7 +78,7 @@ var app = builder.Build();
 
 
 UsersGroup.MapEndpoints(app.MapGroup("/users"));
-ImagesGroup.MapEndpoints(app.MapGroup("/images"));
+ImagesGroup.MapEndpoints(app.MapGroup("/images").AllowAnonymous());
 
 app.MapGet("/error", () => "Dette er en 400-599 eller værre");
 
@@ -63,6 +87,9 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+    app.UseRouting();
+    app.UseAuthentication();
+    app.UseAuthorization();
     InitializeTempDatabase();
 }
 

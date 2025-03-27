@@ -136,6 +136,8 @@ builder.Services.AddRazorComponents()
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddHttpClient();
 
+builder.Services.AddMatBlazor();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

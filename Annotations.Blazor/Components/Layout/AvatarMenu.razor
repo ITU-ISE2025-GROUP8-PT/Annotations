@@ -2,7 +2,7 @@
 @implements IDisposable
 @inject NavigationManager Navigation
 
-<MatThemeProvider Theme="@theme1">
+<MatThemeProvider Theme="@menuTheme">
 <AuthorizeView>
     <Authorized>
         <form action="authentication/logout" method="post">
@@ -20,7 +20,7 @@
 @code {
     private string? currentUrl;
 
-    MatTheme theme1 = new MatTheme()
+    MatTheme menuTheme = new MatTheme()
     {
         Primary = "white",
         Secondary = MatThemeColors.BlueGrey._500.Value

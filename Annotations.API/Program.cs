@@ -1,16 +1,39 @@
 using Annotations.API;
 using Annotations.API.Groups;
 using Annotations.Core.Entities;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Azure;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.Net.Http.Headers;
+using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // General services.
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(options =>
+{
+    var security = new OpenApiSecurityScheme
+    {
+        Name = HeaderNames.Authorization,
+        Type = SecuritySchemeType.ApiKey,
+        In = ParameterLocation.Header,
+        Description = "JWT Authentication header",
+        Reference = new OpenApiReference
+        {
+            Id = JwtBearerDefaults.AuthenticationScheme,
+            Type = ReferenceType.SecurityScheme
+        }
+    };
+
+    options.AddSecurityDefinition(security.Reference.Id, security);
+    options.AddSecurityRequirement(new OpenApiSecurityRequirement
+        {{security, Array.Empty<string>()}});
+});
+
 builder.Services.AddControllers();
 
 // Temporary SQLite based database service.
@@ -30,16 +53,7 @@ builder.Services.AddDbContext<AnnotationsDbContext>((serviceProvider, options) =
 });
 
 // Add services to the container.
-builder.Services.AddAuthentication("Bearer")
-    .AddJwtBearer("Bearer", jwtOptions =>
-    {
-        jwtOptions.Authority = builder.Configuration["jwt:Authority"] ?? throw new InvalidOperationException("JWT Authority not found");
-        jwtOptions.Audience = builder.Configuration["jwt:Audience"] ?? throw new InvalidOperationException("JWT Audience not found");;
-        jwtOptions.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuerSigningKey = true,
-        };
-    });
+builder.Services.AddAuthentication().AddJwtBearer();
 
 builder.Services.AddAuthorization();
 builder.Services.AddAntiforgery();
@@ -53,8 +67,8 @@ builder.Services.AddAzureClients(clientBuilder =>
 var app = builder.Build();
 
 
-UsersGroup.MapEndpoints(app.MapGroup("/users"));
-ImagesGroup.MapEndpoints(app.MapGroup("/images"));
+UsersGroup.MapEndpoints(app.MapGroup("/users").RequireAuthorization());
+ImagesGroup.MapEndpoints(app.MapGroup("/images").RequireAuthorization());
 
 app.MapGet("/error", () => "Dette er en 400-599 eller værre");
 

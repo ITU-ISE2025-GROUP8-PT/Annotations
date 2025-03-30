@@ -90,8 +90,7 @@ public static class ImagesGroup
                 return Results.StatusCode(200);
             }
 
-
-        });
+        }).DisableAntiforgery();
         //ellers ved billedfil brug da
         pathBuilder.MapGet("/{imageId}", async ([FromRoute] string imageId, [FromServices] IAzureClientFactory<BlobServiceClient> clientFactory) =>
         {

@@ -41,7 +41,18 @@ else
         requestMessage.Headers.Authorization = new("Bearer", accessToken);
 
         using var response = await client.SendAsync(requestMessage);
-        story = await response.Content.ReadFromJsonAsync<string[]>();
+
+        try
+        {
+            story = await response.Content.ReadFromJsonAsync<string[]>();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine("Status code: " + response.StatusCode);
+            Console.WriteLine("Bearer " + accessToken);
+            throw e;
+        }
+
     }
 
 }

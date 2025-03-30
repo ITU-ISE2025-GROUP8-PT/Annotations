@@ -2,6 +2,7 @@ using Annotations.API;
 using Annotations.API.Groups;
 using Annotations.Core.Entities;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Azure;
@@ -53,9 +54,26 @@ builder.Services.AddDbContext<AnnotationsDbContext>((serviceProvider, options) =
 });
 
 // Add services to the container.
-builder.Services.AddAuthentication().AddJwtBearer();
+// NOTE: Both services expect the authorization header to contain "Bearer " + <the token>.
+builder.Services.AddAuthentication("AnnotationsBearer")
+    .AddJwtBearer()
+    .AddJwtBearer("AnnotationsBearer", jwtOptions =>
+    {
+        jwtOptions.Authority = builder.Configuration["jwt:Authority"] ?? throw new InvalidOperationException("JWT Authority not found");
+        jwtOptions.Audience = builder.Configuration["jwt:Audience"] ?? throw new InvalidOperationException("JWT Audience not found");
+    });
 
-builder.Services.AddAuthorization();
+// https://learn.microsoft.com/en-us/aspnet/core/security/authorization/limitingidentitybyscheme?view=aspnetcore-8.0
+builder.Services.AddAuthorization(options =>
+{
+    var defaultAuthorizationPolicyBuilder = new AuthorizationPolicyBuilder(
+        JwtBearerDefaults.AuthenticationScheme,
+        "AnnotationsBearer");
+    defaultAuthorizationPolicyBuilder =
+        defaultAuthorizationPolicyBuilder.RequireAuthenticatedUser();
+    options.DefaultPolicy = defaultAuthorizationPolicyBuilder.Build();
+});
+
 builder.Services.AddAntiforgery();
 
 builder.Services.AddAzureClients(clientBuilder =>

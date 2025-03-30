@@ -42,6 +42,7 @@ else
 
         using var response = await client.SendAsync(requestMessage);
 
+        
         try
         {
             story = await response.Content.ReadFromJsonAsync<string[]>();
@@ -49,9 +50,10 @@ else
         catch (Exception e)
         {
             Console.WriteLine("Status code: " + response.StatusCode);
-            Console.WriteLine("Bearer " + accessToken);
-            throw e;
+            story = new string[1];
+            story[0] = response.StatusCode.ToString();
         }
+        
 
     }
 

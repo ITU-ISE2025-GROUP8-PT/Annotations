@@ -1,16 +1,38 @@
 using Annotations.API;
 using Annotations.API.Groups;
 using Annotations.Core.Entities;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Azure;
-using Microsoft.IdentityModel.Tokens;
+using Microsoft.Net.Http.Headers;
+using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // General services.
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(options =>
+{
+    var security = new OpenApiSecurityScheme
+    {
+        Name = HeaderNames.Authorization,
+        Type = SecuritySchemeType.ApiKey,
+        In = ParameterLocation.Header,
+        Description = "JWT Authentication header",
+        Reference = new OpenApiReference
+        {
+            Id = JwtBearerDefaults.AuthenticationScheme,
+            Type = ReferenceType.SecurityScheme
+        }
+    };
+
+    options.AddSecurityDefinition(security.Reference.Id, security);
+    options.AddSecurityRequirement(new OpenApiSecurityRequirement
+        {{security, Array.Empty<string>()}});
+});
+
 builder.Services.AddControllers();
 
 // Temporary SQLite based database service.
@@ -30,19 +52,25 @@ builder.Services.AddDbContext<AnnotationsDbContext>((serviceProvider, options) =
 });
 
 // Add services to the container.
-builder.Services.AddAuthentication("Bearer")
-    .AddJwtBearer("Bearer", jwtOptions =>
+// NOTE: Both services expect the authorization header to contain "Bearer " + <the token>.
+builder.Services.AddAuthentication("AnnotationsBearer")
+    .AddJwtBearer()
+    .AddJwtBearer("AnnotationsBearer", jwtOptions =>
     {
-        jwtOptions.Authority = builder.Configuration["jwt:Authority"] ?? throw new InvalidOperationException("JWT Authority not found");
-        jwtOptions.Audience = builder.Configuration["jwt:Audience"] ?? throw new InvalidOperationException("JWT Audience not found");;
-        jwtOptions.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuerSigningKey = true,
-        };
+        jwtOptions.Authority = builder.Configuration["authentication:jwt:authority"] ?? throw new InvalidOperationException("JWT Authority not found");
+        jwtOptions.Audience = builder.Configuration["authentication:jwt:audience"] ?? throw new InvalidOperationException("JWT Audience not found");
     });
 
-builder.Services.AddAuthorization();
-builder.Services.AddAntiforgery();
+// https://learn.microsoft.com/en-us/aspnet/core/security/authorization/limitingidentitybyscheme?view=aspnetcore-8.0
+builder.Services.AddAuthorization(options =>
+{
+    var defaultAuthorizationPolicyBuilder = new AuthorizationPolicyBuilder(
+        JwtBearerDefaults.AuthenticationScheme,
+        "AnnotationsBearer");
+    defaultAuthorizationPolicyBuilder =
+        defaultAuthorizationPolicyBuilder.RequireAuthenticatedUser();
+    options.DefaultPolicy = defaultAuthorizationPolicyBuilder.Build();
+});
 
 builder.Services.AddAzureClients(clientBuilder =>
 {
@@ -53,8 +81,8 @@ builder.Services.AddAzureClients(clientBuilder =>
 var app = builder.Build();
 
 
-UsersGroup.MapEndpoints(app.MapGroup("/users"));
-ImagesGroup.MapEndpoints(app.MapGroup("/images"));
+UsersGroup.MapEndpoints(app.MapGroup("/users").RequireAuthorization());
+ImagesGroup.MapEndpoints(app.MapGroup("/images").RequireAuthorization());
 
 app.MapGet("/error", () => "Dette er en 400-599 eller værre");
 
@@ -72,7 +100,6 @@ app.UseStaticFiles();
 app.UseRouting();
 app.UseAuthorization();
 app.UseHttpsRedirection();
-app.UseAntiforgery();
 
 app.Run();
 

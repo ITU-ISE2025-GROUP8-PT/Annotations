@@ -67,11 +67,17 @@
                         </div>
                     </div>    
                 </div>
-                <div style="margin-top: 16px; width: 100%;">
-                    <img
-                        src="img/Skærmbillede 2025-03-27 kl. 14.05.56.png"
-                        alt="Vessel Diagram"
-                        style="width: 1000px; height: 600px; border-radius: 4px;">
+                <div style="position: relative;" @ref="imageContainer">
+                    <img src="img/Skærmbillede%202025-03-27%20kl.%2014.05.56.png"
+                         @onclick="HandleImageClick"
+                         style="width: 1000px; height: 600px;" />
+
+                    @if (showTextField)
+                    {
+                        <div style="position: absolute; left: @($"{clickX}px"); top: @($"{clickY}px")">
+                            <MatTextField @bind-Value="annotationText" />
+                        </div>
+                    }
                 </div>
             </div>
         </div>
@@ -86,10 +92,39 @@
     private bool flowDirectionSet;
     private bool videoReviewed;
     
+    private ElementReference imageContainer;
+    private bool showTextField = false;
+    private int clickX, clickY;
+    private string annotationText = "";
+    
     MatTheme theme = new MatTheme()
     {
         Primary = MatThemeColors.Green._800.Value
     };
+    
+    private async Task HandleImageClick(MouseEventArgs e)
+    {
+        // Get container position
+        var containerRect = await JSRuntime.InvokeAsync<BoundingClientRect>(
+            "getBoundingClientRect", 
+            imageContainer
+        );
+
+        // Calculate relative coordinates
+        clickX = (int)(e.ClientX - containerRect.Left);
+        clickY = (int)(e.ClientY - containerRect.Top);
+        
+        showTextField = true;
+    }
+
+    [Inject] private IJSRuntime JSRuntime { get; set; }
+
+    // JS-interop compatible struct
+    private struct BoundingClientRect
+    {
+        public double Left { get; set; }
+        public double Top { get; set; }
+    }
     
     protected override void OnInitialized()
     {

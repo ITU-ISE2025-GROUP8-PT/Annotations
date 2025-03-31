@@ -159,6 +159,11 @@ public static class ImagesGroup
 
         }).DisableAntiforgery();
 
+        pathBuilder.MapGet("/{category}",
+            async (string category, [FromServices] IAzureClientFactory<BlobServiceClient> clientFactory) =>
+            {
+                
+            }).DisableAntiforgery();
         pathBuilder.MapGet("/exception",
             () =>
             {

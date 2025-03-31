@@ -13,9 +13,9 @@ const string oidcScheme = "Annotations OIDC";
 
 var builder = WebApplication.CreateBuilder(args);
 
-//builder.Services.AddAuthentication(oidcScheme)
-    //.AddOpenIdConnect(oidcScheme, oidcOptions =>
-    //{
+builder.Services.AddAuthentication(oidcScheme)
+    .AddOpenIdConnect(oidcScheme, oidcOptions =>
+    {
         /* For the following OIDC settings, any line that's commented out
          * represents a DEFAULT setting. If you adopt the default, you can
          * remove the line if you wish.
@@ -25,7 +25,7 @@ var builder = WebApplication.CreateBuilder(args);
          * user credentials across requests.
          */
 
-        //oidcOptions.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+        oidcOptions.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
         
         /* The "openid" and "profile" scopes are required for the OIDC handler 
          * and included by default. You should enable these scopes here if scopes 
@@ -40,8 +40,8 @@ var builder = WebApplication.CreateBuilder(args);
          * The default values are "/signin-oidc" and "/signout-callback-oidc".
          */
 
-        //oidcOptions.CallbackPath = new PathString("/signin-oidc");
-        //oidcOptions.SignedOutCallbackPath = new PathString("/signout-callback-oidc");
+        oidcOptions.CallbackPath = new PathString("/signin-oidc");
+        oidcOptions.SignedOutCallbackPath = new PathString("/signout-callback-oidc");
         
         /* The RemoteSignOutPath is the "Front-channel logout URL" for remote single 
          * sign-out. The default value is "/signout-oidc".
@@ -54,7 +54,7 @@ var builder = WebApplication.CreateBuilder(args);
          * of the OpenID Connect authority.
          */
         
-        //oidcOptions.Authority = builder.Configuration["OidcAuthority"] ?? throw new InvalidOperationException("OIDC Authority not found");
+        oidcOptions.Authority = builder.Configuration["authentication:oidc:authority"] ?? throw new InvalidOperationException("Missing authentication:oidc:authority");
         
         /* The authority will recognise this application by the client ID. 
          * The client ID is not a secret, but it is not helpful to publish to
@@ -70,8 +70,8 @@ var builder = WebApplication.CreateBuilder(args);
          * involving a client secret!
          */
 
-        //oidcOptions.ClientId = builder.Configuration["authentication:oidc:clientid"] ?? throw new InvalidOperationException("Missing authentication:oidc:clientid");
-        //oidcOptions.ClientSecret = builder.Configuration["authentication:oidc:clientsecret"] ?? throw new InvalidOperationException("Missing authentication:oidc:clientsecret");
+        oidcOptions.ClientId = builder.Configuration["authentication:oidc:clientid"] ?? throw new InvalidOperationException("Missing authentication:oidc:clientid");
+        oidcOptions.ClientSecret = builder.Configuration["authentication:oidc:clientsecret"] ?? throw new InvalidOperationException("Missing authentication:oidc:clientsecret");
 
         /* Setting ResponseType to "code" configures the OIDC handler to use 
          * authorization code flow. Implicit grants and hybrid flows are unnecessary
@@ -81,7 +81,7 @@ var builder = WebApplication.CreateBuilder(args);
          * tokens using the code returned from the authorization endpoint.
          */
 
-        //oidcOptions.ResponseType = OpenIdConnectResponseType.Code;
+        oidcOptions.ResponseType = OpenIdConnectResponseType.Code;
         
         /* Set MapInboundClaims to "false" to obtain the original claim types from 
          * the token. Many OIDC servers use "name" and "role"/"roles" rather than 
@@ -89,12 +89,12 @@ var builder = WebApplication.CreateBuilder(args);
          * identity provider uses different claim types.
          */
 
-        //oidcOptions.MapInboundClaims = false;
-        //oidcOptions.TokenValidationParameters.NameClaimType = JwtRegisteredClaimNames.Name;
-        //oidcOptions.TokenValidationParameters.RoleClaimType = "role";
+        oidcOptions.MapInboundClaims = false;
+        oidcOptions.TokenValidationParameters.NameClaimType = JwtRegisteredClaimNames.Name;
+        oidcOptions.TokenValidationParameters.RoleClaimType = "role";
 
-        //ICollection<string> scopes = ["email", "roles", "profile", "api"];
-        //foreach (string scope in scopes) oidcOptions.Scope.Add(scope);
+        ICollection<string> scopes = ["email", "roles", "profile", "api"];
+        foreach (string scope in scopes) oidcOptions.Scope.Add(scope);
 
         /* Many OIDC providers work with the default issuer validator, but the
          * configuration must account for the issuer parameterized with "{TENANT ID}" 
@@ -115,8 +115,8 @@ var builder = WebApplication.CreateBuilder(args);
          * use the refresh token to obtain a new access token on access token
          * expiration.
          */
-    //})
-    //.AddCookie(CookieAuthenticationDefaults.AuthenticationScheme);
+    })
+    .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme);
 
 /* ConfigureCookieOidcRefresh attaches a cookie OnValidatePrincipal callback to get
  * a new access token when the current one expires, and reissue a cookie with the
@@ -124,7 +124,7 @@ var builder = WebApplication.CreateBuilder(args);
  * out. OIDC connect options are set for saving tokens and the offline access
  * scope.
  */
-//builder.Services.ConfigureCookieOidcRefresh(CookieAuthenticationDefaults.AuthenticationScheme, oidcScheme);
+builder.Services.ConfigureCookieOidcRefresh(CookieAuthenticationDefaults.AuthenticationScheme, oidcScheme);
 
 builder.Services.AddAuthorization();
 builder.Services.AddCascadingAuthenticationState();
@@ -135,8 +135,6 @@ builder.Services.AddRazorComponents()
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddHttpClient();
-
-builder.Services.AddMatBlazor();
 
 var app = builder.Build();
 

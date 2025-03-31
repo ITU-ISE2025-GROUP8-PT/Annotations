@@ -10,8 +10,63 @@
 
 <AuthorizeView>
     <NotAuthorized>
-        You have not signed in yet.
-        <p> Log in or make a new account to get access</p>
+        @*You have not signed in yet.
+        <p> Log in or make a new account to get access</p>*@
+
+        <h2> Welcome user</h2>
+        <div class="mat-layout-grid mat-layout-grid-align-left">
+        <div class="mat-layout-grid-inner">
+                
+            <!-- First Grid Layer -->
+            <div class="mat-layout-grid-cell" >
+                <div> This is your personal page. <p></p>
+
+                    Here you can view your finished tasks or continue to work on you unfinished tasks. <p></p>
+
+                    Go to profile settings to edit your personal experience.<p></p>
+                </div>
+            </div>
+                
+            <!-- Second Grid Layer -->
+            <div class="mat-layout-grid-cell">
+                <MatThemeProvider Theme="@theme">
+                    <div id="leftButtons">
+                        <table style="border-collapse: collapse;">
+                            <tr>
+                                <td>
+                                    <MatButtonLink Href="/ButtonLink" style="width:200%;" Outlined="true">Finished Tasks</MatButtonLink>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <MatButtonLink Href="/ButtonLink" style="width:200%;" Outlined="true">Unfinished Tasks</MatButtonLink>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <MatButtonLink Href="/ButtonLink" style="width:200%;" Outlined="true">Profile Settings</MatButtonLink>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </MatThemeProvider>
+            </div>
+                
+            <!-- Third Grid Layer -->
+            <div class="mat-layout-grid-cell">
+                <div class="mat-layout-grid-inner">
+                    <div class="mat-layout-grid-cell">
+                        <span>Second level</span>
+                    </div>
+                    <div class="mat-layout-grid-cell">
+                        <span>Second level</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </div>
+        
+        
     </NotAuthorized>
     <Authorized>
         <PersonalHome/>
@@ -21,6 +76,11 @@
 
 @code {
     private string? currentUrl;
+
+    MatTheme theme = new MatTheme()
+    {
+        Primary = MatThemeColors.Green._800.Value
+    };
 
     protected override void OnInitialized()
     {

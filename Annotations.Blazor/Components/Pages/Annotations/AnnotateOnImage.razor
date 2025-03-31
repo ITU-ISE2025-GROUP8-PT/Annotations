@@ -75,7 +75,13 @@
                     @if (showTextField)
                     {
                         <div style="position: absolute; left: @($"{clickX}px"); top: @($"{clickY}px")">
-                            <MatTextField @bind-Value="annotationText" />
+                            <p>
+                                <MatTextField @bind-Value="annotationText" Label="Annotation" TextArea="true"/>
+                            </p>
+                            <p>
+                                <MatTextField @bind-Value="annotationType" Label="Type"></MatTextField>
+                            </p>
+                            
                         </div>
                     }
                 </div>
@@ -96,6 +102,7 @@
     private bool showTextField = false;
     private int clickX, clickY;
     private string annotationText = "";
+    private string annotationType = "";
     
     MatTheme theme = new MatTheme()
     {

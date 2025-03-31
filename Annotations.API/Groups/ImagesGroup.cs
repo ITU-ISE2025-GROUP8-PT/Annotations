@@ -170,7 +170,7 @@ public static class ImagesGroup
                 BlobContainerClient containerClient = blobServiceClient.GetBlobContainerClient("images");
                 var listOfFiles = containerClient.GetBlobsAsync().AsPages();
               
-                HashSet<IResult> collection = new HashSet<IResult>();
+                HashSet<byte[]> collection = new HashSet<byte[]>();
                 HashSet<string> testCollection = new HashSet<string>();
                 await foreach (Page<BlobItem> blobPage in listOfFiles)
                 {
@@ -183,15 +183,19 @@ public static class ImagesGroup
                         var personObject = System.Text.Json.JsonSerializer.Deserialize<ImageModel>(jsonString);
                         if (personObject.Category == category)
                         {
-                            /*collection.Add(Results.File(memoryStream.ToArray(),
-                                "application/json"));*/
-                            testCollection.Add(blobItem.Name);
+                            collection.Add(memoryStream.ToArray());
+                            //testCollection.Add(blobItem.Name);
                         }
                     }
 
                 }
 
-                return testCollection;
+                if (collection.Count() == 0)
+                {
+                    Console.WriteLine("No pictures have this category");
+                    //return Results.StatusCode(404);
+                }
+                return collection;
 
 
                 /*BlobClient blobClient = containerClient.GetBlobClient(imageId + ".json");

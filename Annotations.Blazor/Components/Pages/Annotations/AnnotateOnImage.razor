@@ -67,6 +67,7 @@
                         </div>
                     </div>    
                 </div>
+                <!-- @ref imageContainer captures the DOM element for position calculations, when annotating --->
                 <div style="position: relative;" @ref="imageContainer">
                     <img src="img/Skærmbillede%202025-03-27%20kl.%2014.05.56.png"
                          @onclick="HandleImageClick"
@@ -76,6 +77,7 @@
                     {
                         <div style="position: absolute; left: @($"{currentAnnotation.X}px"); top: @($"{currentAnnotation.Y}px")">
                             <p>
+                                <!-- the position is auto focused on click position. Bound to currentAnnotation object --->
                                 <MatTextField @bind-Value="currentAnnotation.Text"
                                               Label="Annotation"
                                               FullWidth="true"
@@ -166,12 +168,14 @@
             imageContainer
         );
         
+        // gets X and Y coordinates of click
         currentAnnotation.X = (int)(e.ClientX - rect.Left);
         currentAnnotation.Y = (int)(e.ClientY - rect.Top);
         
         showTextField = true;
         StateHasChanged();
         
+        // focuses the text field on the location of click
         await JSRuntime.InvokeVoidAsync(
             "eval", 
             "document.getElementById('annotationTextField').focus()"
@@ -200,5 +204,4 @@
     }
 
     [Inject] private IJSRuntime JSRuntime { get; set; }
-
 }

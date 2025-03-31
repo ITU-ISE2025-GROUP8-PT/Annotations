@@ -15,6 +15,9 @@ public class Image
     public required string Description { get; set; }
 	[Required]
     public required byte[] ImageData { get; set; }
+	[Required]
+	[StringLength(100)]
+	public required string Category { get; set; }
 }
 
     /*Later add foreign keys:

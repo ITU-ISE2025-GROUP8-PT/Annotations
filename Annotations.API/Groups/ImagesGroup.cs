@@ -1,6 +1,7 @@
 using Annotations.Core.Models;
 using Microsoft.AspNetCore.Http.Extensions;
 using Annotations.Core.Entities;
+using Azure;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Azure.Storage.Blobs;
@@ -83,6 +84,7 @@ public static class ImagesGroup
                             Title = "idk",
                             Description = "description",
                             ImageData = ms.ToArray(),
+                            Category = "category",
                         
                         };
                         string jsonString = System.Text.Json.JsonSerializer.Serialize(thisImage);
@@ -159,11 +161,43 @@ public static class ImagesGroup
 
         }).DisableAntiforgery();
 
-        pathBuilder.MapGet("/{category}",
+        pathBuilder.MapGet("/filter/{category}",
             async (string category, [FromServices] IAzureClientFactory<BlobServiceClient> clientFactory) =>
             {
+                var cts = new CancellationTokenSource(5000);
+
+                var blobServiceClient = clientFactory.CreateClient("Default");
+                BlobContainerClient containerClient = blobServiceClient.GetBlobContainerClient("images");
+                var blobClient = containerClient.GetBlobsAsync().AsPages();
+                HashSet<BlobItem> collection = new HashSet<BlobItem>(); 
+                await foreach (Page<BlobItem> blobPage in blobClient)
+                {
+                    foreach (BlobItem blobItem in blobPage.Values)
+                    {
+                        
+                    }
+
+                }
+                
+                
+                /*BlobClient blobClient = containerClient.GetBlobClient(imageId + ".json");
+                if (!blobClient.Exists(cts.Token).ToString()
+                        .Contains("404")) //checks if the blobClient is empty/couldn't find the image of that format
+                {
+                    using var memoryStream = new MemoryStream();
+                    await blobClient.DownloadToAsync(memoryStream);
+                    return Results.File(memoryStream.ToArray(),
+                        "application/json"); //because it is a return statement the for-loop will not continue after finding the image
+                }
+                Console.WriteLine("Cannot retrieve image because it doesn't exist");
+                return Results.StatusCode(404);*/
+                
+                
                 
             }).DisableAntiforgery();
+        
+        
+        
         pathBuilder.MapGet("/exception",
             () =>
             {

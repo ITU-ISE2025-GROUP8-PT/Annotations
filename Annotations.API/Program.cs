@@ -136,7 +136,8 @@ void InitializeTempDatabase()
         Id = 1,
         Title = "Sample Image",
         Description = "This is a sample image.",
-        ImageData = File.ReadAllBytes("../docs/images/Perfusiontech_sampleimage.png")
+        ImageData = File.ReadAllBytes("../docs/images/Perfusiontech_sampleimage.png"),
+        Category = "category"
         // ImageData = await GetImageDataAsync("Perfusiontech_sampleimage.png"); <-- Eller hvad den nu kommer til at hedde når den smides op
     });
     context.SaveChanges();

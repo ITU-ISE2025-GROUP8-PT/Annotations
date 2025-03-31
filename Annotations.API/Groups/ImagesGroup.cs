@@ -168,18 +168,32 @@ public static class ImagesGroup
 
                 var blobServiceClient = clientFactory.CreateClient("Default");
                 BlobContainerClient containerClient = blobServiceClient.GetBlobContainerClient("images");
-                var blobClient = containerClient.GetBlobsAsync().AsPages();
-                HashSet<BlobItem> collection = new HashSet<BlobItem>(); 
-                await foreach (Page<BlobItem> blobPage in blobClient)
+                var listOfFiles = containerClient.GetBlobsAsync().AsPages();
+              
+                HashSet<IResult> collection = new HashSet<IResult>();
+                HashSet<string> testCollection = new HashSet<string>();
+                await foreach (Page<BlobItem> blobPage in listOfFiles)
                 {
                     foreach (BlobItem blobItem in blobPage.Values)
                     {
-                        
+                        var BlobClient = containerClient.GetBlobClient(blobItem.Name);
+                        using var memoryStream = new MemoryStream();
+                        await BlobClient.DownloadToAsync(memoryStream);
+                        var jsonString = System.Text.Encoding.UTF8.GetString(memoryStream.ToArray());
+                        var personObject = System.Text.Json.JsonSerializer.Deserialize<ImageModel>(jsonString);
+                        if (personObject.Category == category)
+                        {
+                            /*collection.Add(Results.File(memoryStream.ToArray(),
+                                "application/json"));*/
+                            testCollection.Add(blobItem.Name);
+                        }
                     }
 
                 }
-                
-                
+
+                return testCollection;
+
+
                 /*BlobClient blobClient = containerClient.GetBlobClient(imageId + ".json");
                 if (!blobClient.Exists(cts.Token).ToString()
                         .Contains("404")) //checks if the blobClient is empty/couldn't find the image of that format
@@ -191,9 +205,9 @@ public static class ImagesGroup
                 }
                 Console.WriteLine("Cannot retrieve image because it doesn't exist");
                 return Results.StatusCode(404);*/
-                
-                
-                
+
+
+
             }).DisableAntiforgery();
         
         

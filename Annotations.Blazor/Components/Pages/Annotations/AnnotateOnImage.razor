@@ -91,8 +91,8 @@
                                 <MatSelectItem @bind-Value="@currentAnnotation.Type" Label="Type" Items="@currentAnnotation.Types"></MatSelectItem>
                             </p>
                             <div>
-                                <MatButton OnClick="SaveAnnotation" Style="color: white;">Save</MatButton>
-                                <MatButton OnClick="CancelAnnotation" Style="color: white;">Cancel</MatButton>
+                                <MatButton OnClick="SaveAnnotation" Style="color: white; background: #101e2d">Save</MatButton>
+                                <MatButton OnClick="CancelAnnotation" Style="color: white; background: #101e2d">Cancel</MatButton>
                             </div>
                         </div>
                     }
@@ -100,7 +100,7 @@
                     {
                         <div style="position: absolute; left: @($"{ann.X}px"); top: @($"{ann.Y}px")">
                             <p style="color: white; font-size: xx-small">
-                                @ann.Type: @ann.Text
+                                @ann.Text
                             </p>
                         </div>
                     }

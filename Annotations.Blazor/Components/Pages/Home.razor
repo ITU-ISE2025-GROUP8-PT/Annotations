@@ -2,6 +2,7 @@
 @using MatBlazor
 @implements IDisposable
 @inject NavigationManager Navigation
+@rendermode InteractiveServer
 <style>
     .mat-layout-grid-cell{
         display: flex;
@@ -89,6 +90,10 @@
             </div>
         </div>
         @* insert pie chart here *@
+        
+        <h3> See your complete overview here</h3>
+        <h4 class="mat-subtitle1">Progress</h4>
+        <MatProgressCircle Indeterminate="false" Progress=".75"/>
         
         
     </NotAuthorized>

@@ -23,11 +23,6 @@
 @code {
     private string? currentUrl;
 
-    MatTheme theme = new MatTheme()
-    {
-        Primary = MatThemeColors.Green._800.Value
-    };
-
     protected override void OnInitialized()
     {
         currentUrl = Navigation.Uri;

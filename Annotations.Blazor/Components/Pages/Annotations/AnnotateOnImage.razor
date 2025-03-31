@@ -32,44 +32,46 @@
                 </div>
             </div>
             <div class="mat-layout-grid-cell mat-layout-grid-cell-span-10">
-                <div>
-                    <div style="display: flex; justify-content: flex-start; gap: 8px;">
-                        <MatTabGroup>
-                            <MatTab Label="Vessels">
-                                <div style="padding: 16px;">
-                                    <b>Blood Vessel Identification</b>
-                                    <br/>
-                                    Mark blood vessels, directions, thickness and connectivity
-                                    
-                                    <div style="margin-top: 16px; width: 100%;">
-                                        <img
-                                            src="img/Skærmbillede 2025-03-27 kl. 14.05.56.png"
-                                            alt="Vessel Diagram"
-                                            style="width: 1000px; height: 600px; border-radius: 4px;"
-                                        >
+                <div class="mat-layout-grid-inner">
+                    <div class="mat-layout-grid-cell mat-layout-grid-cell-span-3">
+                        <div style="display: flex; justify-content: flex-start; gap: 8px;">
+                            <MatTabGroup>
+                                <MatTab Label="Vessels">
+                                    <div style="padding: 16px;">
+                                        <b>Blood Vessel Identification</b>
+                                        <br/>
+                                        Mark blood vessels, directions, thickness and connectivity
                                     </div>
-                                </div>
-                            </MatTab>
-                            <MatTab Label="Flow">
-                                <div style="padding: 16px;">
-                                    <b>Blood Flow Identification</b>
-                                    <br/>
-                                    Which direction the blood is flowing; flow analysis tools, with various graphs and visualizations that can be used to determine the blood direction.
-                                </div>
-                            </MatTab>
-                            <MatTab Label="Organs">
-                                <div style="padding: 16px;">
-                                    <b>Organ Identification</b>
-                                    <br/>
-                                    Annotation of organs in the image. white light image instead of sum-map (as shown), possibility to select organs from a list, "semantic segmentation" correction, "best guess" functionality.
-                                </div>
-                            </MatTab>
-                        </MatTabGroup>
+                                </MatTab>
+                                <MatTab Label="Flow">
+                                    <div style="padding: 16px;">
+                                        <b>Blood Flow Identification</b>
+                                        <br/>
+                                        Which direction the blood is flowing; flow analysis tools, with various graphs and visualizations that can be used to determine the blood direction.
+                                    </div>
+                                </MatTab>
+                                <MatTab Label="Organs">
+                                    <div style="padding: 16px;">
+                                        <b>Organ Identification</b>
+                                        <br/>
+                                        Annotation of organs in the image. white light image instead of sum-map (as shown), possibility to select organs from a list, "semantic segmentation" correction, "best guess" functionality.
+                                    </div>
+                                </MatTab>
+                            </MatTabGroup>
+                        </div>
                     </div>
+                    <div class="mat-layout-grid-cell mat-layout-grid-cell-span-9 mat-layout-grid-align-right" style="display: flex; margin-left: auto; gap: 8px;">
+                        <div style="display: flex; justify-content: flex-end; gap: 8px;">
+                            <MatButton>Skip</MatButton>
+                            <MatButton Style=" color: white; background: #101e2d">Complete</MatButton>
+                        </div>
+                    </div>    
                 </div>
-                <div style="display: flex; justify-content: flex-end; gap: 8px;">
-                    <MatButton>Skip</MatButton>
-                    <MatButton>Complete</MatButton>
+                <div style="margin-top: 16px; width: 100%;">
+                    <img
+                        src="img/Skærmbillede 2025-03-27 kl. 14.05.56.png"
+                        alt="Vessel Diagram"
+                        style="width: 1000px; height: 600px; border-radius: 4px;">
                 </div>
             </div>
         </div>

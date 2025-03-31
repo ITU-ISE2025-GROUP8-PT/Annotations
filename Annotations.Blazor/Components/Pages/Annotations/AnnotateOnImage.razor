@@ -79,9 +79,8 @@
                                 <MatTextField @bind-Value="annotationText" Label="Annotation" TextArea="true"/>
                             </p>
                             <p>
-                                <MatTextField @bind-Value="annotationType" Label="Type"></MatTextField>
+                                <MatSelectItem @bind-Value="@annotationType" Label="Type" Items="@types"></MatSelectItem>
                             </p>
-                            
                         </div>
                     }
                 </div>
@@ -104,6 +103,13 @@
     private string annotationText = "";
     private string annotationType = "";
     
+    string[] types = new[]
+    {
+        "Arteries",
+        "Veins",
+        "Flow direction",
+    };
+    
     MatTheme theme = new MatTheme()
     {
         Primary = MatThemeColors.Green._800.Value
@@ -125,8 +131,7 @@
     }
 
     [Inject] private IJSRuntime JSRuntime { get; set; }
-
-    // JS-interop compatible struct
+    
     private struct BoundingClientRect
     {
         public double Left { get; set; }

@@ -1,0 +1,41 @@
+﻿@using MatBlazor
+@using Microsoft.AspNetCore.Authentication
+@page "/images/filter/category"
+@using global::Annotations.Core.Models
+@using Microsoft.AspNetCore.Authentication
+@inject IHttpClientFactory ClientFactory
+@inject IHttpContextAccessor httpContextAccessor
+
+
+@foreach (var word in story)
+{
+    <img src="data:image;base64, @word" />
+}
+@code{
+
+    private HashSet<string>? story;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var httpContext = httpContextAccessor.HttpContext ?? throw new InvalidOperationException("No HttpContext available");
+
+        var accessToken = await httpContext.GetTokenAsync("access_token") ?? throw new InvalidOperationException("No access_token was saved");
+
+        var client = ClientFactory.CreateClient();
+        client.BaseAddress = new("https://localhost:7250");
+
+        using var requestMessage = new HttpRequestMessage(HttpMethod.Get, "/images/filter/category");
+        requestMessage.Headers.Authorization = new("Bearer", accessToken);
+
+        using var response = await client.SendAsync(requestMessage);
+        var array = await response.Content.ReadFromJsonAsync<string[]>();
+        foreach (string jsonString in array)
+        {
+            var personObject = System.Text.Json.JsonSerializer.Deserialize<ImageModel>(jsonString);
+            var imageData = personObject.ImageData;
+            story.Add(System.Convert.ToBase64String(imageData));
+        }  
+
+    }
+
+}

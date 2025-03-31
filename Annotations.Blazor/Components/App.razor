@@ -17,6 +17,16 @@
 <body>
     <Routes/>
     <script src="_framework/blazor.web.js"></script>
+    <!-- This is called in AnnotateOnImage.razor, when aiming to get a rectangle bound to a click position --->
+    <script>
+        function getBoundingClientRect(element) {
+            const rect = element.getBoundingClientRect();
+            return {
+                left: rect.left,
+                top: rect.top
+            };
+        }
+    </script>
 </body>
 
 </html>

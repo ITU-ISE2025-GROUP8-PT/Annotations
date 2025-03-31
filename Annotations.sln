@@ -9,8 +9,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Annotations.API", "Annotati
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Annotations.Core", "Annotations.Core\Annotations.Core.csproj", "{826D1077-5E5B-43BD-B29A-52A5E188DE14}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Annotations.API.Tests", "Annotations.API.Tests\Annotations.API.Tests.csproj", "{AEE9141E-7161-4A7A-A210-45ACEAEF6633}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "bunittestproject", "bunittestproject\bunittestproject.csproj", "{9F8F6C8E-7D80-4C24-8DB4-39AEDFAD63AE}"
 EndProject
 Global

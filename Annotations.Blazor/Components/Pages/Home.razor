@@ -2,7 +2,23 @@
 @using MatBlazor
 @implements IDisposable
 @inject NavigationManager Navigation
-
+<style>
+    .mat-layout-grid-cell{
+        display: flex;
+        align-items: center;
+        min-width: 250px;
+        gap: 30px;
+    }
+    .mat-layout-grid-inner{
+        display: grid;
+        gap: 30px;
+    }
+    .personal-style{
+        border: 5px solid transparent; /* Hidden border with 5px thickness */
+        padding: 10px;
+    }
+    
+</style>
 
 <PageTitle>Home</PageTitle>
 
@@ -14,57 +30,65 @@
         <p> Log in or make a new account to get access</p>*@
 
         <h2> Welcome user</h2>
-        <div class="mat-layout-grid mat-layout-grid-align-left">
-        <div class="mat-layout-grid-inner">
+        <div class="mat-layout-grid mat-layout-grid-align-left mat-layout-grid-cell-span-3">
+            <div class="mat-layout-grid-inner">
                 
-            <!-- First Grid Layer -->
-            <div class="mat-layout-grid-cell" >
-                <div> This is your personal page. <p></p>
+                <!-- First Grid Layer -->
+                <div class="mat-layout-grid-cell "  >
+                    <div> This is your personal page. <br/>
 
-                    Here you can view your finished tasks or continue to work on you unfinished tasks. <p></p>
+                        Here you can view your finished tasks or continue to work on you unfinished tasks. <br/>
 
-                    Go to profile settings to edit your personal experience.<p></p>
+                        Go to profile settings to edit your personal experience. <br/>
+                    </div>
                 </div>
-            </div>
                 
-            <!-- Second Grid Layer -->
-            <div class="mat-layout-grid-cell">
-                <MatThemeProvider Theme="@theme">
-                    <div id="leftButtons">
-                        <table style="border-collapse: collapse;">
-                            <tr>
-                                <td>
-                                    <MatButtonLink Href="/ButtonLink" style="width:200%;" Outlined="true">Finished Tasks</MatButtonLink>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <MatButtonLink Href="/ButtonLink" style="width:200%;" Outlined="true">Unfinished Tasks</MatButtonLink>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <MatButtonLink Href="/ButtonLink" style="width:200%;" Outlined="true">Profile Settings</MatButtonLink>
-                                </td>
-                            </tr>
-                        </table>
-                    </div>
-                </MatThemeProvider>
-            </div>
+                <!-- Second Grid Layer -->
+                <div class="mat-layout-grid-cell">
+                    <MatThemeProvider Theme="@theme">
+                        <div id="leftButtons">
+                            <table style="border-collapse: collapse;">
+                                <tr>
+                                    <td>
+                                        <MatButtonLink Href="/ButtonLink" style="width:200%;" Outlined="true">Finished Tasks</MatButtonLink>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <MatButtonLink Href="/ButtonLink" style="width:200%;" Outlined="true">Unfinished Tasks</MatButtonLink>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <MatButtonLink Href="/ButtonLink" style="width:200%;" Outlined="true">Profile Settings</MatButtonLink>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </MatThemeProvider>
+                </div>
                 
-            <!-- Third Grid Layer -->
-            <div class="mat-layout-grid-cell">
-                <div class="mat-layout-grid-inner">
-                    <div class="mat-layout-grid-cell">
-                        <span>Second level</span>
-                    </div>
-                    <div class="mat-layout-grid-cell">
-                        <span>Second level</span>
+                <!-- Third Grid Layer -->
+                <div class="mat-layout-grid-cell">
+                    <div class="mat-layout-grid-inner">
+                        <div class="mat-layout-grid-cell">
+                            <img src="img/billede1.png" alt="Profile Picture" style="width: 150px; height: 150px; border-radius: 50%; object-fit: cover;">
+                        </div>
+                        <div class="mat-layout-grid-cell">
+                            <div class = "personal-style">
+                                <b>Personal Information</b> 
+                                <br/>
+                                Jane Doe 
+                                <br/>
+                                Surgeon at Frederiksberg Hospital 
+                                <br/>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-        </div>
+        @* insert pie chart here *@
         
         
     </NotAuthorized>

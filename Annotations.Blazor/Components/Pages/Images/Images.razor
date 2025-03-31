@@ -1,18 +1,16 @@
-@page "/images/{imageid}"
+@using MatBlazor
+@using Microsoft.AspNetCore.Authentication
+@page "/images/0"
 @using global::Annotations.Core.Models
 @using Microsoft.AspNetCore.Authentication
 @inject IHttpClientFactory ClientFactory
 @inject IHttpContextAccessor httpContextAccessor
 
 
-<ul>
-   
-    <li>@story</li>
-    
-</ul>
+<img src="data:image;base64, @story" />
 @code{
 
-    private byte[]? story;
+    private string? story;
 
     protected override async Task OnInitializedAsync()
     {
@@ -28,8 +26,10 @@
 
         using var response = await client.SendAsync(requestMessage);
         var jsonString = await response.Content.ReadAsStringAsync();
+        
         var personObject = System.Text.Json.JsonSerializer.Deserialize<ImageModel>(jsonString);
-        story = personObject.ImageData;
+        var imageData = personObject.ImageData;
+        story = System.Convert.ToBase64String(imageData);
     }
 
 }

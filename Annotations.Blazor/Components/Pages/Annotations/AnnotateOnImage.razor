@@ -88,7 +88,7 @@
                             <p>
                                 <MatSelectItem @bind-Value="@currentAnnotation.Type" Label="Type" Items="@currentAnnotation.Types"></MatSelectItem>
                             </p>
-                            <div style="display: flex; gap: 8px; margin-top: 8px;">
+                            <div>
                                 <MatButton OnClick="SaveAnnotation" Style="color: white;">Save</MatButton>
                                 <MatButton OnClick="CancelAnnotation" Style="color: white;">Cancel</MatButton>
                             </div>

@@ -8,6 +8,7 @@ using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.Extensions.Azure;
+using SQLitePCL;
 
 namespace Annotations.API.Groups;
 
@@ -56,7 +57,7 @@ public static class ImagesGroup
         //This is the upload endpoint where the image first gets validated, and then gets uploaded into your local Azurite BlobStorage
         //The image gets saved in the database as the same file type it was uploaded as
         pathBuilder.MapPost("/upload",
-            async (IFormFile image, [FromServices] IAzureClientFactory<BlobServiceClient> clientFactory) =>
+            async (IFormFile image, string category, [FromServices] IAzureClientFactory<BlobServiceClient> clientFactory) =>
             {
 
                 ValidationResponse response = ValidateImage(image);
@@ -84,7 +85,7 @@ public static class ImagesGroup
                             Title = "idk",
                             Description = "description",
                             ImageData = ms.ToArray(),
-                            Category = "category",
+                            Category = category,
                         
                         };
                         string jsonString = System.Text.Json.JsonSerializer.Serialize(thisImage);

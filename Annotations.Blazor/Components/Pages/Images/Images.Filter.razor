@@ -7,13 +7,14 @@
 @inject IHttpContextAccessor httpContextAccessor
 
 
-@foreach (var word in story)
+@foreach (var word in test)
 {
-    <img src="data:image;base64, @word" />
+    <p>word</p>
 }
 @code{
 
-    private HashSet<string>? story;
+    private HashSet<string>? story = new HashSet<string>();
+    private string[] test;
 
     protected override async Task OnInitializedAsync()
     {
@@ -28,13 +29,13 @@
         requestMessage.Headers.Authorization = new("Bearer", accessToken);
 
         using var response = await client.SendAsync(requestMessage);
-        var array = await response.Content.ReadFromJsonAsync<string[]>();
-        foreach (string jsonString in array)
+        test = await response.Content.ReadFromJsonAsync<string[]>();
+        /*foreach (string jsonString in array)
         {
             var personObject = System.Text.Json.JsonSerializer.Deserialize<ImageModel>(jsonString);
             var imageData = personObject.ImageData;
             story.Add(System.Convert.ToBase64String(imageData));
-        }  
+        }*/  
 
     }
 

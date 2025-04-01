@@ -83,7 +83,7 @@ var app = builder.Build();
 
 
 UsersGroup.MapEndpoints(app.MapGroup("/users").RequireAuthorization());
-ImagesGroup.MapEndpoints(app.MapGroup("/images").RequireAuthorization());
+ImagesGroup.MapEndpoints(app.MapGroup("/images").RequireAuthorization().AllowAnonymous());
 
 app.MapGet("/error", () => "Dette er en 400-599 eller værre");
 

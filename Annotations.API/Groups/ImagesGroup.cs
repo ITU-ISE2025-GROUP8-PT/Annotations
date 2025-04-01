@@ -108,7 +108,7 @@ public static class ImagesGroup
                 }
 
 
-            }).DisableAntiforgery();//TODO: Disable antiforgery
+            }).DisableAntiforgery();
         //ellers ved billedfil brug da
         pathBuilder.MapGet("/{imageId}",
             async ([FromRoute] string imageId, [FromServices] IAzureClientFactory<BlobServiceClient> clientFactory) =>
@@ -170,7 +170,7 @@ public static class ImagesGroup
                 BlobContainerClient containerClient = blobServiceClient.GetBlobContainerClient("images");
                 var listOfFiles = containerClient.GetBlobsAsync().AsPages();
               
-                HashSet<byte[]> collection = new HashSet<byte[]>();
+                HashSet<string> collection = new HashSet<string>();
                 HashSet<string> testCollection = new HashSet<string>();
                 await foreach (Page<BlobItem> blobPage in listOfFiles)
                 {
@@ -183,7 +183,7 @@ public static class ImagesGroup
                         var personObject = System.Text.Json.JsonSerializer.Deserialize<ImageModel>(jsonString);
                         if (personObject.Category == category)
                         {
-                            collection.Add(memoryStream.ToArray());
+                            collection.Add(jsonString);
                             //testCollection.Add(blobItem.Name);
                         }
                     }
@@ -195,7 +195,7 @@ public static class ImagesGroup
                     Console.WriteLine("No pictures have this category");
                     //return Results.StatusCode(404);
                 }
-                return collection;
+                return collection.ToArray();
 
 
                 /*BlobClient blobClient = containerClient.GetBlobClient(imageId + ".json");

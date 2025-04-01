@@ -7,7 +7,7 @@
 @inject IHttpContextAccessor httpContextAccessor
 
 
-@if (images == null)
+@if (images==null)
 {
     <p><em>No images found</em></p>
 }
@@ -54,12 +54,6 @@ else
             images = new string[1];
             images[0] = response.StatusCode.ToString();
         }
-        /*foreach (string jsonString in array)
-        {
-            var personObject = System.Text.Json.JsonSerializer.Deserialize<ImageModel>(jsonString);
-            var imageData = personObject.ImageData;
-            story.Add(System.Convert.ToBase64String(imageData));
-        }*/  
 
     }
 

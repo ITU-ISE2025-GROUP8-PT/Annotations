@@ -7,7 +7,7 @@
 @inject IHttpClientFactory ClientFactory
 @inject IHttpContextAccessor httpContextAccessor
 
-@if (image == null)
+@if (error)
 {
     <p><em>No image found</em></p>
 }
@@ -19,6 +19,7 @@ else
 @code{
 
     private string? image;
+    private bool error = false;
 
     [Parameter]
     public string imageId { get; set; }
@@ -48,6 +49,7 @@ else
         {
             Console.WriteLine("Status code: " + response.StatusCode);
             image = response.StatusCode.ToString();
+            error = true;
         }
 
     }

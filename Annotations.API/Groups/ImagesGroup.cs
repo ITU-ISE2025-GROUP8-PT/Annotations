@@ -171,7 +171,6 @@ public static class ImagesGroup
                 var listOfFiles = containerClient.GetBlobsAsync().AsPages();
               
                 HashSet<string> collection = new HashSet<string>();
-                HashSet<string> testCollection = new HashSet<string>();
                 await foreach (Page<BlobItem> blobPage in listOfFiles)
                 {
                     foreach (BlobItem blobItem in blobPage.Values)
@@ -184,7 +183,6 @@ public static class ImagesGroup
                         if (personObject.Category == category)
                         {
                             collection.Add(jsonString);
-                            //testCollection.Add(blobItem.Name);
                         }
                     }
 

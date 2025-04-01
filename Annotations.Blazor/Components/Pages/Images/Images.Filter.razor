@@ -7,13 +7,21 @@
 @inject IHttpContextAccessor httpContextAccessor
 
 
-@foreach (var word in test)
+@if (story == null)
 {
-    <p>word</p>
+    <p><em>Loading...</em></p>
+}
+else
+{
+    foreach (string word in story)
+    {
+        <img src="data:image;base64, @word" />
+
+    }
 }
 @code{
 
-    private HashSet<string>? story = new HashSet<string>();
+    private string[]? story;
     private string[] test;
 
     protected override async Task OnInitializedAsync()
@@ -29,7 +37,23 @@
         requestMessage.Headers.Authorization = new("Bearer", accessToken);
 
         using var response = await client.SendAsync(requestMessage);
-        test = await response.Content.ReadFromJsonAsync<string[]>();
+        try
+        {
+            string[] answer = await response.Content.ReadFromJsonAsync<string[]>();
+            story = new string[answer.Length];
+            for (int i = 0; i < answer.Length; i++)
+            {
+                var personObject = System.Text.Json.JsonSerializer.Deserialize<ImageModel>(answer[i]);
+                var imageData = personObject.ImageData;
+                story[i] = System.Convert.ToBase64String(imageData);
+            }
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine("Status code: " + response.StatusCode);
+            story = new string[1];
+            story[0] = response.StatusCode.ToString();
+        }
         /*foreach (string jsonString in array)
         {
             var personObject = System.Text.Json.JsonSerializer.Deserialize<ImageModel>(jsonString);

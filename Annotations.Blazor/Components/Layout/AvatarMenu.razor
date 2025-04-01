@@ -1,14 +1,26 @@
 @using MatBlazor
+@using System.Security.Claims
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.Authorization
+@rendermode InteractiveServer
 @implements IDisposable
 @inject NavigationManager Navigation
 
 <AuthorizeView>
     <Authorized>
-        <form action="authentication/logout" method="post">
-            <AntiforgeryToken />
-            <input type="hidden" name="ReturnUrl" value="@currentUrl" />
-            <MatButton type="submit">Sign out</MatButton>
-        </form>
+        <MatButton Label="Menu" OnClick="@OnClick" @ref="avatarButton"></MatButton>
+        <MatMenu @ref="userMenu">
+            <MatList>
+                <MatListGroupSubHeader>@context.User.Identity?.Name</MatListGroupSubHeader>
+                <MatListItem>
+                    <form action="authentication/logout" method="post">
+                        <AntiforgeryToken />
+                        <input type="hidden" name="ReturnUrl" value="@currentUrl" />
+                        <MatButton type="submit">Sign out</MatButton>
+                    </form>  
+                </MatListItem>
+            </MatList>
+        </MatMenu>
     </Authorized>
     <NotAuthorized>
         <MatButtonLink Href="authentication/login">Sign in</MatButtonLink>
@@ -18,7 +30,15 @@
 @code {
     private string? currentUrl;
 
-    protected override void OnInitialized()
+    private MatButton avatarButton = new();
+    private BaseMatMenu userMenu = new();
+
+    public void OnClick(MouseEventArgs e)
+    {
+        this.userMenu.OpenAsync(avatarButton.Ref);
+    }
+
+    protected async override void OnInitialized()
     {
         currentUrl = Navigation.Uri;
         Navigation.LocationChanged += OnLocationChanged;

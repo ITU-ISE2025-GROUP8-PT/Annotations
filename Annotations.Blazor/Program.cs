@@ -54,7 +54,7 @@ builder.Services.AddAuthentication(oidcScheme)
          * of the OpenID Connect authority.
          */
         
-        oidcOptions.Authority = builder.Configuration["OidcAuthority"] ?? throw new InvalidOperationException("OIDC Authority not found");
+        oidcOptions.Authority = builder.Configuration["authentication:oidc:authority"] ?? throw new InvalidOperationException("Missing authentication:oidc:authority");
         
         /* The authority will recognise this application by the client ID. 
          * The client ID is not a secret, but it is not helpful to publish to

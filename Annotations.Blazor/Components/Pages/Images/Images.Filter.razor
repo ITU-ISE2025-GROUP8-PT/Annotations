@@ -7,13 +7,13 @@
 @inject IHttpContextAccessor httpContextAccessor
 
 
-@if (story == null)
+@if (images == null)
 {
-    <p><em>Loading...</em></p>
+    <p><em>No images found</em></p>
 }
 else
 {
-    foreach (string word in story)
+    foreach (string word in images)
     {
         <img src="data:image;base64, @word" />
 
@@ -22,7 +22,7 @@ else
 @code{
     [Parameter]
     public string category { get; set; }
-    private string[]? story;
+    private string[]? images;
 
     protected override async Task OnInitializedAsync()
     {
@@ -40,19 +40,19 @@ else
         try
         {
             string[] answer = await response.Content.ReadFromJsonAsync<string[]>();
-            story = new string[answer.Length];
+            images = new string[answer.Length];
             for (int i = 0; i < answer.Length; i++)
             {
                 var personObject = System.Text.Json.JsonSerializer.Deserialize<ImageModel>(answer[i]);
                 var imageData = personObject.ImageData;
-                story[i] = System.Convert.ToBase64String(imageData);
+                images[i] = System.Convert.ToBase64String(imageData);
             }
         }
         catch (Exception e)
         {
             Console.WriteLine("Status code: " + response.StatusCode);
-            story = new string[1];
-            story[0] = response.StatusCode.ToString();
+            images = new string[1];
+            images[0] = response.StatusCode.ToString();
         }
         /*foreach (string jsonString in array)
         {

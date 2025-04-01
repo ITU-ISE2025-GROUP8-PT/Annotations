@@ -7,11 +7,18 @@
 @inject IHttpClientFactory ClientFactory
 @inject IHttpContextAccessor httpContextAccessor
 
+@if (image == null)
+{
+    <p><em>No image found</em></p>
+}
+else
+{
+    <img src="data:image;base64, @image" />
 
-<img src="data:image;base64, @story" />
+}
 @code{
 
-    private string? story;
+    private string? image;
 
     [Parameter]
     public string imageId { get; set; }
@@ -29,11 +36,20 @@
         requestMessage.Headers.Authorization = new("Bearer", accessToken);
 
         using var response = await client.SendAsync(requestMessage);
-        var jsonString = await response.Content.ReadAsStringAsync();
-        
-        var personObject = System.Text.Json.JsonSerializer.Deserialize<ImageModel>(jsonString);
-        var imageData = personObject.ImageData;
-        story = System.Convert.ToBase64String(imageData);
+        try
+        {
+            var jsonString = await response.Content.ReadAsStringAsync();
+
+            var personObject = System.Text.Json.JsonSerializer.Deserialize<ImageModel>(jsonString);
+            var imageData = personObject.ImageData;
+            image = System.Convert.ToBase64String(imageData);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine("Status code: " + response.StatusCode);
+            image = response.StatusCode.ToString();
+        }
+
     }
 
 }

@@ -2,6 +2,7 @@
 @implements IDisposable
 @inject NavigationManager Navigation
 
+<MatThemeProvider Theme="@menuTheme">
 <AuthorizeView>
     <Authorized>
         <form action="authentication/logout" method="post">
@@ -14,9 +15,16 @@
         <MatButtonLink Href="authentication/login">Sign in</MatButtonLink>
     </NotAuthorized>
 </AuthorizeView>
+</MatThemeProvider>
 
 @code {
     private string? currentUrl;
+
+    MatTheme menuTheme = new MatTheme()
+    {
+        Primary = "white",
+        Secondary = MatThemeColors.BlueGrey._500.Value
+    };
 
     protected override void OnInitialized()
     {

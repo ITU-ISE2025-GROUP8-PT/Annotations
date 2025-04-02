@@ -3,12 +3,53 @@
 
 @inject IHttpClientFactory ClientFactory
 @inject IHttpContextAccessor httpContextAccessor
+<style>
+    .container {
+        display: flex;
+        flex-direction: column;
+    }
+    .datasetContainers {
+        background-color: #8ca2b2;
+        padding-top: 0.8%;
+        padding-bottom: 0.3%;
+        padding-left: 1%;
+        margin-bottom: 1%;
+        margin-top: 1%;
+        border-radius: 10px 10px 10px 10px;
+    }
+    .DivToScroll{
+        background-color: #F5F5F5;
+        border: 1px solid #DDDDDD;
+        border-radius: 4px 0 4px 0;
+        color: #3B3C3E;
+        left: -1px;
+        max-height: 100vh;
+        overflow-x:hidden;
+        padding: 1.5%;
+        scrollbar-width: auto;
+    }
+</style>
+<div class = "container DivToScroll">
+    @foreach (var name in datasets)
+    {
+        <div class="datasetContainers">
+            <div style=" display: flex; flex-direction:row; flex-wrap: nowrap">
+                <span style="padding:0; margin: 0; font-weight: bold; width: 90%;">Dataset @name</span>
+                <span style="padding:0; margin: 0; width: 18%">Annotated by: 1 person</span>
+            </div>
+            <div style=" display: flex; flex-direction:row; flex-wrap: nowrap">
+                <span style="padding:0; margin: 0;  width: 90%">Number of images: 3</span>
+                <span style="padding:0; margin: 0; width: 18%">Reviewed by: 1 person</span>
+            </div>
+            <div style=" display: flex; flex-direction:row; flex-wrap: nowrap">
+                <span style="padding:0; margin: 0;  width: 95.5%;">Category: "hello"</span>
+                <a href="https://localhost:7238/images/filter/hello"><img src="https://www.svgrepo.com/download/64793/inverted-triangle.svg" style="max-height: 30px; width:auto; margin-top: 0.1%; margin-bottom: 0.0001%">
+                </a>
+            </div>
+        </div>
+    }
+</div>
 
-@foreach (var name in datasets)
-{
-    int huh = name;
-    <p>@huh</p>
-}
 
 
 
@@ -16,6 +57,7 @@
 @code{
     public List<int>? datasets = new List<int>();
     private bool error = false;
+
     protected override async Task OnInitializedAsync()
     {
         var httpContext = httpContextAccessor.HttpContext ?? throw new InvalidOperationException("No HttpContext available");
@@ -31,7 +73,7 @@
         using var response = await client.SendAsync(requestMessage);
         try
         {
-            var something= await response.Content.ReadFromJsonAsync<int[]>();
+            var something = await response.Content.ReadFromJsonAsync<int[]>();
             for (int i = 0; i < something.Length; i++)
             {
                 datasets.Add(something[i]);
@@ -44,4 +86,5 @@
         }
 
     }
+
 }

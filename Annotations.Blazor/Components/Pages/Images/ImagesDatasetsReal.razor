@@ -24,12 +24,12 @@
         color: #3B3C3E;
         left: -1px;
         max-height: 100vh;
-        overflow-x:hidden;
+        overflow-x:hidden;/*this creates the scrollbar. It's appearance cannot be changed*/
         padding: 1.5%;
         scrollbar-width: auto;
         max-width: 67vw;
     }
-    .filterButton {
+    .orderingButton {/*for functionality later on*/
         border: 5px;
         cursor: pointer;
         background-color: transparent;
@@ -39,13 +39,13 @@
         margin-left: 10%;
         text-decoration: underline;
     }
-    .ordering{
+    .ordering{/*maybe used for later*/
         margin-left: 10%;
         text-decoration: underline;
         font-size: 130%;
     }
-    .textForDatasetsA{
-        padding:0; 
+    .textForDatasetsA{/*used to control the width/placement*/
+        padding:0; /*makes it so the lines are close together*/
         margin: 0; 
         width: 80%;
     }
@@ -60,12 +60,12 @@
 
     <span style="margin-left:13%; margin-top:0.0001%; padding-bottom:2%; font-weight: bold; width: 72%; font-size: 215%">Manage datasets</span>
     <div style="width:15%">
-        <button class="filterButton">Order by...</button>
+        <button class="orderingButton">Order by...</button>
     </div>
 
 </div>
 <div class = "container DivToScroll">
-    @foreach (var name in datasets)
+    @foreach (var name in datasets)//TODO: dont hardcode these values (e.g. number of images)
     {
         <div class="datasetContainers">
             <div style=" display: flex; flex-direction:row; flex-wrap: nowrap">
@@ -90,28 +90,29 @@
 
 
 @code{
-    public List<int>? datasets = new List<int>();
-    private bool error = false;
+    public List<int>? datasets = new List<int>();//it only works as a list, not an array
+    private bool error = false;//this isn't used yet
+    //TODO: error handling (what blazor pages returns)
 
     protected override async Task OnInitializedAsync()
     {
-        var httpContext = httpContextAccessor.HttpContext ?? throw new InvalidOperationException("No HttpContext available");
+        var httpContext = httpContextAccessor.HttpContext ?? throw new InvalidOperationException("No HttpContext available");//make connection
 
-        var accessToken = await httpContext.GetTokenAsync("access_token") ?? throw new InvalidOperationException("No access_token was saved");
+        var accessToken = await httpContext.GetTokenAsync("access_token") ?? throw new InvalidOperationException("No access_token was saved");//authorization
 
         var client = ClientFactory.CreateClient();
-        client.BaseAddress = new("https://localhost:7250");
+        client.BaseAddress = new("https://localhost:7250");//connect to Web API
 
-        using var requestMessage = new HttpRequestMessage(HttpMethod.Get, $"/images/datasets");
-        requestMessage.Headers.Authorization = new("Bearer", accessToken);
+        using var requestMessage = new HttpRequestMessage(HttpMethod.Get, $"/images/datasets");//access endpoint
+        requestMessage.Headers.Authorization = new("Bearer", accessToken);//bearer token for authorization
 
-        using var response = await client.SendAsync(requestMessage);
+        using var response = await client.SendAsync(requestMessage);//sending the response
         try
         {
-            var something = await response.Content.ReadFromJsonAsync<int[]>();
-            for (int i = 0; i < something.Length; i++)
+            var existingIds = await response.Content.ReadFromJsonAsync<int[]>();//int array of all the ids of all the existing datasets
+            for (int i = 0; i < existingIds.Length; i++)
             {
-                datasets.Add(something[i]);
+                datasets.Add(existingIds[i]);
             }
         }
         catch (Exception e)

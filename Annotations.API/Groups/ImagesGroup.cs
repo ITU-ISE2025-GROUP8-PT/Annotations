@@ -54,11 +54,10 @@ public static class ImagesGroup
     {
         pathBuilder.RequireAuthorization();
         
-        //This is the upload endpoint where the image first gets validated, and then gets uploaded into your local Azurite BlobStorage
-        //The image gets saved in the database as the same file type it was uploaded as
+        //This is the upload endpoint where the image first gets validated, and then gets uploaded into your local Azurite BlobStorage as a JSON file
         pathBuilder.MapPost("/upload",
             async (IFormFile image, string category, [FromServices] IAzureClientFactory<BlobServiceClient> clientFactory) =>
-            {
+            {//TODO: more paramters for the other fields in images?
 
                 ValidationResponse response = ValidateImage(image);
                 if (!response.Success)
@@ -79,7 +78,7 @@ public static class ImagesGroup
                     using (MemoryStream ms = new MemoryStream())
                     {
                         await image.OpenReadStream().CopyToAsync(ms);
-                        var thisImage = new ImageModel()
+                        var thisImage = new ImageModel()//TODO: dont do this
                         {
                             Id = counter,
                             Title = "idk",
@@ -88,8 +87,8 @@ public static class ImagesGroup
                             Category = category,
                         
                         };
-                        string jsonString = System.Text.Json.JsonSerializer.Serialize(thisImage);
-                        var byteContent = System.Text.Encoding.UTF8.GetBytes(jsonString);
+                        string jsonString = System.Text.Json.JsonSerializer.Serialize(thisImage);//objects becomes JSON string
+                        var byteContent = System.Text.Encoding.UTF8.GetBytes(jsonString);//JSON string becomes byte array
 
                         BlobClient thisImageBlobClient = containerClient.GetBlobClient($"{counter}.json");
                         counter++;
@@ -100,7 +99,8 @@ public static class ImagesGroup
                         };
 
                         // Trigger the upload function to push the data to blob
-                        await thisImageBlobClient.UploadAsync(new MemoryStream(byteContent), blobHeaders);
+                        await thisImageBlobClient.UploadAsync(new MemoryStream(byteContent), blobHeaders);//uploaded as byte array
+                        //Should it be uploaded as a string instead? So far all endpoints retrieve the JSON files as strings?
                     }
                    
                     
@@ -118,7 +118,7 @@ public static class ImagesGroup
                 var cts = new CancellationTokenSource(5000);
 
                 var blobServiceClient = clientFactory.CreateClient("Default");
-                BlobContainerClient containerClient = blobServiceClient.GetBlobContainerClient("images");
+                BlobContainerClient containerClient = blobServiceClient.GetBlobContainerClient("images");//enters images
 
                
                 BlobClient blobClient = containerClient.GetBlobClient(imageId + ".json");
@@ -162,25 +162,26 @@ public static class ImagesGroup
 
         }).DisableAntiforgery();
 
-        pathBuilder.MapGet("/filter/{category}",
+        pathBuilder.MapGet("/filter/{category}",//returns all images of a certain category
             async (string category, [FromServices] IAzureClientFactory<BlobServiceClient> clientFactory) =>
             {
                 var cts = new CancellationTokenSource(5000);
 
                 var blobServiceClient = clientFactory.CreateClient("Default");
                 BlobContainerClient containerClient = blobServiceClient.GetBlobContainerClient("images");
-                var listOfFiles = containerClient.GetBlobsAsync().AsPages();
+                var listOfFiles = containerClient.GetBlobsAsync().AsPages();//all data inside of blobContainer
               
                 HashSet<string> collection = new HashSet<string>();
                 await foreach (Page<BlobItem> blobPage in listOfFiles)
                 {
-                    foreach (BlobItem blobItem in blobPage.Values)
+                    foreach (BlobItem blobItem in blobPage.Values)//every image found
                     {
+                        //goes through all images and check for the category
                         var BlobClient = containerClient.GetBlobClient(blobItem.Name);
                         using var memoryStream = new MemoryStream();
                         await BlobClient.DownloadToAsync(memoryStream);
-                        var jsonString = System.Text.Encoding.UTF8.GetString(memoryStream.ToArray());
-                        var imageObject = System.Text.Json.JsonSerializer.Deserialize<ImageModel>(jsonString);
+                        var jsonString = System.Text.Encoding.UTF8.GetString(memoryStream.ToArray());//JSON file as string
+                        var imageObject = System.Text.Json.JsonSerializer.Deserialize<ImageModel>(jsonString);//deserialize so it becomes imageModel
                         if (imageObject.Category == category)
                         {
                             collection.Add(jsonString);
@@ -192,9 +193,10 @@ public static class ImagesGroup
                 if (collection.Count() == 0)
                 {
                     Console.WriteLine("No pictures have this category");
+                    //TODO return proper error code
                     //return Results.StatusCode(404);
                 }
-                return collection.ToArray();
+                return collection.ToArray();//returns array of the JSON files as strings
 
 
                
@@ -203,12 +205,12 @@ public static class ImagesGroup
 
             }).DisableAntiforgery();
         
-        pathBuilder.MapGet("/datasets", async (AnnotationsDbContext context) =>
+        pathBuilder.MapGet("/datasets", async (AnnotationsDbContext context) =>//returns all existing datasets
             {
                 var cts = new CancellationTokenSource(5000);
 
                 var datasets = await context.Datasets
-                    .Select(u => new DatasetModel()
+                    .Select(u => new DatasetModel()//is this too much?
                     {
                         Id = u.Id,
                         ImageIds = u.ImageIds,
@@ -219,18 +221,20 @@ public static class ImagesGroup
                     .ToListAsync();
                 int[] names = new int[datasets.Count];
                 int counter = 0;
-                foreach (DatasetModel dataset in datasets)
+                foreach (DatasetModel dataset in datasets)//better way of doing this
                 {
                     names[counter] = dataset.Id;
                     counter++;
                 }
 
-                return names;
+                return names;//array of all ids of datasets
 
 
             }).DisableAntiforgery();
+        
         pathBuilder.MapGet("/datasets/{dataset}", async (string dataset, AnnotationsDbContext context, [FromServices] IAzureClientFactory<BlobServiceClient> clientFactory) =>
-        {
+        {//access images of specific dataset
+            //TODO: almost identical code as "/filter/{category}" - remove the code duplication
             var cts = new CancellationTokenSource(5000);
 
             IQueryable<DatasetModel> datasets = Queryable.Where(context.Datasets, d => d.Id == Int32.Parse(dataset))
@@ -242,12 +246,12 @@ public static class ImagesGroup
                     AnnotatedBy= u.AnnotatedBy,
                     ReviewedBy = u.ReviewedBy
                 })
-                .Take(1);
+                .Take(1);//there is only one dataset with a certain Id, so no point of taking more
             HashSet<string> collection = new HashSet<string>();
             var blobServiceClient = clientFactory.CreateClient("Default");
             BlobContainerClient containerClient = blobServiceClient.GetBlobContainerClient("images");
-            foreach (DatasetModel datasetModel in datasets)
-            {
+            foreach (DatasetModel datasetModel in datasets)//guaranteed to only be one dataset in "datasets", so this is not linear time. 
+            {//there is a better way of doing this
                 foreach (int ids in datasetModel.ImageIds)
                 {
                     BlobClient blobClient = containerClient.GetBlobClient(ids + ".json");
@@ -266,7 +270,7 @@ public static class ImagesGroup
                     }
                 }
             }
-            return collection.ToArray();
+            return collection.ToArray();//returns array of all images as JSON strings
             
 
         }).DisableAntiforgery();        

@@ -7,7 +7,7 @@
 @inject IHttpContextAccessor httpContextAccessor
 
 <style>
-    .displayImages {
+    .displayImages {/*images are a third - three images per line*/
         width: 33%;
         padding: 1%;
 
@@ -25,11 +25,11 @@
         color: #3B3C3E;
         left: -1px;
         max-height: 100vh;
-        overflow-x:hidden;
+        overflow-x:hidden;/*this creates the scrollbar. It's appearance cannot be changed*/
         padding: 1.5%;
         scrollbar-width: auto;
     }
-    .filterButton {
+    .filterButton {/*for functionality later on*/
         text-align: right; 
         width: 10%;
         border: 5px;
@@ -44,15 +44,15 @@
 </style>
 
 
-@if (images==null)
+@if (images==null)//TODO: better error handling
 {
     <p><em>No images found</em></p>
 }
 else
 {
-    <div style=" display: flex; flex-direction:row;">
+    <div style=" display: flex; flex-direction:row;"><!--To make both lines on the same row -->
         
-        <span style="padding:2%; font-weight: bold; width: 90%; font-size: 215%">Dataset @dataset.ToString()</span>
+        <span style="padding:2%; font-weight: bold; width: 90%; font-size: 215%">Dataset @dataset</span>
         <button class="filterButton">Filter by...</button>
         
     </div>
@@ -63,7 +63,7 @@ else
     <div class="container DivToScroll" >
         @for (int i = 0; i < images.Length; i++)
         {
-            <img class = "displayImages" src="data:image;base64, @images[i]" alt="@altText[i]" />   
+            <img class = "displayImages" src="data:image;base64, @images[i]" alt="@altText[i]" /><!--src is a URL - it's converted from a string of the byte array--> 
         }
     </div>
     
@@ -73,37 +73,38 @@ else
 
 }
 @code{
-    [Parameter] public string dataset { get; set; }
-    private string[]? images;
+    //TODO: code duplication from Image.Filter.razor
+    [Parameter] public string dataset { get; set; }//get access to parameter from URL/get request
+    private string[]? images;//all byte arrays as strings
     private string[]? altText;
 
     protected override async Task OnInitializedAsync()
     {
-        var httpContext = httpContextAccessor.HttpContext ?? throw new InvalidOperationException("No HttpContext available");
+        var httpContext = httpContextAccessor.HttpContext ?? throw new InvalidOperationException("No HttpContext available");//make connection
 
-        var accessToken = await httpContext.GetTokenAsync("access_token") ?? throw new InvalidOperationException("No access_token was saved");
+        var accessToken = await httpContext.GetTokenAsync("access_token") ?? throw new InvalidOperationException("No access_token was saved");//authorization
 
         var client = ClientFactory.CreateClient();
-        client.BaseAddress = new("https://localhost:7250");
+        client.BaseAddress = new("https://localhost:7250");//connect to Web API
 
-        using var requestMessage = new HttpRequestMessage(HttpMethod.Get, $"/images/datasets/{dataset}");
-        requestMessage.Headers.Authorization = new("Bearer", accessToken);
+        using var requestMessage = new HttpRequestMessage(HttpMethod.Get, $"/images/datasets/{dataset}");//access endpoint
+        requestMessage.Headers.Authorization = new("Bearer", accessToken);//bearer token for authorization
 
-        using var response = await client.SendAsync(requestMessage);
+        using var response = await client.SendAsync(requestMessage);//sending the response
         try
         {
-            string[] answer = await response.Content.ReadFromJsonAsync<string[]>();
+            string[] answer = await response.Content.ReadFromJsonAsync<string[]>();//string array of JSON files of the images as strings
             images = new string[answer.Length];
             altText = new string[answer.Length];
             for (int i = 0; i < answer.Length; i++)
             {
-                var imageObject = System.Text.Json.JsonSerializer.Deserialize<ImageModel>(answer[i]);
+                var imageObject = System.Text.Json.JsonSerializer.Deserialize<ImageModel>(answer[i]);//JSON file becomes imageModel object
                 var imageData = imageObject.ImageData;
-                images[i] = System.Convert.ToBase64String(imageData);
+                images[i] = System.Convert.ToBase64String(imageData);//byte array to string
                 altText[i] = imageObject.Description;
             }
         }
-        catch (Exception e)
+        catch (Exception e)//if nothing is retrieved - prints out error
         {
             Console.WriteLine("Status code: " + response.StatusCode);
             images = new string[1];

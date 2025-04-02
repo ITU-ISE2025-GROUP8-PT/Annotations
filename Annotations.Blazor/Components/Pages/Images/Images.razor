@@ -11,44 +11,44 @@
 }
 else
 {
-    <img src="data:image;base64, @image" alt="@altText" />
+    <img src="data:image;base64, @image" alt="@altText" /><!--src is a URL - it's converted from a string of the byte array--> 
 
 }
 @code{
 
-    private string? image;
-    private bool error = false;
+    private string? image;//byte array as string
+    private bool error = false;//used to determine if there was an error - blazor page displays something different if that was the case
     private string? altText;
 
-    [Parameter] public string imageId { get; set; }
+    [Parameter] public string imageId { get; set; }//get access to parameter from URL/get request
 
     protected override async Task OnInitializedAsync()
     {
-        var httpContext = httpContextAccessor.HttpContext ?? throw new InvalidOperationException("No HttpContext available");
+        var httpContext = httpContextAccessor.HttpContext ?? throw new InvalidOperationException("No HttpContext available");//make connection
 
-        var accessToken = await httpContext.GetTokenAsync("access_token") ?? throw new InvalidOperationException("No access_token was saved");
+        var accessToken = await httpContext.GetTokenAsync("access_token") ?? throw new InvalidOperationException("No access_token was saved");//authorization
 
         var client = ClientFactory.CreateClient();
-        client.BaseAddress = new("https://localhost:7250");
+        client.BaseAddress = new("https://localhost:7250");//connect to Web API
 
-        using var requestMessage = new HttpRequestMessage(HttpMethod.Get, $"/images/{imageId}");
-        requestMessage.Headers.Authorization = new("Bearer", accessToken);
+        using var requestMessage = new HttpRequestMessage(HttpMethod.Get, $"/images/{imageId}");//access endpoint
+        requestMessage.Headers.Authorization = new("Bearer", accessToken);//bearer token for authorization
 
-        using var response = await client.SendAsync(requestMessage);
+        using var response = await client.SendAsync(requestMessage);//sending the response
         try
         {
-            var jsonString = await response.Content.ReadAsStringAsync();
+            var jsonString = await response.Content.ReadAsStringAsync();//string of JSON file of the image as a string
 
-            var imageObject = System.Text.Json.JsonSerializer.Deserialize<ImageModel>(jsonString);
+            var imageObject = System.Text.Json.JsonSerializer.Deserialize<ImageModel>(jsonString);//JSON file becomes imageModel object
             var imageData = imageObject.ImageData;
             altText = imageObject.Description;
-            image = System.Convert.ToBase64String(imageData);
+            image = System.Convert.ToBase64String(imageData);//byte array to string
         }
         catch (Exception e)
         {
             Console.WriteLine("Status code: " + response.StatusCode);
             image = response.StatusCode.ToString();
-            error = true;
+            error = true;//there has been an error
         }
 
     }

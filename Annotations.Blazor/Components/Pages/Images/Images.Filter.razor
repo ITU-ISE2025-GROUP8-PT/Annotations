@@ -8,34 +8,34 @@
 
 <style>
     .displayImages {
-        width: 100%;
-        padding: 5%;
+        width: 33%;
+        padding: 1%;
 
     }
     .container {
-        display:  grid;
-        grid-template-columns: auto auto auto;
-        padding: 20px;
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+    
+    }
+    .DivToScroll{
+        background-color: #F5F5F5;
+        border: 1px solid #DDDDDD;
+        border-radius: 4px 0 4px 0;
+        color: #3B3C3E;
+        font-size: 12px;
+        font-weight: bold;
+        left: -1px;
+        padding: 10px 7px 5px;
 
     }
-    /* width */
-    ::-webkit-scrollbar {
-        width: 10px;
-    }
 
-    /* Track */
-    ::-webkit-scrollbar-track {
-        background: #f1f1f1;
-    }
-
-    /* Handle */
-    ::-webkit-scrollbar-thumb {
-        background: #888;
-    }
-
-    /* Handle on hover */
-    ::-webkit-scrollbar-thumb:hover {
-        background: #555;
+    .DivWithScroll{
+        overflow:scroll;
+        overflow-x:hidden;
+        left:  0rem;
+        right: 0rem;
+        top:  0rem;
     }
 </style>
 @if (images==null)
@@ -44,14 +44,18 @@
 }
 else
 {
-        <div class="container">
+    <div class="DivWithScroll">
+        
+        <div class="container DivToScroll" >
             @foreach (var word in images)
             {
                 <img class = "displayImages" src="data:image;base64, @word" />   
             }
         </div>
-    
-    
+    </div>
+
+
+
 }
 @code{
     [Parameter]

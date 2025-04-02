@@ -1,11 +1,13 @@
-﻿namespace Annotations.Core.Models;
+﻿using System.Collections;
+
+namespace Annotations.Core.Models;
 
 public class DatasetModel
 {
   
     public required int Id { get; set; }
 
-    public required int[] ImageIds{ get; set; }
+    public required List<int> ImageIds{ get; set; }
    
     public required string Category { get; set; }
    

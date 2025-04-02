@@ -23,19 +23,24 @@
         border: 1px solid #DDDDDD;
         border-radius: 4px 0 4px 0;
         color: #3B3C3E;
-        font-size: 12px;
-        font-weight: bold;
         left: -1px;
-        padding: 10px 7px 5px;
-
-    }
-
-    .DivWithScroll{
-        overflow:scroll;
-        overflow-x:hidden;
         max-height: 100vh;
+        overflow-x:hidden;
         padding: 1.5%;
+        scrollbar-width: auto;
     }
+    .filterButton {
+        text-align: right; 
+        width: 10%;
+        border: 5px;
+        cursor: pointer;
+        background-color: transparent;
+        font-size: 110%;
+        margin-right: 3%;
+        text-decoration: underline;
+    }
+
+  
 </style>
 @if (images==null)
 {
@@ -43,8 +48,15 @@
 }
 else
 {
-    <h2 style="padding:2%; font-weight: bold" >Dataset name</h2>
-    <div class="DivWithScroll">
+    <div style=" display: flex; flex-direction:row;">
+        
+            <span style="padding:2%; font-weight: bold; width: 90%; font-size: 215%">Dataset name</span>
+            <input type="button" class="filterButton" value="Filter by...">
+
+    </div>
+
+    
+   
         
         <div class="container DivToScroll" >
             @foreach (var word in images)
@@ -52,7 +64,7 @@ else
                 <img class = "displayImages" src="data:image;base64, @word" />   
             }
         </div>
-    </div>
+   
 
 
 

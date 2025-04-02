@@ -197,23 +197,37 @@ public static class ImagesGroup
                 return collection.ToArray();
 
 
-                /*BlobClient blobClient = containerClient.GetBlobClient(imageId + ".json");
-                if (!blobClient.Exists(cts.Token).ToString()
-                        .Contains("404")) //checks if the blobClient is empty/couldn't find the image of that format
-                {
-                    using var memoryStream = new MemoryStream();
-                    await blobClient.DownloadToAsync(memoryStream);
-                    return Results.File(memoryStream.ToArray(),
-                        "application/json"); //because it is a return statement the for-loop will not continue after finding the image
-                }
-                Console.WriteLine("Cannot retrieve image because it doesn't exist");
-                return Results.StatusCode(404);*/
+               
 
 
 
             }).DisableAntiforgery();
         
-        
+        pathBuilder.MapGet("/datasets", async (AnnotationsDbContext context) =>
+            {
+              
+                var datasets = await context.Datasets
+                    .Select(u => new Dataset()
+                    {
+                        Id = u.Id,
+                        ImageIds = u.ImageIds,
+                        Category = u.Category,
+                        AnnotatedBy= u.AnnotatedBy,
+                        ReviewedBy = u.ReviewedBy
+                    })
+                    .ToListAsync();
+                string[] names = new string[datasets.Count];
+                int counter = 0;
+                foreach (Dataset dataset in datasets)
+                {
+                    names[counter] = dataset.Id.ToString();
+                    counter++;
+                }
+
+                return names;
+
+
+            }).DisableAntiforgery();
         
         pathBuilder.MapGet("/exception",
             () =>

@@ -141,7 +141,14 @@ void InitializeTempDatabase()
         Category = "category"
         // ImageData = await GetImageDataAsync("Perfusiontech_sampleimage.png"); <-- Eller hvad den nu kommer til at hedde når den smides op
     });
-
+    context.Add(new Dataset
+    {
+        Id = 1,
+        ImageIds = new List<int>() { 0, 1, 2 },
+        Category = "category",
+        AnnotatedBy = 1,
+        ReviewedBy = 1
+    });
     context.SaveChanges();
 }
 

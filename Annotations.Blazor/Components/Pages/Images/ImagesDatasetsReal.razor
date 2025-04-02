@@ -27,19 +27,54 @@
         overflow-x:hidden;
         padding: 1.5%;
         scrollbar-width: auto;
+        max-width: 67vw;
     }
+    .filterButton {
+        border: 5px;
+        cursor: pointer;
+        background-color: transparent;
+        font-size: 130%;
+        text-align: center;
+        margin-top:20%;
+        margin-left: 10%;
+        text-decoration: underline;
+    }
+    .ordering{
+        margin-left: 10%;
+        text-decoration: underline;
+        font-size: 130%;
+    }
+    .textForDatasetsA{
+        padding:0; 
+        margin: 0; 
+        width: 80%;
+    }
+    .textForDatasetsB {
+        padding:0; 
+        margin: 0; 
+        width: 21%
+    }
+
 </style>
+<div style=" display: flex; flex-direction:row;">
+
+    <span style="margin-left:13%; margin-top:0.0001%; padding-bottom:2%; font-weight: bold; width: 72%; font-size: 215%">Manage datasets</span>
+    <div style="width:15%">
+        <button class="filterButton">Order by...</button>
+    </div>
+
+</div>
 <div class = "container DivToScroll">
     @foreach (var name in datasets)
     {
         <div class="datasetContainers">
             <div style=" display: flex; flex-direction:row; flex-wrap: nowrap">
-                <span style="padding:0; margin: 0; font-weight: bold; width: 90%;">Dataset @name</span>
-                <span style="padding:0; margin: 0; width: 18%">Annotated by: 1 person</span>
+                <span class = "textForDatasetsA" style="font-weight: bold">Dataset @name</span>
+                <span class = "textForDatasetsB">Annotated by: 1 person</span>
             </div>
             <div style=" display: flex; flex-direction:row; flex-wrap: nowrap">
-                <span style="padding:0; margin: 0;  width: 90%">Number of images: 3</span>
-                <span style="padding:0; margin: 0; width: 18%">Reviewed by: 1 person</span>
+                <span class = "textForDatasetsA">Number of images: 3</span>
+                <span class = "textForDatasetsB">Reviewed by: 1 person</span>
             </div>
             <div style=" display: flex; flex-direction:row; flex-wrap: nowrap">
                 <span style="padding:0; margin: 0;  width: 95.5%;">Category: "hello"</span>

@@ -205,9 +205,10 @@ public static class ImagesGroup
         
         pathBuilder.MapGet("/datasets", async (AnnotationsDbContext context) =>
             {
-              
+                var cts = new CancellationTokenSource(5000);
+
                 var datasets = await context.Datasets
-                    .Select(u => new Dataset()
+                    .Select(u => new DatasetModel()
                     {
                         Id = u.Id,
                         ImageIds = u.ImageIds,
@@ -216,11 +217,11 @@ public static class ImagesGroup
                         ReviewedBy = u.ReviewedBy
                     })
                     .ToListAsync();
-                string[] names = new string[datasets.Count];
+                int[] names = new int[datasets.Count];
                 int counter = 0;
-                foreach (Dataset dataset in datasets)
+                foreach (DatasetModel dataset in datasets)
                 {
-                    names[counter] = dataset.Id.ToString();
+                    names[counter] = dataset.Id;
                     counter++;
                 }
 

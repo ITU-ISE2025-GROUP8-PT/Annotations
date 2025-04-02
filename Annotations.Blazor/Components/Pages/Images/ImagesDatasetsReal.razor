@@ -1,22 +1,20 @@
 ﻿@page "/images/datasets"
-@using global::Annotations.Core.Models
+@using Microsoft.AspNetCore.Authentication
 
 @inject IHttpClientFactory ClientFactory
 @inject IHttpContextAccessor httpContextAccessor
-@using Microsoft.AspNetCore.Authentication
 
-
-
-@foreach (var dataset in datasets)
+@foreach (var name in datasets)
 {
-    <p>@dataset</p>
+    int huh = name;
+    <p>@huh</p>
 }
 
 
 
 
-@code {
-    private string[]? datasets;
+@code{
+    public List<int>? datasets = new List<int>();
     private bool error = false;
     protected override async Task OnInitializedAsync()
     {
@@ -33,9 +31,11 @@
         using var response = await client.SendAsync(requestMessage);
         try
         {
-            datasets= await response.Content.ReadFromJsonAsync<string[]>();
-            Console.WriteLine(datasets==null);
-            
+            var something= await response.Content.ReadFromJsonAsync<int[]>();
+            for (int i = 0; i < something.Length; i++)
+            {
+                datasets.Add(something[i]);
+            }
         }
         catch (Exception e)
         {

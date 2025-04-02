@@ -180,8 +180,8 @@ public static class ImagesGroup
                         using var memoryStream = new MemoryStream();
                         await BlobClient.DownloadToAsync(memoryStream);
                         var jsonString = System.Text.Encoding.UTF8.GetString(memoryStream.ToArray());
-                        var personObject = System.Text.Json.JsonSerializer.Deserialize<ImageModel>(jsonString);
-                        if (personObject.Category == category)
+                        var imageObject = System.Text.Json.JsonSerializer.Deserialize<ImageModel>(jsonString);
+                        if (imageObject.Category == category)
                         {
                             collection.Add(jsonString);
                         }

@@ -1,9 +1,7 @@
-@using MatBlazor
 @using Microsoft.AspNetCore.Authentication
 @page "/images/{imageId}"
 @using global::Annotations.Core.Models
-@using Microsoft.AspNetCore.Authentication
-@using SQLitePCL
+
 @inject IHttpClientFactory ClientFactory
 @inject IHttpContextAccessor httpContextAccessor
 
@@ -41,8 +39,8 @@ else
         {
             var jsonString = await response.Content.ReadAsStringAsync();
 
-            var personObject = System.Text.Json.JsonSerializer.Deserialize<ImageModel>(jsonString);
-            var imageData = personObject.ImageData;
+            var imageObject = System.Text.Json.JsonSerializer.Deserialize<ImageModel>(jsonString);
+            var imageData = imageObject.ImageData;
             image = System.Convert.ToBase64String(imageData);
         }
         catch (Exception e)

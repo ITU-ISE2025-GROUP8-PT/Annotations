@@ -42,6 +42,8 @@
 
   
 </style>
+
+
 @if (images==null)
 {
     <p><em>No images found</em></p>
@@ -50,20 +52,21 @@ else
 {
     <div style=" display: flex; flex-direction:row;">
         
-            <span style="padding:2%; font-weight: bold; width: 90%; font-size: 215%">Dataset name</span>
-            <input type="button" class="filterButton" value="Filter by...">
-
+        <span style="padding:2%; font-weight: bold; width: 90%; font-size: 215%">Dataset name</span>
+        <button class="filterButton">Filter by...</button>
+        
     </div>
 
     
    
         
-        <div class="container DivToScroll" >
-            @foreach (var word in images)
-            {
-                <img class = "displayImages" src="data:image;base64, @word" />   
-            }
-        </div>
+    <div class="container DivToScroll" >
+        @foreach (var word in images)
+        {
+            <img class = "displayImages" src="data:image;base64, @word" />   
+        }
+    </div>
+    
    
 
 

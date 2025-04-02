@@ -6,18 +6,33 @@
 @inject IHttpClientFactory ClientFactory
 @inject IHttpContextAccessor httpContextAccessor
 
+<style>
+    img {
+        width: 100%;
+        padding: 5%;
 
+    }
+    .container {
+        display:  grid;
+        grid-template-columns: auto auto auto;
+        padding: 20px;
+
+    }
+</style>
 @if (images==null)
 {
     <p><em>No images found</em></p>
 }
 else
 {
-    foreach (string word in images)
-    {
-        <img src="data:image;base64, @word" />
-
-    }
+        <div class="container">
+            @foreach (var word in images)
+            {
+                <img src="data:image;base64, @word" />   
+            }
+        </div>
+    
+    
 }
 @code{
     [Parameter]

@@ -61,9 +61,9 @@ else
    
         
     <div class="container DivToScroll" >
-        @foreach (var word in images)
+        @for (int i = 0; i < images.Length; i++)
         {
-            <img class = "displayImages" src="data:image;base64, @word" />   
+            <img class = "displayImages" src="data:image;base64, @images[i]" alt="@altText[i]" />   
         }
     </div>
     
@@ -75,6 +75,7 @@ else
 @code{
     [Parameter] public string dataset { get; set; }
     private string[]? images;
+    private string[]? altText;
 
     protected override async Task OnInitializedAsync()
     {
@@ -93,11 +94,13 @@ else
         {
             string[] answer = await response.Content.ReadFromJsonAsync<string[]>();
             images = new string[answer.Length];
+            altText = new string[answer.Length];
             for (int i = 0; i < answer.Length; i++)
             {
-                var personObject = System.Text.Json.JsonSerializer.Deserialize<ImageModel>(answer[i]);
-                var imageData = personObject.ImageData;
+                var imageObject = System.Text.Json.JsonSerializer.Deserialize<ImageModel>(answer[i]);
+                var imageData = imageObject.ImageData;
                 images[i] = System.Convert.ToBase64String(imageData);
+                altText[i] = imageObject.Description;
             }
         }
         catch (Exception e)

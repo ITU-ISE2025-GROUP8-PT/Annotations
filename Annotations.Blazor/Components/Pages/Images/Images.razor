@@ -11,13 +11,14 @@
 }
 else
 {
-    <img src="data:image;base64, @image" />
+    <img src="data:image;base64, @image" alt="@altText" />
 
 }
 @code{
 
     private string? image;
     private bool error = false;
+    private string? altText;
 
     [Parameter] public string imageId { get; set; }
 
@@ -40,6 +41,7 @@ else
 
             var imageObject = System.Text.Json.JsonSerializer.Deserialize<ImageModel>(jsonString);
             var imageData = imageObject.ImageData;
+            altText = imageObject.Description;
             image = System.Convert.ToBase64String(imageData);
         }
         catch (Exception e)

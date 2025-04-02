@@ -34,6 +34,7 @@
         overflow:scroll;
         overflow-x:hidden;
         max-height: 100vh;
+        padding: 1.5%;
     }
 </style>
 @if (images==null)
@@ -42,6 +43,7 @@
 }
 else
 {
+    <h2 style="padding:2%; font-weight: bold" >Dataset name</h2>
     <div class="DivWithScroll">
         
         <div class="container DivToScroll" >
@@ -56,8 +58,7 @@ else
 
 }
 @code{
-    [Parameter]
-    public string category { get; set; }
+    [Parameter] public string category { get; set; }
     private string[]? images;
 
     protected override async Task OnInitializedAsync()

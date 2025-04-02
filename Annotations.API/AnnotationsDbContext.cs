@@ -10,6 +10,7 @@ public class AnnotationsDbContext : IdentityDbContext<User>
     public DbSet<Admin> Admins { get; set; }
     public DbSet<MedicalProfessional> MedicalProfessionals { get; set; }
     public DbSet<Image> Images { get; set; }
+    public DbSet<Dataset> Datasets { get; set; }
 
     public AnnotationsDbContext(DbContextOptions<AnnotationsDbContext> options) : base(options)
     {
@@ -17,5 +18,6 @@ public class AnnotationsDbContext : IdentityDbContext<User>
         Admins = Set<Admin>();
         MedicalProfessionals = Set<MedicalProfessional>();
         Images = Set<Image>();
+        Datasets = Set<Dataset>();
     }
 }

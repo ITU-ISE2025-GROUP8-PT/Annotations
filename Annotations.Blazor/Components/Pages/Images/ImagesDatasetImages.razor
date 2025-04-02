@@ -1,0 +1,112 @@
+﻿@page "/images/datasets/{dataset}"
+@using MatBlazor
+@using Microsoft.AspNetCore.Authentication
+@using global::Annotations.Core.Models
+@using Microsoft.AspNetCore.Authentication
+@inject IHttpClientFactory ClientFactory
+@inject IHttpContextAccessor httpContextAccessor
+
+<style>
+    .displayImages {
+        width: 33%;
+        padding: 1%;
+
+    }
+    .container {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+    
+    }
+    .DivToScroll{
+        background-color: #F5F5F5;
+        border: 1px solid #DDDDDD;
+        border-radius: 4px 0 4px 0;
+        color: #3B3C3E;
+        left: -1px;
+        max-height: 100vh;
+        overflow-x:hidden;
+        padding: 1.5%;
+        scrollbar-width: auto;
+    }
+    .filterButton {
+        text-align: right; 
+        width: 10%;
+        border: 5px;
+        cursor: pointer;
+        background-color: transparent;
+        font-size: 110%;
+        margin-right: 3%;
+        text-decoration: underline;
+    }
+
+  
+</style>
+
+
+@if (images==null)
+{
+    <p><em>No images found</em></p>
+}
+else
+{
+    <div style=" display: flex; flex-direction:row;">
+        
+        <span style="padding:2%; font-weight: bold; width: 90%; font-size: 215%">Dataset @dataset.ToString()</span>
+        <button class="filterButton">Filter by...</button>
+        
+    </div>
+
+    
+   
+        
+    <div class="container DivToScroll" >
+        @foreach (var word in images)
+        {
+            <img class = "displayImages" src="data:image;base64, @word" />   
+        }
+    </div>
+    
+   
+
+
+
+}
+@code{
+    [Parameter] public string dataset { get; set; }
+    private string[]? images;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var httpContext = httpContextAccessor.HttpContext ?? throw new InvalidOperationException("No HttpContext available");
+
+        var accessToken = await httpContext.GetTokenAsync("access_token") ?? throw new InvalidOperationException("No access_token was saved");
+
+        var client = ClientFactory.CreateClient();
+        client.BaseAddress = new("https://localhost:7250");
+
+        using var requestMessage = new HttpRequestMessage(HttpMethod.Get, $"/images/datasets/{dataset}");
+        requestMessage.Headers.Authorization = new("Bearer", accessToken);
+
+        using var response = await client.SendAsync(requestMessage);
+        try
+        {
+            string[] answer = await response.Content.ReadFromJsonAsync<string[]>();
+            images = new string[answer.Length];
+            for (int i = 0; i < answer.Length; i++)
+            {
+                var personObject = System.Text.Json.JsonSerializer.Deserialize<ImageModel>(answer[i]);
+                var imageData = personObject.ImageData;
+                images[i] = System.Convert.ToBase64String(imageData);
+            }
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine("Status code: " + response.StatusCode);
+            images = new string[1];
+            images[0] = response.StatusCode.ToString();
+        }
+
+    }
+
+}

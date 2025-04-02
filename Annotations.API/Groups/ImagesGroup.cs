@@ -229,7 +229,47 @@ public static class ImagesGroup
 
 
             }).DisableAntiforgery();
-        
+        pathBuilder.MapGet("/datasets/{dataset}", async (string dataset, AnnotationsDbContext context, [FromServices] IAzureClientFactory<BlobServiceClient> clientFactory) =>
+        {
+            var cts = new CancellationTokenSource(5000);
+
+            IQueryable<DatasetModel> datasets = Queryable.Where(context.Datasets, d => d.Id == Int32.Parse(dataset))
+                .Select(u => new DatasetModel()
+                {
+                    Id = u.Id,
+                    ImageIds = u.ImageIds,
+                    Category = u.Category,
+                    AnnotatedBy= u.AnnotatedBy,
+                    ReviewedBy = u.ReviewedBy
+                })
+                .Take(1);
+            HashSet<string> collection = new HashSet<string>();
+            var blobServiceClient = clientFactory.CreateClient("Default");
+            BlobContainerClient containerClient = blobServiceClient.GetBlobContainerClient("images");
+            foreach (DatasetModel datasetModel in datasets)
+            {
+                foreach (int ids in datasetModel.ImageIds)
+                {
+                    BlobClient blobClient = containerClient.GetBlobClient(ids + ".json");
+                    if (!blobClient.Exists(cts.Token).ToString()
+                            .Contains("404")) //checks if the blobClient is empty/couldn't find the image of that format
+                    {
+                        using var memoryStream = new MemoryStream();
+                        await blobClient.DownloadToAsync(memoryStream);
+                        var jsonString = System.Text.Encoding.UTF8.GetString(memoryStream.ToArray());
+                        collection.Add(jsonString);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Cannot retrieve image because it doesn't exist");
+                        break;
+                    }
+                }
+            }
+            return collection.ToArray();
+            
+
+        }).DisableAntiforgery();        
         pathBuilder.MapGet("/exception",
             () =>
             {

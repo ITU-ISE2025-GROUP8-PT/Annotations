@@ -1,1 +1,201 @@
-@page "/images/{imageid}/annotations"
+@* @page "/images/{imageid}/annotations" *@
+@rendermode InteractiveServer
+@page "/images/annotations"
+@implements IDisposable
+@inject NavigationManager Navigation
+
+<PageTitle>Annotations</PageTitle>
+
+<MatThemeProvider Theme="@theme">
+    <div class="mat-layout-grid">
+        <div class="mat-layout-grid-inner">
+            <div class="mat-layout-grid-cell mat-layout-grid-cell-span-2">
+                <div style="display: flex; align-items: center; gap: 20px;">
+                    <img src="img/billede1.png" alt="Profile Picture" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover;">
+                    <div>
+                        <b style="margin: 0;">Jane Doe</b>
+                        <br/>
+                        <small style="margin: 0;">Surgeon</small>
+                    </div>
+                </div>
+                <div style="margin-top: 50px">
+                    <MatCheckbox @bind-Value="@arteriesMarked">Arteries marked</MatCheckbox>
+                </div>
+                <div>
+                    <MatCheckbox @bind-Value="@veinsMarked">Veins marked</MatCheckbox>
+                </div>
+                <div>
+                    <MatCheckbox @bind-Value="@flowDirectionSet">Flow direction set</MatCheckbox>
+                </div>
+                <div>
+                    <MatCheckbox @bind-Value="@videoReviewed">Video reviewed</MatCheckbox>
+                </div>
+            </div>
+            <div class="mat-layout-grid-cell mat-layout-grid-cell-span-10">
+                <div class="mat-layout-grid-inner">
+                    <div class="mat-layout-grid-cell mat-layout-grid-cell-span-3">
+                        <div style="display: flex; justify-content: flex-start; gap: 8px;">
+                            <MatTabGroup>
+                                <MatTab Label="Vessels">
+                                    <div style="padding: 16px;">
+                                        <b>Blood Vessel Identification</b>
+                                    </div>
+                                </MatTab>
+                                <MatTab Label="Flow">
+                                    <div style="padding: 16px;">
+                                        <b>Blood Flow Identification</b>
+                                    </div>
+                                </MatTab>
+                                <MatTab Label="Organs">
+                                    <div style="padding: 16px;">
+                                        <b>Organ Identification</b>
+                                    </div>
+                                </MatTab>
+                            </MatTabGroup>
+                        </div>
+                    </div>
+                    <div class="mat-layout-grid-cell mat-layout-grid-cell-span-9 mat-layout-grid-align-right" style="display: flex; margin-left: auto; gap: 8px;">
+                        <div style="display: flex; justify-content: flex-end; gap: 8px;">
+                            <MatButton>Skip</MatButton>
+                            <MatButton Style=" color: white; background: #101e2d">Complete</MatButton>
+                        </div>
+                    </div>    
+                </div>
+                <!-- @ref imageContainer captures the DOM element for position calculations, when annotating --->
+                <div style="position: relative;" @ref="imageContainer">
+                    <img src="img/Skærmbillede%202025-03-27%20kl.%2014.05.56.png" alt = "Annotation Image"
+                         @onclick="HandleImageClick"
+                         style="width: 1000px; height: 600px;" />
+
+                    @if (showTextField)
+                    {
+                        <div style="position: absolute; left: @($"{currentAnnotation.X}px"); top: @($"{currentAnnotation.Y}px")">
+                            <p>
+                                <!-- the position is auto focused on click position. Bound to currentAnnotation object --->
+                                <MatTextField @bind-Value="currentAnnotation.Text"
+                                              Label="Annotation"
+                                              FullWidth="true"
+                                              Immediate="true"
+                                              @ref="textFieldRef"
+                                              Id="annotationTextField"
+                                              Style="background: white">
+                                </MatTextField>
+                            </p>
+                            <p>
+                                <MatSelectItem @bind-Value="@currentAnnotation.Type" Label="Type" Items="@currentAnnotation.Types"></MatSelectItem>
+                            </p>
+                            <div>
+                                <MatButton OnClick="SaveAnnotation" Style="color: white; background: #101e2d">Save</MatButton>
+                                <MatButton OnClick="CancelAnnotation" Style="color: white; background: #101e2d">Cancel</MatButton>
+                            </div>
+                        </div>
+                    }
+                    @foreach (var ann in savedAnnotations)
+                    {
+                        <div style="position: absolute; left: @($"{ann.X}px"); top: @($"{ann.Y}px")">
+                            <p style="color: white; font-size: xx-small">
+                                @ann.Text
+                            </p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</MatThemeProvider>
+
+
+@code {
+    private string? currentUrl;
+    private bool arteriesMarked;
+    private bool veinsMarked;
+    private bool flowDirectionSet;
+    private bool videoReviewed;
+    
+    MatTheme theme = new MatTheme()
+    {
+        Primary = MatThemeColors.Green._800.Value
+    };
+    
+    protected override void OnInitialized()
+    {
+        currentUrl = Navigation.Uri;
+        Navigation.LocationChanged += OnLocationChanged;
+    }
+
+    private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
+    {
+        currentUrl = Navigation.Uri;
+        StateHasChanged();
+    }
+
+    public void Dispose() => Navigation.LocationChanged -= OnLocationChanged;
+    
+    private class Annotation
+    {
+        public int X { get; set; }
+        public int Y { get; set; }
+        public string Text { get; set; } = "";
+        public string[] Types = new[]
+        {
+            "Artery",
+            "Vein",
+            "Flow direction"
+        };
+        public string Type { get; set; } = "";
+    }
+
+    private ElementReference imageContainer;
+    private MatTextField<string> textFieldRef;
+    private bool showTextField = false;
+    private Annotation currentAnnotation = new();
+    private List<Annotation> savedAnnotations = new();
+
+    private async Task HandleImageClick(MouseEventArgs e)
+    {
+        // Reset for new annotation
+        currentAnnotation = new Annotation();
+        
+        // Get click position relative to container
+        var rect = await JSRuntime.InvokeAsync<BoundingClientRect>(
+            "getBoundingClientRect", 
+            imageContainer
+        );
+        
+        // gets X and Y coordinates of click
+        currentAnnotation.X = (int)(e.ClientX - rect.Left);
+        currentAnnotation.Y = (int)(e.ClientY - rect.Top);
+        
+        showTextField = true;
+        StateHasChanged();
+        
+        // focuses the text field on the location of click
+        await JSRuntime.InvokeVoidAsync(
+            "eval", 
+            "document.getElementById('annotationTextField').focus()"
+        );
+    }
+
+    private void SaveAnnotation()
+    {
+        if (!string.IsNullOrWhiteSpace(currentAnnotation.Text))
+        {
+            savedAnnotations.Add(currentAnnotation);
+        }
+        showTextField = false;
+    }
+
+    private void CancelAnnotation()
+    {
+        showTextField = false;
+    }
+
+    // JS interop struct
+    private struct BoundingClientRect
+    {
+        public double Left { get; set; }
+        public double Top { get; set; }
+    }
+
+    [Inject] private IJSRuntime JSRuntime { get; set; }
+}

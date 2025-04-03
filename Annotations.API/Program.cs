@@ -143,7 +143,6 @@ void InitializeTempDatabase()
         // ImageData = await GetImageDataAsync("Perfusiontech_sampleimage.png"); <-- Eller hvad den nu kommer til at hedde når den smides op
     });
     //this is only for testing/showcasing
-    //something about having datasets in blobstorage instead of dbContext?
     
     /*
     Due to the hard-coding of database elements below, we override code from ImagesGroup
@@ -152,7 +151,7 @@ void InitializeTempDatabase()
 context.Add(new Dataset//different images compared to the other 5 datasets
     {
         Id = 1,
-        ImageIds = new List<int>(){0, 1},
+        ImageIds = new List<int>(){0, 1},//TODO remove this - this is only for testing
         Category = "category",
         AnnotatedBy = 1,
         ReviewedBy = 1
@@ -162,7 +161,7 @@ context.Add(new Dataset//different images compared to the other 5 datasets
         context.Add(new Dataset
         {
             Id = i,
-            ImageIds = new List<int>(){0},
+            ImageIds = new List<int>(){0},//TODO remove this - this is only for testing
             Category = "category",
             AnnotatedBy = 1,
             ReviewedBy = 1

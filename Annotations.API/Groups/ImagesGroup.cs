@@ -94,12 +94,12 @@ public static class ImagesGroup
                         inputs the names (ids) of datasets, and we can use below code (without
                         hard-coded ids) to cross-add the images to the relevant datasets.
                         */
-                        var addimagetodataset = context.Datasets.Select(Dataset => Dataset).
-                        Where(Dataset => Dataset.Id == 1 || Dataset.Id == 2);
+                        var NeededDataset = context.Datasets.Select(Dataset => Dataset).
+                        Where(Dataset => Dataset.Id == 1 || Dataset.Id == 2);//TODO dont do this - this is hardcoded for testing
                         
-                        foreach (Dataset dataset in addimagetodataset)
+                        foreach (Dataset dataset in NeededDataset)
                         {
-                            dataset.ImageIds.Add(thisImage.Id);
+                            dataset.ImageIds.Add(thisImage.Id);//adds images to the datasets
                             await context.SaveChangesAsync();
                         }
 

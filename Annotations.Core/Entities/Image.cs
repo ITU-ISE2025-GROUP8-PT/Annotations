@@ -18,6 +18,8 @@ public class Image
 	[Required]
 	[StringLength(100)]
 	public required string Category { get; set; }
+    [Required]
+    public required List<int> DatasetsIds { get; set; }
 }
 
     /*Later add foreign keys:

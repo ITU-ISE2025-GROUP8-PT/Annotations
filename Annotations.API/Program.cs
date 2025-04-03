@@ -138,15 +138,21 @@ void InitializeTempDatabase()
         Title = "Sample Image",
         Description = "This is a sample image.",
         ImageData = File.ReadAllBytes("../docs/images/Perfusiontech_sampleimage.png"),
-        Category = "category"
+        Category = "category",
+        DatasetsIds = new List<int>(){0, 1, 2}
         // ImageData = await GetImageDataAsync("Perfusiontech_sampleimage.png"); <-- Eller hvad den nu kommer til at hedde når den smides op
     });
     //this is only for testing/showcasing
     //something about having datasets in blobstorage instead of dbContext?
-    context.Add(new Dataset//different images compared to the other 5 datasets
+    
+    /*
+    Due to the hard-coding of database elements below, we override code from ImagesGroup
+    image-upload-functionality, that adds an image to the dataset.
+    */  
+context.Add(new Dataset//different images compared to the other 5 datasets
     {
         Id = 1,
-        ImageIds = new List<int>() { 0, 1, 2 },
+        ImageIds = new List<int>(){0, 1},
         Category = "category",
         AnnotatedBy = 1,
         ReviewedBy = 1
@@ -156,7 +162,7 @@ void InitializeTempDatabase()
         context.Add(new Dataset
         {
             Id = i,
-            ImageIds = new List<int>() { 3, 4, 5 },
+            ImageIds = new List<int>(){0},
             Category = "category",
             AnnotatedBy = 1,
             ReviewedBy = 1

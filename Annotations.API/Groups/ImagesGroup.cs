@@ -56,7 +56,7 @@ public static class ImagesGroup
         
         //This is the upload endpoint where the image first gets validated, and then gets uploaded into your local Azurite BlobStorage as a JSON file
         pathBuilder.MapPost("/upload",
-            async (IFormFile image, string category, [FromServices] IAzureClientFactory<BlobServiceClient> clientFactory) =>
+            async (IFormFile image, string category, AnnotationsDbContext context, [FromServices] IAzureClientFactory<BlobServiceClient> clientFactory) =>
             {//TODO: more paramters for the other fields in images?
 
                 ValidationResponse response = ValidateImage(image);
@@ -85,8 +85,24 @@ public static class ImagesGroup
                             Description = "description",
                             ImageData = ms.ToArray(),
                             Category = category,
-                        
+                            DatasetsIds = new List<int>(){1, 2},
                         };
+                        /*
+                        Below functionality of cross-adding the image to the assigned datasets
+                        is overriden by the hard-code creation of datasets in Api, Program.cs
+                        The idea for future reference is that when uploading an image, the user
+                        inputs the names (ids) of datasets, and we can use below code (without
+                        hard-coded ids) to cross-add the images to the relevant datasets.
+                        */
+                        var addimagetodataset = context.Datasets.Select(Dataset => Dataset).
+                        Where(Dataset => Dataset.Id == 1 || Dataset.Id == 2);
+                        
+                        foreach (Dataset dataset in addimagetodataset)
+                        {
+                            dataset.ImageIds.Add(thisImage.Id);
+                            await context.SaveChangesAsync();
+                        }
+
                         string jsonString = System.Text.Json.JsonSerializer.Serialize(thisImage);//objects becomes JSON string
                         var byteContent = System.Text.Encoding.UTF8.GetBytes(jsonString);//JSON string becomes byte array
 

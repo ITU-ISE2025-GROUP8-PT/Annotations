@@ -19,15 +19,14 @@ public class AnnotationsDbContext : IdentityDbContext<User>
         MedicalProfessionals = Set<MedicalProfessional>();
         Images = Set<Image>();
         Datasets = Set<Dataset>();
-
-        base.OnModelCreating(modelBuilder);
     }
 
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    /*protected override void OnModelCreating(ModelBuilder modelBuilder)
 	{
 		base.OnModelCreating(modelBuilder);
 
         modelBuilder.Entity<Dataset>().HasMany(d => d.ImageIds).WithMany().HasForeignKey(i => i.ImageId);
 	}
+    */
 
 }

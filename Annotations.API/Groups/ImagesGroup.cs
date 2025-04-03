@@ -237,7 +237,7 @@ public static class ImagesGroup
             //TODO: almost identical code as "/filter/{category}" - remove the code duplication
             var cts = new CancellationTokenSource(5000);
 
-            IQueryable<DatasetModel> datasets = Queryable.Where(context.Datasets, d => d.Id == Int32.Parse(dataset))
+            var datasets = context.Datasets
                 .Select(u => new DatasetModel()
                 {
                     Id = u.Id,
@@ -245,15 +245,17 @@ public static class ImagesGroup
                     Category = u.Category,
                     AnnotatedBy= u.AnnotatedBy,
                     ReviewedBy = u.ReviewedBy
-                })
-                .Take(1);//there is only one dataset with a certain Id, so no point of taking more
+                }).Where(DatasetModel => DatasetModel.Id == Int32.Parse(dataset));
+                //there is only one dataset with a certain Id, so no point of taking more
+            var datasetModel = (DatasetModel) datasets;
             HashSet<string> collection = new HashSet<string>();
             var blobServiceClient = clientFactory.CreateClient("Default");
             BlobContainerClient containerClient = blobServiceClient.GetBlobContainerClient("images");
-            foreach (DatasetModel datasetModel in datasets)//guaranteed to only be one dataset in "datasets", so this is not linear time. 
-            {//there is a better way of doing this
+            //foreach (DatasetModel datasetModel in datasets)//guaranteed to only be one dataset in "datasets", so this is not linear time. 
+            //{//there is a better way of doing this
                 foreach (int ids in datasetModel.ImageIds)
                 {
+                    Console.WriteLine(ids);
                     BlobClient blobClient = containerClient.GetBlobClient(ids + ".json");
                     if (!blobClient.Exists(cts.Token).ToString()
                             .Contains("404")) //checks if the blobClient is empty/couldn't find the image of that format
@@ -269,7 +271,7 @@ public static class ImagesGroup
                         break;
                     }
                 }
-            }
+            //}
             return collection.ToArray();//returns array of all images as JSON strings
             
 

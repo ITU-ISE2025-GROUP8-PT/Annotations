@@ -247,7 +247,7 @@ public static class ImagesGroup
                     ReviewedBy = u.ReviewedBy
                 }).Where(DatasetModel => DatasetModel.Id == Int32.Parse(dataset));
                 //there is only one dataset with a certain Id, so no point of taking more
-            var datasetModel = (DatasetModel) datasets;
+            var datasetModel = await datasets.FirstOrDefaultAsync();
             HashSet<string> collection = new HashSet<string>();
             var blobServiceClient = clientFactory.CreateClient("Default");
             BlobContainerClient containerClient = blobServiceClient.GetBlobContainerClient("images");

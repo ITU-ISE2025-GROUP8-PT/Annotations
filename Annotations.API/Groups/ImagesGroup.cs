@@ -78,7 +78,7 @@ public static class ImagesGroup
                     using (MemoryStream ms = new MemoryStream())
                     {
                         await image.OpenReadStream().CopyToAsync(ms);
-                        var thisImage = new ImageModel()//TODO: dont do this
+                        var thisImage = new ImageModel()//TODO: dont do this - the title, description and datasetsId are hardcoded
                         {
                             Id = counter,
                             Title = "idk",

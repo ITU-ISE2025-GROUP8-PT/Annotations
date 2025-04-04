@@ -83,7 +83,7 @@ var app = builder.Build();
 
 
 UsersGroup.MapEndpoints(app.MapGroup("/users").RequireAuthorization());
-ImagesGroup.MapEndpoints(app.MapGroup("/images").RequireAuthorization().AllowAnonymous());
+ImagesGroup.MapEndpoints(app.MapGroup("/images").RequireAuthorization());//TODO    DONT DO THIS. REMOVE 
 
 app.MapGet("/error", () => "Dette er en 400-599 eller værre");
 
@@ -138,9 +138,36 @@ void InitializeTempDatabase()
         Title = "Sample Image",
         Description = "This is a sample image.",
         ImageData = File.ReadAllBytes("../docs/images/Perfusiontech_sampleimage.png"),
-        Category = "category"
+        Category = "category",
+        DatasetsIds = new List<int>(){0, 1, 2}
         // ImageData = await GetImageDataAsync("Perfusiontech_sampleimage.png"); <-- Eller hvad den nu kommer til at hedde når den smides op
     });
+    //this is only for testing/showcasing
+    
+    /*
+    Due to the hard-coding of database elements below, we override code from ImagesGroup
+    image-upload-functionality, that adds an image to the dataset.
+    */  
+context.Add(new Dataset//different images compared to the other 5 datasets
+    {
+        Id = 1,
+        ImageIds = new List<int>(){0, 1},//TODO remove this - this is only for testing
+        Category = "category",
+        AnnotatedBy = 1,
+        ReviewedBy = 1
+    });
+    for (int i = 2; i < 7; i++)
+    {
+        context.Add(new Dataset
+        {
+            Id = i,
+            ImageIds = new List<int>(){0},//TODO remove this - this is only for testing
+            Category = "category",
+            AnnotatedBy = 1,
+            ReviewedBy = 1
+        });
+    }
+    
     context.SaveChanges();
 }
 

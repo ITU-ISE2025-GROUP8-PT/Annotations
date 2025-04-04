@@ -186,6 +186,23 @@ paths:
                   $ref: '#/components/schemas/Annotation'
         '400':
           description: Invalid image ID supplied
+  /images/datasets:
+    get:
+      summary: Get a list of datasets
+      description: A list of chronologically ordered datasets
+      tags:
+        - Images
+      operationId: getDatasets
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: string
+                example: "Successful operation"
+          '404':
+            description: Datasets not found
   /annotations/{annotationId}:
     patch:
       summary: Update an annotation

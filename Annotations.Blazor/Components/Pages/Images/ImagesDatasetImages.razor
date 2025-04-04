@@ -1,6 +1,6 @@
-﻿@using MatBlazor
+﻿@page "/images/datasets/{dataset}"
+@using MatBlazor
 @using Microsoft.AspNetCore.Authentication
-@page "/images/filter/{category}"
 @using global::Annotations.Core.Models
 @using Microsoft.AspNetCore.Authentication
 @inject IHttpClientFactory ClientFactory
@@ -52,16 +52,18 @@ else
 {
     <div style=" display: flex; flex-direction:row;"><!--To make both lines on the same row -->
         
-        <span style="padding:2%; font-weight: bold; width: 90%; font-size: 215%">Images of category "@category"</span><!--width is mainly for the placement of the filter button -->
+        <span style="padding:2%; font-weight: bold; width: 90%; font-size: 215%">Dataset @dataset</span>
         <button class="filterButton">Filter by...</button>
         
     </div>
 
+    
+   
         
-    <div class="container DivToScroll">
+    <div class="container DivToScroll" >
         @for (int i = 0; i < images.Length; i++)
         {
-            <img class="displayImages" alt="@altText[i]" src="data:image;base64, @images[i]"/><!--src is a URL - it's converted from a string of the byte array-->
+            <img class = "displayImages" src="data:image;base64, @images[i]" alt="@altText[i]" /><!--src is a URL - it's converted from a string of the byte array--> 
         }
     </div>
     
@@ -71,7 +73,8 @@ else
 
 }
 @code{
-    [Parameter] public string category { get; set; }//get access to parameter from URL/get request
+    //TODO: code duplication from Image.Filter.razor
+    [Parameter] public string dataset { get; set; }//get access to parameter from URL/get request
     private string[]? images;//all byte arrays as strings
     private string[]? altText;
 
@@ -84,7 +87,7 @@ else
         var client = ClientFactory.CreateClient();
         client.BaseAddress = new("https://localhost:7250");//connect to Web API
 
-        using var requestMessage = new HttpRequestMessage(HttpMethod.Get, $"/images/filter/{category}");//access endpoint
+        using var requestMessage = new HttpRequestMessage(HttpMethod.Get, $"/images/datasets/{dataset}");//access endpoint
         requestMessage.Headers.Authorization = new("Bearer", accessToken);//bearer token for authorization
 
         using var response = await client.SendAsync(requestMessage);//sending the response
@@ -97,8 +100,8 @@ else
             {
                 var imageObject = System.Text.Json.JsonSerializer.Deserialize<ImageModel>(answer[i]);//JSON file becomes imageModel object
                 var imageData = imageObject.ImageData;
-                altText[i] = imageObject.Description;
                 images[i] = System.Convert.ToBase64String(imageData);//byte array to string
+                altText[i] = imageObject.Description;
             }
         }
         catch (Exception e)//if nothing is retrieved - prints out error

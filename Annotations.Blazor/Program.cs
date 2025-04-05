@@ -129,6 +129,7 @@ builder.Services.ConfigureCookieOidcRefresh(CookieAuthenticationDefaults.Authent
 builder.Services.AddAuthorization();
 builder.Services.AddCascadingAuthenticationState();
 
+
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
@@ -155,5 +156,6 @@ app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 
 app.MapGroup("/authentication").MapLoginAndLogout();
+app.MapGroup("/images");
 
 app.Run();

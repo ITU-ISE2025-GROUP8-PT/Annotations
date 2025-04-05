@@ -1,8 +1,8 @@
-﻿@page "/images/datasets"
+﻿@page "/images/datasets/page={PageNumber:int}"
 @using Microsoft.AspNetCore.Authentication
-
 @inject IHttpClientFactory ClientFactory
 @inject IHttpContextAccessor httpContextAccessor
+@inject NavigationManager NavigationManager
 <style>
     .container {
         display: flex;
@@ -54,18 +54,15 @@
         margin: 0; 
         width: 21%
     }
-
 </style>
 <div style=" display: flex; flex-direction:row;">
-
     <span style="margin-left:13%; margin-top:0.0001%; padding-bottom:2%; font-weight: bold; width: 72%; font-size: 215%">Manage datasets</span>
     <div style="width:15%">
         <button class="orderingButton">Order by...</button>
     </div>
-
 </div>
 <div class = "container DivToScroll">
-    @foreach (var name in datasets)//TODO: dont hardcode these values (e.g. number of images)
+    @foreach (var name in datasetslist)//TODO: dont hardcode these values (e.g. number of images)
     {
         <div class="datasetContainers">
             <div style=" display: flex; flex-direction:row; flex-wrap: nowrap">
@@ -83,36 +80,37 @@
             </div>
         </div>
     }
+    <MatButton OnClick="@PageNumberNext">Next page</MatButton>
+    @if (PageNumber > 1) {
+    <MatButton OnClick="@PageNumberPrev">Previous page</MatButton>
+    }
 </div>
 
 
 
 
-
 @code{
-    public List<int>? datasets = new List<int>();//it only works as a list, not an array
+    [Parameter] public int PageNumber {get; set;} = 1;
+    
+    public List<int>? datasetslist = new List<int>();//it only works as a list, not an array
     private bool error = false;//this isn't used yet
     //TODO: error handling (what blazor pages returns)
 
     protected override async Task OnInitializedAsync()
     {
         var httpContext = httpContextAccessor.HttpContext ?? throw new InvalidOperationException("No HttpContext available");//make connection
-
         var accessToken = await httpContext.GetTokenAsync("access_token") ?? throw new InvalidOperationException("No access_token was saved");//authorization
-
         var client = ClientFactory.CreateClient();
         client.BaseAddress = new("https://localhost:7250");//connect to Web API
-
-        using var requestMessage = new HttpRequestMessage(HttpMethod.Get, $"/images/datasets");//access endpoint
+        using var requestMessage = new HttpRequestMessage(HttpMethod.Get, $"/images/datasets/");//access endpoint
         requestMessage.Headers.Authorization = new("Bearer", accessToken);//bearer token for authorization
-
         using var response = await client.SendAsync(requestMessage);//sending the response
         try
         {
             var existingIds = await response.Content.ReadFromJsonAsync<int[]>();//int array of all the ids of all the existing datasets
             for (int i = 0; i < existingIds.Length; i++)
             {
-                datasets.Add(existingIds[i]);
+                datasetslist.Add(existingIds[i]);
             }
         }
         catch (Exception e)
@@ -120,7 +118,25 @@
             Console.WriteLine("Status code: " + response.StatusCode);
             error = true;
         }
-
     }
 
+    public int IncreasePageNumber ()
+    {
+        return PageNumber++;
+    }
+    
+    public int DecreasePageNumber ()
+    {
+        return PageNumber--;
+    }
+
+    public void PageNumberNext (MouseEventArgs e) {
+        //public int NewPage = IncreasePageNumber();
+        //needs logic for changing pagenumber
+    }
+
+    public void PageNumberPrev (MouseEventArgs e) {
+        //public int NewPage = DecreasePageNumber();
+        //needs logic for changing pagenumber
+    }
 }

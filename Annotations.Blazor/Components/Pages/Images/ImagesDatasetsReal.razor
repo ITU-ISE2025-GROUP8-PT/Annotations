@@ -80,10 +80,10 @@
     </div>
 </div>
 
-
+<MatThemeProvider Theme="_theme">
     <MatTable Items="Datasets" class="table-formatting">
         <MatTableRow>
-           <td>
+            <td>
                 <MatButtonLink href="@($"https://localhost:7238/images/datasets/{context.Id}")">Dataset: @context.Id</MatButtonLink>
             </td>
             <td>
@@ -98,9 +98,10 @@
             <td>
                 Reviewed By: @context.ReviewedBy
             </td>
-            
+
         </MatTableRow>
     </MatTable>
+</MatThemeProvider>
 
 <!--
 <div class = "container DivToScroll">
@@ -136,11 +137,11 @@
     private bool _error; //this isn't used yet
     //TODO: error handling (what blazor pages returns)
     
- /*   private MatTheme _theme = new MatTheme()
+    private MatTheme _theme = new MatTheme()
     {
         Primary = MatThemeColors.Green._900.Value
     };
-*/
+
     protected override async Task OnInitializedAsync()
     {
         try

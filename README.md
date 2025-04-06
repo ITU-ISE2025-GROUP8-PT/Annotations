@@ -129,4 +129,7 @@ dotnet ef database update
 ```
 When running the program all pending migrations will be added to the database.
 
+## Testing
+As per our DoD, testing is required for each addition to the program. As of now we have support for unit testing the API, using xUnit, and the Blazor project, using bUnit. E2E testing our website is done with Playwright, using a test user with a locally stored authentication state. Testing should follow the "Arrange, Act, Assert" pattern and cover all relevant functionality of a new feature. Always test that safety measures - such as authorization - work correctly on new features. 
+
 

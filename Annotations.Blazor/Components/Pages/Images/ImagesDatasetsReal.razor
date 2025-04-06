@@ -1,4 +1,4 @@
-﻿@page "/images/datasets/page={PageNumber:int}"
+﻿@page "/images/datasets"
 @rendermode InteractiveServer
 @using Microsoft.AspNetCore.Authentication
 @inject IHttpClientFactory ClientFactory
@@ -73,7 +73,7 @@
     </MatTableHeader>
     <MatTableRow>
         <td>
-            <MatButtonLink href="@($"https://localhost:7238/images/datasets/{context.Id}")">@context.Id</MatButtonLink>
+            <MatButtonLink href="@($"https://localhost:7238/images/datasets/{context.Id}")">Dataset: @context.Id</MatButtonLink>
         </td>
     </MatTableRow>
 </MatTable>

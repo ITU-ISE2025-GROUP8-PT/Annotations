@@ -87,7 +87,7 @@
                 <MatButtonLink href="@($"https://localhost:7238/images/datasets/{context.Id}")">Dataset: @context.Id</MatButtonLink>
             </td>
             <td>
-                Images in Dataset: ?
+                Images in Dataset: ? <!-- TBD how to display all images in Dataset --->
             </td>
             <td>
                 Category: @context.Category
@@ -191,14 +191,14 @@
  
         public int ReviewedBy { get; set; }
         
-        public Dataset(int id, List<int> ImageIds, string Category, int AnnotatedBy, int ReviewedBy)
+        public Dataset(int id, List<int> imageIds, string category, int annotatedBy, int reviewedBy)
         
         {
             Id = id;
-            ImageIds = ImageIds;
-            Category = Category;
-            AnnotatedBy = AnnotatedBy;
-            ReviewedBy = ReviewedBy;
+            ImageIds = imageIds;
+            Category = category;
+            AnnotatedBy = annotatedBy;
+            ReviewedBy = reviewedBy;
         }
     }
 

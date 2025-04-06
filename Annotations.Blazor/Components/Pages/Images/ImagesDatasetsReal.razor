@@ -50,10 +50,17 @@
         border-radius: 10px 10px 10px 10px;
     }
 
-    .table-formatting th, td {
-        padding:0;
+    .table-formatting th {
+        height: 0%
+        margin-top: 0%;
+        margin-bottom: 0%;
+        border: none;
+    }
+
+    .table-formatting td {
+        padding: 2%;
         margin: 0; 
-        width: 5%;
+        width: 20%;
         border: none;
         background: #e3e7ee;
     }
@@ -74,16 +81,16 @@
                 <MatButtonLink href="@($"https://localhost:7238/images/datasets/{context.Id}")">Dataset: @context.Id</MatButtonLink>
             </td>
             <td>
-                Images in Dataset: @context.ImageIds.Sum()
+                Images in Dataset: ?
             </td>
             <td>
-                Category: @context.Category
+                Category: ?
             </td>
             <td>
-                Annotated By: @context.AnnotatedBy
+                Annotated By: ?
             </td>
             <td>
-                Reviewed By: @context.ReviewedBy
+                Reviewed By: ?
             </td>
         </MatTableRow>
     </MatTable>
@@ -141,10 +148,10 @@
             using var response = await client.SendAsync(requestMessage);//sending the response
             if (response.IsSuccessStatusCode)
             {
-                var datasetmodels = await response.Content.ReadFromJsonAsync<int[]>();//int array of all the ids of all the existing datasets
-                foreach (var dataset in datasetmodels)
+                var existingIds = await response.Content.ReadFromJsonAsync<int[]>();//int array of all the ids of all the existing datasets
+                foreach (var id in existingIds)
                 {
-                    Datasets.Add(new Dataset(dataset));
+                    Datasets.Add(new Dataset(id));
                 }
             }
             else
@@ -164,21 +171,22 @@
     public class Dataset
     {
         public int Id { get; set; }
-        public List<int> ImageIds{ get; set; }
+       /* public List<int> ImageIds{ get; set; }
    
         public string Category { get; set; }
    
         public int AnnotatedBy { get; set; }
  
         public int ReviewedBy { get; set; }
-        
+        */
         public Dataset(int id)
+        
         {
             Id = id;
-            ImageIds = ImageIds;
+            /*ImageIds = ImageIds;
             Category = Category;
             AnnotatedBy = AnnotatedBy;
-            ReviewedBy = ReviewedBy;
+            ReviewedBy = ReviewedBy;*/
         }
     }
 

@@ -1,6 +1,7 @@
 ﻿@page "/images/datasets/"
 @rendermode InteractiveServer
 @using Microsoft.AspNetCore.Authentication
+@using global::Annotations.Core.Models
 @inject IHttpClientFactory ClientFactory
 @inject IHttpContextAccessor httpContextAccessor
 @inject NavigationManager NavigationManager
@@ -34,9 +35,9 @@
     }
 
     .table-formatting {
+        position: relative;
         border-collapse: collapse;
         border-spacing: 0;
-        display: inline-block;
         overflow-x: auto;
         margin-left: 10%;
         margin-right: 10%;
@@ -48,22 +49,28 @@
         margin-bottom: 1%;
         margin-top: 1%;
         border-radius: 10px 10px 10px 10px;
+        text-align: center;
     }
 
     .table-formatting th {
-        height: 0%
-        margin-top: 0%;
-        margin-bottom: 0%;
-        border: none;
-    }
+        padding:0;
+        margin: 2%; 
+        width: 22.5%;
+        height: 0%;
 
-    .table-formatting td {
-        padding: 2%;
-        margin: 0; 
-        width: 20%;
         border: none;
         background: #e3e7ee;
     }
+
+    .table-formatting td {
+        text-align: center;
+        padding:0;
+        margin: 2%; 
+
+        width: 22.5%;
+        background: #e3e7ee;
+    }
+
 </style>
 
 <div style=" display: flex; flex-direction:row;">
@@ -75,23 +82,23 @@
 
 
     <MatTable Items="Datasets" class="table-formatting">
-
         <MatTableRow>
-            <td>
+           <td>
                 <MatButtonLink href="@($"https://localhost:7238/images/datasets/{context.Id}")">Dataset: @context.Id</MatButtonLink>
             </td>
             <td>
                 Images in Dataset: ?
             </td>
             <td>
-                Category: ?
+                Category: @context.Category
             </td>
             <td>
-                Annotated By: ?
+                Annotated By: @context.AnnotatedBy
             </td>
             <td>
-                Reviewed By: ?
+                Reviewed By: @context.ReviewedBy
             </td>
+            
         </MatTableRow>
     </MatTable>
 
@@ -148,12 +155,17 @@
             using var response = await client.SendAsync(requestMessage);//sending the response
             if (response.IsSuccessStatusCode)
             {
-                var existingIds = await response.Content.ReadFromJsonAsync<int[]>();//int array of all the ids of all the existing datasets
-                foreach (var id in existingIds)
+                var datasetmodels = await response.Content.ReadFromJsonAsync<DatasetModel[]>();//int array of all the ids of all the existing datasets
+                foreach (var datasetmodel in datasetmodels)
                 {
-                    Datasets.Add(new Dataset(id));
+                    Datasets.Add(new Dataset(datasetmodel.Id,
+                    datasetmodel.ImageIds,
+                    datasetmodel.Category,
+                    datasetmodel.AnnotatedBy,
+                    datasetmodel.ReviewedBy));
                 }
             }
+
             else
             {
                 _error = true;
@@ -171,22 +183,22 @@
     public class Dataset
     {
         public int Id { get; set; }
-       /* public List<int> ImageIds{ get; set; }
+        public List<int> ImageIds{ get; set; }
    
         public string Category { get; set; }
    
         public int AnnotatedBy { get; set; }
  
         public int ReviewedBy { get; set; }
-        */
-        public Dataset(int id)
+        
+        public Dataset(int id, List<int> ImageIds, string Category, int AnnotatedBy, int ReviewedBy)
         
         {
             Id = id;
-            /*ImageIds = ImageIds;
+            ImageIds = ImageIds;
             Category = Category;
             AnnotatedBy = AnnotatedBy;
-            ReviewedBy = ReviewedBy;*/
+            ReviewedBy = ReviewedBy;
         }
     }
 

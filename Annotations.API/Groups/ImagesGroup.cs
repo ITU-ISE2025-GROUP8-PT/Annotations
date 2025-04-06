@@ -235,15 +235,16 @@ public static class ImagesGroup
                         ReviewedBy = u.ReviewedBy
                     })
                     .ToListAsync();
-                int[] names = new int[datasets.Count];
-                int counter = 0;
+                DatasetModel[] datasetsarray = datasets.ToArray();
+                //int[] names = new int[datasets.Count];
+                /*int counter = 0;
                 foreach (DatasetModel dataset in datasets)//better way of doing this
                 {
                     names[counter] = dataset.Id;
                     counter++;
-                }
-                return names;//array of all ids of datasets
-
+                }*/
+                //return names;//array of all ids of datasets
+                return datasetsarray;
 
             }).DisableAntiforgery();
         

@@ -34,6 +34,11 @@
 	  <ProjectReference Include="..\Annotations.Blazor\Annotations.Blazor.csproj" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Folder Include="Annotations.Blazor.Tests.E2E\" />
+	  <Folder Include="Annotations.Blazor.Tests.Integration\" />
+	</ItemGroup>
+
 
 
 </Project>

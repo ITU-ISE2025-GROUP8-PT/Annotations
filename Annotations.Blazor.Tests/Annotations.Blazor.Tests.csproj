@@ -23,6 +23,8 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<PackageReference Include="Microsoft.Playwright" Version="1.51.0" />
+		<PackageReference Include="Microsoft.Playwright.Xunit" Version="1.51.0" />
 		<PackageReference Include="xunit" Version="2.9.0" />
 		<PackageReference Include="xunit.runner.visualstudio" Version="2.5.4">
 			<PrivateAssets>all</PrivateAssets>
@@ -35,7 +37,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Folder Include="Annotations.Blazor.Tests.E2E\" />
 	  <Folder Include="Annotations.Blazor.Tests.Integration\" />
 	</ItemGroup>
 

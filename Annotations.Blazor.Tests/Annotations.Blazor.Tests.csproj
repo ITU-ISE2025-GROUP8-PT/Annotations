@@ -38,6 +38,7 @@
 
 	<ItemGroup>
 	  <Folder Include="Annotations.Blazor.Tests.Integration\" />
+	  <Folder Include="playwright\.auth\" />
 	</ItemGroup>
 
 

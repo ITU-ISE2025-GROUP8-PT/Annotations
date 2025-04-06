@@ -1,5 +1,4 @@
-﻿using Annotations.Blazor.Components.Pages;
-using Annotations.Blazor.Components.Pages.Annotations;
+﻿using Annotations.Blazor.Components.Pages.Annotations;
 
 namespace Annotations.Blazor.Tests.Annotations.Blazor.Tests.Unit;
 

@@ -5,104 +5,110 @@
 @inject NavigationManager Navigation
 
 <PageTitle>Annotations</PageTitle>
-
-<MatThemeProvider Theme="@theme">
-    <div class="mat-layout-grid">
-        <div class="mat-layout-grid-inner">
-            <div class="mat-layout-grid-cell mat-layout-grid-cell-span-2">
-                <div style="display: flex; align-items: center; gap: 20px;">
-                    <img src="img/billede1.png" alt="Profile Picture" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover;">
-                    <div>
-                        <b style="margin: 0;">Jane Doe</b>
-                        <br/>
-                        <small style="margin: 0;">Surgeon</small>
-                    </div>
-                </div>
-                <div style="margin-top: 50px">
-                    <MatCheckbox @bind-Value="@arteriesMarked">Arteries marked</MatCheckbox>
-                </div>
-                <div>
-                    <MatCheckbox @bind-Value="@veinsMarked">Veins marked</MatCheckbox>
-                </div>
-                <div>
-                    <MatCheckbox @bind-Value="@flowDirectionSet">Flow direction set</MatCheckbox>
-                </div>
-                <div>
-                    <MatCheckbox @bind-Value="@videoReviewed">Video reviewed</MatCheckbox>
-                </div>
-            </div>
-            <div class="mat-layout-grid-cell mat-layout-grid-cell-span-10">
+<AuthorizeView>
+    <Authorized>
+        <MatThemeProvider Theme="@theme">
+            <div class="mat-layout-grid">
                 <div class="mat-layout-grid-inner">
-                    <div class="mat-layout-grid-cell mat-layout-grid-cell-span-3">
-                        <div style="display: flex; justify-content: flex-start; gap: 8px;">
-                            <MatTabGroup>
-                                <MatTab Label="Vessels">
-                                    <div style="padding: 16px;">
-                                        <b>Blood Vessel Identification</b>
-                                    </div>
-                                </MatTab>
-                                <MatTab Label="Flow">
-                                    <div style="padding: 16px;">
-                                        <b>Blood Flow Identification</b>
-                                    </div>
-                                </MatTab>
-                                <MatTab Label="Organs">
-                                    <div style="padding: 16px;">
-                                        <b>Organ Identification</b>
-                                    </div>
-                                </MatTab>
-                            </MatTabGroup>
-                        </div>
-                    </div>
-                    <div class="mat-layout-grid-cell mat-layout-grid-cell-span-9 mat-layout-grid-align-right" style="display: flex; margin-left: auto; gap: 8px;">
-                        <div style="display: flex; justify-content: flex-end; gap: 8px;">
-                            <MatButton>Skip</MatButton>
-                            <MatButton Style=" color: white; background: #101e2d">Complete</MatButton>
-                        </div>
-                    </div>    
-                </div>
-                <!-- @ref imageContainer captures the DOM element for position calculations, when annotating --->
-                <div style="position: relative;" @ref="imageContainer">
-                    <img src="img/Skærmbillede%202025-03-27%20kl.%2014.05.56.png" alt = "Annotation Image"
-                         @onclick="HandleImageClick"
-                         style="width: 1000px; height: 600px;" />
-
-                    @if (showTextField)
-                    {
-                        <div style="position: absolute; left: @($"{currentAnnotation.X}px"); top: @($"{currentAnnotation.Y}px")">
-                            <p>
-                                <!-- the position is auto focused on click position. Bound to currentAnnotation object --->
-                                <MatTextField @bind-Value="currentAnnotation.Text"
-                                              Label="Annotation"
-                                              FullWidth="true"
-                                              Immediate="true"
-                                              @ref="textFieldRef"
-                                              Id="annotationTextField"
-                                              Style="background: white">
-                                </MatTextField>
-                            </p>
-                            <p>
-                                <MatSelectItem @bind-Value="@currentAnnotation.Type" Label="Type" Items="@currentAnnotation.Types"></MatSelectItem>
-                            </p>
+                    <div class="mat-layout-grid-cell mat-layout-grid-cell-span-2">
+                        <div style="display: flex; align-items: center; gap: 20px;">
+                            <img src="img/billede1.png" alt="Profile Picture" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover;">
                             <div>
-                                <MatButton OnClick="SaveAnnotation" Style="color: white; background: #101e2d">Save</MatButton>
-                                <MatButton OnClick="CancelAnnotation" Style="color: white; background: #101e2d">Cancel</MatButton>
+                                <b style="margin: 0;">Jane Doe</b>
+                                <br/>
+                                <small style="margin: 0;">Surgeon</small>
                             </div>
                         </div>
-                    }
-                    @foreach (var ann in savedAnnotations)
-                    {
-                        <div style="position: absolute; left: @($"{ann.X}px"); top: @($"{ann.Y}px")">
-                            <p style="color: white; font-size: xx-small">
-                                @ann.Text
-                            </p>
+                        <div style="margin-top: 50px">
+                            <MatCheckbox @bind-Value="@arteriesMarked">Arteries marked</MatCheckbox>
                         </div>
-                    }
+                        <div>
+                            <MatCheckbox @bind-Value="@veinsMarked">Veins marked</MatCheckbox>
+                        </div>
+                        <div>
+                            <MatCheckbox @bind-Value="@flowDirectionSet">Flow direction set</MatCheckbox>
+                        </div>
+                        <div>
+                            <MatCheckbox @bind-Value="@videoReviewed">Video reviewed</MatCheckbox>
+                        </div>
+                    </div>
+                    <div class="mat-layout-grid-cell mat-layout-grid-cell-span-10">
+                        <div class="mat-layout-grid-inner">
+                            <div class="mat-layout-grid-cell mat-layout-grid-cell-span-3">
+                                <div style="display: flex; justify-content: flex-start; gap: 8px;">
+                                    <MatTabGroup>
+                                        <MatTab Label="Vessels">
+                                            <div style="padding: 16px;">
+                                                <b>Blood Vessel Identification</b>
+                                            </div>
+                                        </MatTab>
+                                        <MatTab Label="Flow">
+                                            <div style="padding: 16px;">
+                                                <b>Blood Flow Identification</b>
+                                            </div>
+                                        </MatTab>
+                                        <MatTab Label="Organs">
+                                            <div style="padding: 16px;">
+                                                <b>Organ Identification</b>
+                                            </div>
+                                        </MatTab>
+                                    </MatTabGroup>
+                                </div>
+                            </div>
+                            <div class="mat-layout-grid-cell mat-layout-grid-cell-span-9 mat-layout-grid-align-right" style="display: flex; margin-left: auto; gap: 8px;">
+                                <div style="display: flex; justify-content: flex-end; gap: 8px;">
+                                    <MatButton>Skip</MatButton>
+                                    <MatButton Style=" color: white; background: #101e2d">Complete</MatButton>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- @ref imageContainer captures the DOM element for position calculations, when annotating --->
+                        <div style="position: relative;" @ref="imageContainer">
+                            <img src="img/Skærmbillede%202025-03-27%20kl.%2014.05.56.png" alt = "Annotation Image"
+                                 @onclick="HandleImageClick"
+                                 style="width: 1000px; height: 600px;" />
+
+                            @if (showTextField)
+                            {
+                                <div style="position: absolute; left: @($"{currentAnnotation.X}px"); top: @($"{currentAnnotation.Y}px")">
+                                    <p>
+                                        <!-- the position is auto focused on click position. Bound to currentAnnotation object --->
+                                        <MatTextField @bind-Value="currentAnnotation.Text"
+                                                      Label="Annotation"
+                                                      FullWidth="true"
+                                                      Immediate="true"
+                                                      @ref="textFieldRef"
+                                                      Id="annotationTextField"
+                                                      Style="background: white">
+                                        </MatTextField>
+                                    </p>
+                                    <p>
+                                        <MatSelectItem @bind-Value="@currentAnnotation.Type" Label="Type" Items="@currentAnnotation.Types"></MatSelectItem>
+                                    </p>
+                                    <div>
+                                        <MatButton OnClick="SaveAnnotation" Style="color: white; background: #101e2d">Save</MatButton>
+                                        <MatButton OnClick="CancelAnnotation" Style="color: white; background: #101e2d">Cancel</MatButton>
+                                    </div>
+                                </div>
+                            }
+                            @foreach (var ann in savedAnnotations)
+                            {
+                                <div style="position: absolute; left: @($"{ann.X}px"); top: @($"{ann.Y}px")">
+                                    <p style="color: white; font-size: xx-small">
+                                        @ann.Text
+                                    </p>
+                                </div>
+                            }
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-    </div>
-</MatThemeProvider>
+        </MatThemeProvider>
+    </Authorized>
+    <NotAuthorized>
+        <Home/>
+    </NotAuthorized>
+</AuthorizeView>
 
 
 @code {

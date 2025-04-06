@@ -235,11 +235,11 @@ public static class ImagesGroup
                         ReviewedBy = u.ReviewedBy
                     })
                     .ToListAsync();
-                int[] names = new int[datasets.Count];
+                DatasetModel[] names = new DatasetModel[datasets.Count];
                 int counter = 0;
                 foreach (DatasetModel dataset in datasets)//better way of doing this
                 {
-                    names[counter] = dataset.Id;
+                    names[counter] = dataset;
                     counter++;
                 }
 

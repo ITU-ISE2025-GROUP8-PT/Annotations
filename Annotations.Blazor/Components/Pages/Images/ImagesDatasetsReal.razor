@@ -1,23 +1,10 @@
-﻿@page "/images/datasets"
+﻿@page "/images/datasets/"
 @rendermode InteractiveServer
 @using Microsoft.AspNetCore.Authentication
 @inject IHttpClientFactory ClientFactory
 @inject IHttpContextAccessor httpContextAccessor
 @inject NavigationManager NavigationManager
 <style>
-    .container {
-        display: flex;
-        flex-direction: column;
-    }
-    .datasetContainers {
-        background-color: #e3e7ee;
-        padding-top: 0.8%;
-        padding-bottom: 0.3%;
-        padding-left: 1%;
-        margin-bottom: 1%;
-        margin-top: 1%;
-        border-radius: 10px 10px 10px 10px;
-    }
     .DivToScroll{
         background-color: #F5F5F5;
         border: 1px solid #DDDDDD;
@@ -45,17 +32,33 @@
         text-decoration: underline;
         font-size: 130%;
     }
-    .textForDatasetsA{/*used to control the width/placement*/
-        padding:0; /*makes it so the lines are close together*/
-        margin: 0; 
+
+    .table-formatting {
+        border-collapse: collapse;
+        border-spacing: 0;
+        display: inline-block;
+        overflow-x: auto;
+        margin-left: 10%;
+        margin-right: 10%;
         width: 80%;
+        background-color: #e3e7ee;
+        padding-top: 0.8%;
+        padding-bottom: 0.3%;
+        padding-left: 1%;
+        margin-bottom: 1%;
+        margin-top: 1%;
+        border-radius: 10px 10px 10px 10px;
     }
-    .textForDatasetsB {
-        padding:0; 
+
+    .table-formatting th, td {
+        padding:0;
         margin: 0; 
-        width: 21%
+        width: 5%;
+        border: none;
+        background: #e3e7ee;
     }
 </style>
+
 <div style=" display: flex; flex-direction:row;">
     <span style="margin-left:13%; margin-top:0.0001%; padding-bottom:2%; font-weight: bold; width: 72%; font-size: 215%">Manage datasets</span>
     <div style="width:15%">
@@ -63,34 +66,28 @@
     </div>
 </div>
 
-<MatThemeProvider Theme="_theme">
-    <MatTable Items="Datasets" class="mat-elevation-z5">
-        <MatTableHeader>
-            <th>Id</th>
-            <th>Images</th>
-            <th>Category</th>
-            <th>Annotated By</th>
-            <th>Reviewed By</th>
-        </MatTableHeader>
+
+    <MatTable Items="Datasets" class="table-formatting">
+
         <MatTableRow>
             <td>
                 <MatButtonLink href="@($"https://localhost:7238/images/datasets/{context.Id}")">Dataset: @context.Id</MatButtonLink>
             </td>
             <td>
-                Images in Dataset: ???
+                Images in Dataset: @context.ImageIds.Sum()
             </td>
             <td>
-                Category: ???
+                Category: @context.Category
             </td>
             <td>
-                Annotated By: ???
+                Annotated By: @context.AnnotatedBy
             </td>
             <td>
-                Reviewed By: ???
+                Reviewed By: @context.ReviewedBy
             </td>
         </MatTableRow>
     </MatTable>
-</MatThemeProvider>
+
 <!--
 <div class = "container DivToScroll">
     @foreach (var name in datasetslist)//TODO: dont hardcode these values (e.g. number of images)
@@ -119,17 +116,17 @@
 --->
 
 @code{
-    [Parameter] public int PageNumber {get; set;} = 1;
+    //[Parameter] public int PageNumber {get; set;} = 1;
     
     public List<Dataset>? Datasets = new List<Dataset>();//it only works as a list, not an array
     private bool _error; //this isn't used yet
     //TODO: error handling (what blazor pages returns)
     
-    private MatTheme _theme = new MatTheme()
+ /*   private MatTheme _theme = new MatTheme()
     {
         Primary = MatThemeColors.Green._900.Value
     };
-
+*/
     protected override async Task OnInitializedAsync()
     {
         try
@@ -144,10 +141,10 @@
             using var response = await client.SendAsync(requestMessage);//sending the response
             if (response.IsSuccessStatusCode)
             {
-                var existingIds = await response.Content.ReadFromJsonAsync<int[]>();//int array of all the ids of all the existing datasets
-                foreach (var id in existingIds)
+                var datasetmodels = await response.Content.ReadFromJsonAsync<int[]>();//int array of all the ids of all the existing datasets
+                foreach (var dataset in datasetmodels)
                 {
-                    Datasets.Add(new Dataset(id));
+                    Datasets.Add(new Dataset(dataset));
                 }
             }
             else
@@ -167,10 +164,21 @@
     public class Dataset
     {
         public int Id { get; set; }
+        public List<int> ImageIds{ get; set; }
+   
+        public string Category { get; set; }
+   
+        public int AnnotatedBy { get; set; }
+ 
+        public int ReviewedBy { get; set; }
         
         public Dataset(int id)
         {
             Id = id;
+            ImageIds = ImageIds;
+            Category = Category;
+            AnnotatedBy = AnnotatedBy;
+            ReviewedBy = ReviewedBy;
         }
     }
 

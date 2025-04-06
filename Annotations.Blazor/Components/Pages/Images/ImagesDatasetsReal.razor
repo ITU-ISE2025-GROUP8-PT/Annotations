@@ -6,18 +6,6 @@
 @inject IHttpContextAccessor httpContextAccessor
 @inject NavigationManager NavigationManager
 <style>
-    .DivToScroll{
-        background-color: #F5F5F5;
-        border: 1px solid #DDDDDD;
-        border-radius: 4px 0 4px 0;
-        color: #3B3C3E;
-        left: -1px;
-        max-height: 100vh;
-        overflow-x:hidden;/*this creates the scrollbar. It's appearance cannot be changed*/
-        padding: 1.5%;
-        scrollbar-width: auto;
-        max-width: 67vw;
-    }
     .orderingButton {/*for functionality later on*/
         border: 5px;
         cursor: pointer;
@@ -27,11 +15,6 @@
         margin-top:20%;
         margin-left: 10%;
         text-decoration: underline;
-    }
-    .ordering{/*maybe used for later*/
-        margin-left: 10%;
-        text-decoration: underline;
-        font-size: 130%;
     }
 
     .table-formatting {
@@ -87,7 +70,7 @@
                 <MatButtonLink href="@($"https://localhost:7238/images/datasets/{context.Id}")">Dataset: @context.Id</MatButtonLink>
             </td>
             <td>
-                Images in Dataset: ? <!-- TBD how to display all images in Dataset --->
+                Images in Dataset: @context.ImageIds.Count
             </td>
             <td>
                 Category: @context.Category
@@ -103,36 +86,7 @@
     </MatTable>
 </MatThemeProvider>
 
-<!--
-<div class = "container DivToScroll">
-    @foreach (var name in datasetslist)//TODO: dont hardcode these values (e.g. number of images)
-    {
-        <div class="datasetContainers">
-            <div style=" display: flex; flex-direction:row; flex-wrap: nowrap">
-                <span class = "textForDatasetsA" style="font-weight: bold">Dataset @name</span>
-                <span class = "textForDatasetsB">Annotated by: 1 person</span>
-            </div>
-            <div style=" display: flex; flex-direction:row; flex-wrap: nowrap">
-                <span class = "textForDatasetsA">Number of images: 3</span>
-                <span class = "textForDatasetsB">Reviewed by: 1 person</span>
-            </div>
-            <div style=" display: flex; flex-direction:row; flex-wrap: nowrap">
-                <span style="padding:0; margin: 0;  width: 95.5%;">Category: "?"</span>
-                <a href="https://localhost:7238/images/datasets/@name"><img src="https://www.svgrepo.com/download/64793/inverted-triangle.svg" alt="small black arrow pointing downwards" style="max-height: 30px; width:auto; margin-top: 0.1%; margin-bottom: 0.0001%">
-                </a>
-            </div>
-        </div>
-    }
-    <MatButton OnClick="@PageNumberNext">Next page</MatButton>
-    @if (PageNumber > 1) {
-    <MatButton OnClick="@PageNumberPrev">Previous page</MatButton>
-    }
-</div>
---->
-
 @code{
-    //[Parameter] public int PageNumber {get; set;} = 1;
-    
     public List<Dataset>? Datasets = new List<Dataset>();//it only works as a list, not an array
     private bool _error; //this isn't used yet
     //TODO: error handling (what blazor pages returns)
@@ -202,26 +156,4 @@
             ReviewedBy = reviewedBy;
         }
     }
-
-    /*
-    public int IncreasePageNumber ()
-    {
-        return PageNumber++;
-    }
-    
-    public int DecreasePageNumber ()
-    {
-        return PageNumber--;
-    }
-
-    public void PageNumberNext (MouseEventArgs e) {
-        //public int NewPage = IncreasePageNumber();
-        //needs logic for changing pagenumber
-    }
-
-    public void PageNumberPrev (MouseEventArgs e) {
-        //public int NewPage = DecreasePageNumber();
-        //needs logic for changing pagenumber
-    }
-    */
 }

@@ -203,6 +203,30 @@ paths:
                 example: "Successful operation"
           '404':
             description: Datasets not found
+  /images/datasets/{datasetId}:
+    get:
+      summary: Get all images within the specified dataset
+      tags:
+        - Images
+      operationId: getDatasetImages
+      parameters:
+        - in: path
+          name: datasetId
+          description: The dataset id, the pictures shown, belong to
+          required: true
+          schema:
+            type: integer
+            format: "int64"
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: string
+                example: "Successful operation"
+        '404':
+          description: The dataset with the given id, does not exist
   /images/filter/{category}:
     get:
       summary: Get images with the specified category

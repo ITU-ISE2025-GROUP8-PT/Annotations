@@ -17,9 +17,9 @@ public class SaveAuthState
         await page.GotoAsync("https://localhost:7238/authentication/login");
 
         // Fill Orchard Core credentials (adjust selectors as needed)
-        await page.GetByLabel("Username or email address").FillAsync(""!);
+        await page.GetByLabel("Username or email address").FillAsync("");
         
-        await page.GetByLabel("Password").FillAsync(""!);
+        await page.GetByLabel("Password").FillAsync("");
         await page.GetByRole(AriaRole.Button, new() { Name = "Log in" }).ClickAsync();
 
         // Wait for post-login redirect (optional)

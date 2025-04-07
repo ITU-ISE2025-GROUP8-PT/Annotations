@@ -203,6 +203,29 @@ paths:
                 example: "Successful operation"
           '404':
             description: Datasets not found
+  /images/filter/{category}:
+    get:
+      summary: Get images with the specified category
+      tags:
+        - Images
+      operationId: getFilteredImages
+      parameters:
+        - in: path
+          name: category
+          description: The category given to the filter
+          required: true
+          schema:
+            type: string
+      responses: 
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: string
+                example: "Successful operation"
+        '404':
+          description: No images matching the filter
   /annotations/{annotationId}:
     patch:
       summary: Update an annotation

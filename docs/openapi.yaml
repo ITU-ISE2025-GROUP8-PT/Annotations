@@ -6,7 +6,7 @@ info:
     The API allows the Admin user role to upload and delete angiographic images.
     Users can only be created or deleted by any user with the Admin user role, following RBAC principles.
     
-  version: 1.1.0
+  version: 1.2.0
 tags:
   - name: Reviews
     description: Operations related to reviewing angiographic images.

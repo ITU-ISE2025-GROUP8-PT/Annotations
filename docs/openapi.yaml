@@ -372,10 +372,10 @@ paths:
           description: Forbidden (user does not have admin role)
         '401':
           description: Unauthorized (invalid or missing token)        
-  /auth/login:
+  /authentication/login:
     post:
       summary: User login
-      description: User can login to an already created account and receive a user token using Oauth or JWT.
+      description: User can login to an already created account through our userbase on Orchard Core.
       operationId: userLogin
       tags:
         - Users

@@ -1,3 +1,4 @@
+using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Playwright;
 
@@ -8,6 +9,7 @@ public class SaveAuthState
     [Fact]
     public async Task SaveAuthenticatedState()
     {
+        string[] loginCred = File.ReadAllLines("../../../../playwright/.auth/testUser.txt");
         using var playwright = await Playwright.CreateAsync();
         await using var browser = await playwright.Chromium.LaunchAsync();
         var context = await browser.NewContextAsync();
@@ -17,9 +19,9 @@ public class SaveAuthState
         await page.GotoAsync("https://localhost:7238/authentication/login");
 
         // Fill Orchard Core credentials (adjust selectors as needed)
-        await page.GetByLabel("Username or email address").FillAsync("");
+        await page.GetByLabel("Username or email address").FillAsync(loginCred[0]);
         
-        await page.GetByLabel("Password").FillAsync("");
+        await page.GetByLabel("Password").FillAsync(loginCred[1]);
         await page.GetByRole(AriaRole.Button, new() { Name = "Log in" }).ClickAsync();
 
         // Wait for post-login redirect (optional)

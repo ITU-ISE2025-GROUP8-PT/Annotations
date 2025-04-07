@@ -23,7 +23,7 @@
         border-collapse: collapse;
         border-spacing: 0;
         overflow-x: auto;
-        margin: 1% auto; /* Centers horizontally + keeps vertical margin */
+        margin: 1% auto; /* Centers horizontally and keeps vertical margin */
         width: 41.5%;
         background-color: #e3e7ee;
         padding: 0.8% 1% 0.3% 1%; /* Shorthand for top, right, bottom, left */
@@ -51,79 +51,64 @@
         background: #e3e7ee;
     }
 
-    /* Target the first column (ID column) */
     .table-formatting tr > td:nth-child(1) {
-        width: 100px; /* or whatever width you want */
-        max-width: 100px;
-        min-width: 100px;
-        /* Add any other styles you want for this column */
+        width: 20%; 
+        max-width: 20%;
+        min-width: 20%;
     }
 
-    /* If you need to target the header as well */
     .table-formatting th:nth-child(1){
-        width: 100px;
-        max-width: 100px;
-        min-width: 100px;
+        width: 20%; 
+        max-width: 20%;
+        min-width: 20%;
     }
 
-    /* Target the first column (ID column) */
     .table-formatting tr > td:nth-child(2) {
-        width: 100px; /* or whatever width you want */
-        max-width: 100px;
-        min-width: 100px;
-        /* Add any other styles you want for this column */
+        width: 20%; 
+        max-width: 20%;
+        min-width: 20%;
     }
 
-    /* If you need to target the header as well */
     .table-formatting th:nth-child(2) {
-        width: 100px;
-        max-width: 100px;
-        min-width: 100px;
+        width: 20%; 
+        max-width: 20%;
+        min-width: 20%;
     }
 
-    /* Target the first column (ID column) */
     .table-formatting tr > td:nth-child(3) {
-        width: 150px; /* or whatever width you want */
-        max-width: 150px;
-        min-width: 150px;
-        /* Add any other styles you want for this column */
+        width: 30%; 
+        max-width: 30%;
+        min-width: 30%;
     }
 
-    /* If you need to target the header as well */
     .table-formatting th:nth-child(3) {
-        width: 150px;
-        max-width: 150px;
-        min-width: 150px;
+        width: 30%; 
+        max-width: 30%;
+        min-width: 30%;
     }
 
-    /* Target the first column (ID column) */
     .table-formatting tr > td:nth-child(4) {
-        width: 100px; /* or whatever width you want */
-        max-width: 100px;
-        min-width: 100px;
-        /* Add any other styles you want for this column */
+        width: 20%; 
+        max-width: 20%;
+        min-width: 20%;
     }
 
-    /* If you need to target the header as well */
     .table-formatting th:nth-child(4) {
-        width: 100px;
-        max-width: 100px;
-        min-width: 100px;
+        width: 20%; 
+        max-width: 20%;
+        min-width: 20%;
     }
 
-    /* Target the first column (ID column) */
     .table-formatting tr > td:nth-child(5) {
-        width: 100px; /* or whatever width you want */
-        max-width: 100px;
-        min-width: 100px;
-        /* Add any other styles you want for this column */
+        width: 20%; 
+        max-width: 20%;
+        min-width: 20%;
     }
 
-    /* If you need to target the header as well */
     .table-formatting th:nth-child(5) {
-        width: 100px;
-        max-width: 100px;
-        min-width: 100px;
+        width: 20%; 
+        max-width: 20%;
+        min-width: 20%;
     }
 
 </style>
@@ -171,7 +156,7 @@
     
     private MatTheme _theme = new MatTheme()
     {
-        Primary = MatThemeColors.Green._900.Value
+        Primary = MatThemeColors.Green._800.Value
     };
 
     protected override async Task OnInitializedAsync()

@@ -275,4 +275,4 @@ __pycache__/
 
 # OSX specific files.
 .DS_Store
-playwright/.auth
+

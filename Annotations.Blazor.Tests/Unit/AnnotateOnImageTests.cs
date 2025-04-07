@@ -12,6 +12,8 @@ public class AnnotateOnImageTests : TestContext
         JSInterop.Mode = JSRuntimeMode.Loose; // allows JS to run during bUnit tests
         var authContext = this.AddTestAuthorization();
         authContext.SetAuthorized("", AuthorizationState.Unauthorized); // fakes authorized state for a fake user
+        
+        // Act
         var annotatePage = RenderComponent<AnnotateOnImage>();
         
         // Assert
@@ -26,10 +28,11 @@ public class AnnotateOnImageTests : TestContext
         JSInterop.Mode = JSRuntimeMode.Loose; // allows JS to run during bUnit tests
         var authContext = this.AddTestAuthorization();
         authContext.SetAuthorized("FAKE USER TEST"); // fakes authorized state for a fake user
+        
+        // Act
         var annotatePage = RenderComponent<AnnotateOnImage>();
         
         // Assert
         annotatePage.Find("img").MarkupMatches("<img src=\"img/billede1.png\" alt=\"Profile Picture\" style=\"width: 80px; height: 80px; border-radius: 50%; object-fit: cover;\">");
-        
     }
 }

@@ -11,6 +11,8 @@ public class PersonalHomeTests : TestContext
         JSInterop.Mode = JSRuntimeMode.Loose; // allows JS to run during bUnit tests
         var authContext = this.AddTestAuthorization();
         authContext.SetAuthorized("", AuthorizationState.Unauthorized); // fakes unauthorized state for a fake user
+        
+        // Act
         var homePage = RenderComponent<Home>();
         
         // Assert
@@ -25,6 +27,8 @@ public class PersonalHomeTests : TestContext
         JSInterop.Mode = JSRuntimeMode.Loose; // allows JS to run during bUnit tests
         var authContext = this.AddTestAuthorization();
         authContext.SetAuthorized("FAKE TEST USER"); // fakes authorized state for a fake user
+        
+        // Act
         var homePage = RenderComponent<Home>();
         
         // Assert

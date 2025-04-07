@@ -1,6 +1,6 @@
 ﻿using Annotations.Blazor.Components.Pages.Annotations;
 
-namespace Annotations.Blazor.Tests.Annotations.Blazor.Tests.Unit;
+namespace Annotations.Blazor.Tests.Unit;
 
 public class AnnotateOnImageTests : TestContext
 {

@@ -2,7 +2,7 @@ using System.Threading.Tasks;
 using Microsoft.Playwright;
 using Microsoft.Playwright.Xunit;
 
-namespace Annotations.Blazor.Tests.Annotations.Blazor.Tests.E2E;
+namespace Annotations.Blazor.Tests.E2E;
 
 public class AnnotationsToolPlaywrightTests: PageTest
 {

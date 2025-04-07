@@ -35,11 +35,5 @@
 	<ItemGroup>
 	  <ProjectReference Include="..\Annotations.Blazor\Annotations.Blazor.csproj" />
 	</ItemGroup>
-
-	<ItemGroup>
-	  <Folder Include="Annotations.Blazor.Tests.Integration\" />
-	</ItemGroup>
-
-
-
+	
 </Project>

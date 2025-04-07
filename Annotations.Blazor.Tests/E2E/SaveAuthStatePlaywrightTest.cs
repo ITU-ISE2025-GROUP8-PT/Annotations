@@ -4,7 +4,7 @@ using Microsoft.Playwright;
 
 namespace Annotations.Blazor.Tests.E2E;
 
-public class SaveAuthState
+public class SaveAuthStatePlaywrightTest
 {
     [Fact]
     public async Task SaveAuthenticatedState()

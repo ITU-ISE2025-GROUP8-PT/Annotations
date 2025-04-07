@@ -405,7 +405,7 @@ paths:
                     type: string
         '400':
           description: Invalid email/password supplied
-  /auth/logout:
+  /authentication/logout:
     post: # post instead of get, becuase both login and logout change the state of the program in some way
       summary: Logs out current logged in user session
       description: ""

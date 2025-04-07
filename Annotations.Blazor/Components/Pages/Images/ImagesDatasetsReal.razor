@@ -18,24 +18,21 @@
     }
 
     .table-formatting {
+        display: block; /* Required for margin: auto to work */
         position: relative;
         border-collapse: collapse;
         border-spacing: 0;
         overflow-x: auto;
-        margin-left: 10%;
-        margin-right: 10%;
-        width: 80%;
+        margin: 1% auto; /* Centers horizontally + keeps vertical margin */
+        width: 41.5%;
         background-color: #e3e7ee;
-        padding-top: 0.8%;
-        padding-bottom: 0.3%;
-        padding-left: 1%;
-        margin-bottom: 1%;
-        margin-top: 1%;
-        border-radius: 10px 10px 10px 10px;
+        padding: 0.8% 1% 0.3% 1%; /* Shorthand for top, right, bottom, left */
+        border-radius: 10px;
         text-align: center;
     }
 
     .table-formatting th {
+        text-align: center;
         padding:0;
         margin: 2%; 
         width: 22.5%;
@@ -54,6 +51,81 @@
         background: #e3e7ee;
     }
 
+    /* Target the first column (ID column) */
+    .table-formatting tr > td:nth-child(1) {
+        width: 100px; /* or whatever width you want */
+        max-width: 100px;
+        min-width: 100px;
+        /* Add any other styles you want for this column */
+    }
+
+    /* If you need to target the header as well */
+    .table-formatting th:nth-child(1){
+        width: 100px;
+        max-width: 100px;
+        min-width: 100px;
+    }
+
+    /* Target the first column (ID column) */
+    .table-formatting tr > td:nth-child(2) {
+        width: 100px; /* or whatever width you want */
+        max-width: 100px;
+        min-width: 100px;
+        /* Add any other styles you want for this column */
+    }
+
+    /* If you need to target the header as well */
+    .table-formatting th:nth-child(2) {
+        width: 100px;
+        max-width: 100px;
+        min-width: 100px;
+    }
+
+    /* Target the first column (ID column) */
+    .table-formatting tr > td:nth-child(3) {
+        width: 150px; /* or whatever width you want */
+        max-width: 150px;
+        min-width: 150px;
+        /* Add any other styles you want for this column */
+    }
+
+    /* If you need to target the header as well */
+    .table-formatting th:nth-child(3) {
+        width: 150px;
+        max-width: 150px;
+        min-width: 150px;
+    }
+
+    /* Target the first column (ID column) */
+    .table-formatting tr > td:nth-child(4) {
+        width: 100px; /* or whatever width you want */
+        max-width: 100px;
+        min-width: 100px;
+        /* Add any other styles you want for this column */
+    }
+
+    /* If you need to target the header as well */
+    .table-formatting th:nth-child(4) {
+        width: 100px;
+        max-width: 100px;
+        min-width: 100px;
+    }
+
+    /* Target the first column (ID column) */
+    .table-formatting tr > td:nth-child(5) {
+        width: 100px; /* or whatever width you want */
+        max-width: 100px;
+        min-width: 100px;
+        /* Add any other styles you want for this column */
+    }
+
+    /* If you need to target the header as well */
+    .table-formatting th:nth-child(5) {
+        width: 100px;
+        max-width: 100px;
+        min-width: 100px;
+    }
+
 </style>
 
 <div style=" display: flex; flex-direction:row;">
@@ -65,23 +137,29 @@
 
 <MatThemeProvider Theme="_theme">
     <MatTable Items="Datasets" class="table-formatting">
+        <MatTableHeader>
+            <th>Dataset ID</th>
+            <th>Nr. of Images</th>
+            <th>Category</th>
+            <th>Annotated By</th>
+            <th>Reviewed By</th>
+        </MatTableHeader>
         <MatTableRow>
             <td>
-                <MatButtonLink href="@($"https://localhost:7238/images/datasets/{context.Id}")">Dataset: @context.Id</MatButtonLink>
+                <MatButtonLink href="@($"https://localhost:7238/images/datasets/{context.Id}")">@context.Id</MatButtonLink>
             </td>
             <td>
-                Images in Dataset: @context.ImageIds.Count
+                @context.ImageIds.Count
             </td>
             <td>
-                Category: @context.Category
+                @context.Category
             </td>
             <td>
-                Annotated By: @context.AnnotatedBy
+                @context.AnnotatedBy
             </td>
             <td>
-                Reviewed By: @context.ReviewedBy
+                @context.ReviewedBy
             </td>
-
         </MatTableRow>
     </MatTable>
 </MatThemeProvider>
@@ -138,6 +216,7 @@
     public class Dataset
     {
         public int Id { get; set; }
+        
         public List<int> ImageIds{ get; set; }
    
         public string Category { get; set; }
@@ -147,7 +226,6 @@
         public int ReviewedBy { get; set; }
         
         public Dataset(int id, List<int> imageIds, string category, int annotatedBy, int reviewedBy)
-        
         {
             Id = id;
             ImageIds = imageIds;

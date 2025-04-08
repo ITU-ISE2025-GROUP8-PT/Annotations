@@ -1,19 +1,37 @@
-﻿@page "/images/datasets/{dataset}/"
+﻿@rendermode InteractiveServer
+@page "/images/datasets/{dataset}/"
 @using MatBlazor
 @using Microsoft.AspNetCore.Authentication
 @using global::Annotations.Core.Models
 @using Microsoft.AspNetCore.Authentication
 @inject IHttpClientFactory ClientFactory
 @inject IHttpContextAccessor httpContextAccessor
+
+<style>
+    .filterButton {/*for functionality later on*/
+        text-align: right; 
+        width: 10%;
+        border: 5px;
+        cursor: pointer;
+        background-color: transparent;
+        font-size: 110%;
+        margin-right: 3%;
+        text-decoration: underline;
+    }
+
+    #displayImages {/*images are a third - three images per line*/
+        width: 2%;
+        padding: 1%;
+    }
+</style>
+
   
-@if (images==null)//TODO: better error handling - this doesn't even work
+@if (images == null) //Does this work? If not, why?
 {
-    <p><em>No images found</em></p>
+    <p><em>This Dataset is empty.</em></p>
 }
 else
 {
-   
-
     <div style=" display: flex; flex-direction:row;"><!--To make both lines on the same row -->
         
         <span style="padding:2%; font-weight: bold; width: 90%; font-size: 215%">Dataset @dataset</span>
@@ -21,20 +39,22 @@ else
         
     </div>
 
-    <Virtualize Items="@images" OverscanCount="1">
-        <ItemContent>
-            <img src="@GetImageSource(@context)" alt="Image" style="width: 100%; height: auto;" />
-        </ItemContent>
-    </Virtualize>  
-   
-    
+    <div class="container DivToScroll" >
+        <Virtualize ItemsProvider="@LoadImages" OverscanCount="1">
+            <ItemContent>
+            
+                <img class="displayImages" src="@GetImageSource(@context)" alt="placeholder" style="width: 100%; height: auto;" />
+                <!-- TODO: unsure of how to get the alt text in a Virtualize loop. Maybe an imageobject-->
+            </ItemContent>
+        </Virtualize> 
+    </div> 
 }
 
 @code{
     //TODO: code duplication from Image.Filter.razor
-    [Parameter] public string dataset { get; set; }//get access to parameter from URL/get request
-    public string[]? images;//all byte arrays as strings
-    private string[]? altText;
+    [Parameter] public string dataset { get; set; } //get access to parameter from URL/get request
+    public string[]? images; //all img byte arrays as base64 strings
+    private string[]? altText; //all img alt text
 
     protected override async Task OnInitializedAsync()
     {
@@ -58,7 +78,7 @@ else
             {
                 var imageObject = System.Text.Json.JsonSerializer.Deserialize<ImageModel>(answer[i]);//JSON file becomes imageModel object
                 var imageData = imageObject.ImageData;
-                images[i] = System.Convert.ToBase64String(imageData);//byte array to string
+                images[i] = System.Convert.ToBase64String(imageData); //byte array to base64 string
                 altText[i] = imageObject.Description;
             }
         }
@@ -71,10 +91,17 @@ else
 
 
     }
-    public string GetImageSource(string base64)
-        {
-        // From chatgpt
-        return $"data:image;base64,{base64}";
-        }
 
+    /* Define an item provider - IEnumerable of items to iterate over for Virtualize 
+        Code inspired by: https://toxigon.com/implementing-lazy-loading-in-blazor */
+    private async ValueTask<ItemsProviderResult<string>> LoadImages(ItemsProviderRequest request) {
+        return new ItemsProviderResult<string>(images, images.Length);
+    } 
+
+    /* Converts the image base64 string into an url the website can render
+        as an image. */
+    public string GetImageSource(string base64)
+    {
+        return $"data:image;base64,{base64}";
+    }
 }

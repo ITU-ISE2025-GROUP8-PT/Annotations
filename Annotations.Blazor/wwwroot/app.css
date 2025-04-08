@@ -103,11 +103,7 @@ h1:focus {
     color: white;
 }
 
-.displayImages {/*images are a third - three images per line*/
-    width: 33%;
-    padding: 1%;
 
-}
 .container {
     display: flex;
     flex-direction: row;

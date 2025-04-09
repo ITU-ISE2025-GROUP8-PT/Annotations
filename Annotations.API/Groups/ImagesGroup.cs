@@ -57,7 +57,7 @@ public static class ImagesGroup
         //This is the upload endpoint where the image first gets validated, and then gets uploaded into your local Azurite BlobStorage as a JSON file
         pathBuilder.MapPost("/upload",
             async (IFormFile image, string category, AnnotationsDbContext context, [FromServices] IAzureClientFactory<BlobServiceClient> clientFactory) =>
-            {//TODO: more parameters for the other fields in images?
+            {//TODO: more paramters for the other fields in images?
 
                 ValidationResponse response = ValidateImage(image);
                 if (!response.Success)

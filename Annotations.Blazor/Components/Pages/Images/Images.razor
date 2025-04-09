@@ -1,4 +1,3 @@
-@using Microsoft.AspNetCore.Authentication
 @page "/images/{imageId}"
 @using global::Annotations.Core.Models
 
@@ -11,8 +10,9 @@
 }
 else
 {
-    <img src="data:image;base64, @image" alt="@altText" /><!--src is a URL - it's converted from a string of the byte array--> 
-
+    <div class="container DivToScroll">
+        <img class="displaySoloImage" src="data:image;base64, @image" alt="@altText" /><!--src is a URL - it's converted from a string of the byte array--> 
+    </div>
 }
 @code{
 

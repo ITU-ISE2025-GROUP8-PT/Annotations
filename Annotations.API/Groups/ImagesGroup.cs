@@ -199,6 +199,9 @@ public static class ImagesGroup
                         await BlobClient.DownloadToAsync(memoryStream);
                         var jsonString = System.Text.Encoding.UTF8.GetString(memoryStream.ToArray());//JSON file as string
                         var imageObject = System.Text.Json.JsonSerializer.Deserialize<ImageModel>(jsonString);//deserialize so it becomes imageModel
+                        if (imageObject == null)
+                        {
+                            throw new Exception("image object is null");}
                         if (imageObject.Category == category)
                         {
                             collection.Add(jsonString);
@@ -265,11 +268,19 @@ public static class ImagesGroup
                 }).Where(DatasetModel => DatasetModel.Id == Int32.Parse(dataset));
                 //there is only one dataset with a certain Id, so no point of taking more
             var datasetModel = await datasets.FirstOrDefaultAsync();
+
+            if (datasetModel == null)
+            {
+                Console.WriteLine("No dataset found");
+                throw new Exception("No dataset found");
+            };
+            
             HashSet<string> collection = new HashSet<string>();
             var blobServiceClient = clientFactory.CreateClient("Default");
             BlobContainerClient containerClient = blobServiceClient.GetBlobContainerClient("images");
             //foreach (DatasetModel datasetModel in datasets)//guaranteed to only be one dataset in "datasets", so this is not linear time. 
             //{//there is a better way of doing this
+            
                 foreach (int ids in datasetModel.ImageIds)
                 {
                     Console.WriteLine(ids);

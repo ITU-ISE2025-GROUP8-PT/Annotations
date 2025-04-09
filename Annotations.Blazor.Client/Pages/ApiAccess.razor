@@ -24,11 +24,18 @@ else
 
 
 @code {
-    private IEnumerable<string>? story;
+    private IEnumarable<string>? story;
 
     protected override async Task OnInitializedAsync()
     {
-        story = await ApiTester.GetTestStringsAsync();
+        try
+        {
+            story = await ApiTester.GetTestStringsAsync();
+        }
+        catch (IOException e)
+        {
+            story = new List<string>().Add(e.Message);
+        }
     }
 
 }

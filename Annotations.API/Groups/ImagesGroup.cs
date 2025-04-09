@@ -225,8 +225,9 @@ public static class ImagesGroup
             {
                 var cts = new CancellationTokenSource(5000);
 
+                //Datasets from DBContext are transformed to DatasetModels
                 var datasets = await context.Datasets
-                    .Select(u => new DatasetModel()//is this too much?
+                    .Select(u => new DatasetModel()
                     {
                         Id = u.Id,
                         ImageIds = u.ImageIds,
@@ -235,15 +236,10 @@ public static class ImagesGroup
                         ReviewedBy = u.ReviewedBy
                     })
                     .ToListAsync();
+                
+                //DatasetModel list is converted to Array for sending to Blazor front-end
                 DatasetModel[] datasetsarray = datasets.ToArray();
-                //int[] names = new int[datasets.Count];
-                /*int counter = 0;
-                foreach (DatasetModel dataset in datasets)//better way of doing this
-                {
-                    names[counter] = dataset.Id;
-                    counter++;
-                }*/
-                //return names;//array of all ids of datasets
+
                 return datasetsarray;
 
             }).DisableAntiforgery();

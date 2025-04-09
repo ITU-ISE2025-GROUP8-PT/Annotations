@@ -4,6 +4,7 @@
  */
 
 using Annotations.Blazor.Client;
+using Annotations.Blazor.Client.ApiTest;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 
@@ -13,11 +14,11 @@ builder.Services.AddAuthorizationCore();
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddSingleton<AuthenticationStateProvider, PersistentAuthenticationStateProvider>();
 
-/*
-builder.Services.AddHttpClient<IWeatherForecaster, ClientWeatherForecaster>(httpClient =>
+
+builder.Services.AddHttpClient<IApiTester, ClientApiTester>(httpClient =>
 {
     httpClient.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress);
 });
-*/
+
 
 await builder.Build().RunAsync();

@@ -8,6 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+	<ProjectReference Include="..\Annotations.Blazor.Client\Annotations.Blazor.Client.csproj" />
     <PackageReference Include="MatBlazor" Version="2.10.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="8.0.14" />
     <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="8.0.14" />

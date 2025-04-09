@@ -103,13 +103,13 @@ h1:focus {
     color: white;
 }
 
-
 .container {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
-
+    overflow-y:scroll;
 }
+
 .DivToScroll{
     background-color: #F5F5F5;
     border: 1px solid #DDDDDD;
@@ -121,6 +121,7 @@ h1:focus {
     padding: 1.5%;
     scrollbar-width: auto;
 }
+
 .filterButton {/*for functionality later on*/
     text-align: right; 
     width: 10%;
@@ -235,4 +236,22 @@ h1:focus {
     width: 20%; 
     max-width: 20%;
     min-width: 20%;
+}
+
+.filterButton {/*for functionality later on*/
+    text-align: right; 
+    width: 10%;
+    border: 5px;
+    cursor: pointer;
+    background-color: transparent;
+    font-size: 110%;
+    margin-right: 3%;
+    text-decoration: underline;
+}
+
+
+.displayImages {/*images are a third - three images per line*/
+    width: 33%;
+    height: 33%;
+    padding: 1%;
 }

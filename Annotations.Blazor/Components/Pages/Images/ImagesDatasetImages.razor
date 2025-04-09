@@ -1,50 +1,28 @@
 ﻿@rendermode InteractiveServer
 @page "/images/datasets/{dataset}/"
-@using MatBlazor
-@using Microsoft.AspNetCore.Authentication
 @using global::Annotations.Core.Models
-@using Microsoft.AspNetCore.Authentication
 @inject IHttpClientFactory ClientFactory
 @inject IHttpContextAccessor httpContextAccessor
 
-<style>
-    .filterButton {/*for functionality later on*/
-        text-align: right; 
-        width: 10%;
-        border: 5px;
-        cursor: pointer;
-        background-color: transparent;
-        font-size: 110%;
-        margin-right: 3%;
-        text-decoration: underline;
-    }
-
-    #displayImages {/*images are a third - three images per line*/
-        width: 2%;
-        padding: 1%;
-    }
-</style>
-
   
-@if (images == null) //Does this work? If not, why?
+@if (images == null) //This will show on screen in a milisecond before imgs load. Should it be "Loading..."?
 {
     <p><em>This Dataset is empty.</em></p>
 }
 else
 {
     <div style=" display: flex; flex-direction:row;"><!--To make both lines on the same row -->
-        
         <span style="padding:2%; font-weight: bold; width: 90%; font-size: 215%">Dataset @dataset</span>
         <button class="filterButton">Filter by...</button>
-        
     </div>
 
     <div class="container DivToScroll" >
-        <Virtualize ItemsProvider="@LoadImages" OverscanCount="1">
+    <!--Virtualize is a special loop that loops OverscanCount data - here the imgs received from API-->
+        <Virtualize ItemsProvider="@LoadImages" OverscanCount="15">
+            <!--OverscanCount must always be divisible by 3! As we have 3 imgs per line-->
+            <!--It represents the number of images loaded before and after current position-->
             <ItemContent>
-            
-                <img class="displayImages" src="@GetImageSource(@context)" alt="placeholder" style="width: 100%; height: auto;" />
-                <!-- TODO: unsure of how to get the alt text in a Virtualize loop. Maybe an imageobject-->
+                <img class="displayImages" src="@GetImageSource(@context.Base64Data)" alt="@context.AltText" />
             </ItemContent>
         </Virtualize> 
     </div> 
@@ -53,49 +31,76 @@ else
 @code{
     //TODO: code duplication from Image.Filter.razor
     [Parameter] public string dataset { get; set; } //get access to parameter from URL/get request
-    public string[]? images; //all img byte arrays as base64 strings
-    private string[]? altText; //all img alt text
-
+    public ImageModelWeb[]? images; //all imgs from API turned into local datatype class (see further down)
+    
+    //Will run when site is initialized
     protected override async Task OnInitializedAsync()
     {
-        var httpContext = httpContextAccessor.HttpContext ?? throw new InvalidOperationException("No HttpContext available");//make connection
+        //make connection to website
+        var httpContext = httpContextAccessor.HttpContext ?? throw new InvalidOperationException("No HttpContext available");
 
-        var accessToken = await httpContext.GetTokenAsync("access_token") ?? throw new InvalidOperationException("No access_token was saved");//authorization
-
+        //authorization
+        var accessToken = await httpContext.GetTokenAsync("access_token") ?? throw new InvalidOperationException("No access_token was saved");
+        
         var client = ClientFactory.CreateClient();
-        client.BaseAddress = new("https://localhost:7250");//connect to Web API
+        
+        //connect to Web API
+        client.BaseAddress = new("https://localhost:7250");
 
-        using var requestMessage = new HttpRequestMessage(HttpMethod.Get, $"/images/datasets/{dataset}");//access endpoint
-        requestMessage.Headers.Authorization = new("Bearer", accessToken);//bearer token for authorization
+        //access endpoint
+        using var requestMessage = new HttpRequestMessage(HttpMethod.Get, $"/images/datasets/{dataset}");
 
-        using var response = await client.SendAsync(requestMessage);//sending the response
+        //bearer token for authorization
+        requestMessage.Headers.Authorization = new("Bearer", accessToken);
+
+        //sending the response
+        using var response = await client.SendAsync(requestMessage);
+        
         try
         {
-            string[] answer = await response.Content.ReadFromJsonAsync<string[]>();//string array of JSON files of the images as strings
-            images = new string[answer.Length];
-            altText = new string[answer.Length];
+            //string array of JSON files of the images as strings
+            string[] answer = await response.Content.ReadFromJsonAsync<string[]>();
+            
+            //initialize array for storing images to be shown on the webpage
+            images = new ImageModelWeb[answer.Length];
+            
             for (int i = 0; i < answer.Length; i++)
             {
-                var imageObject = System.Text.Json.JsonSerializer.Deserialize<ImageModel>(answer[i]);//JSON file becomes imageModel object
+                //JSON file becomes ImageModel object
+                var imageObject = System.Text.Json.JsonSerializer.Deserialize<ImageModel>(answer[i]);
+                
+                //Byte array data for the image
                 var imageData = imageObject.ImageData;
-                images[i] = System.Convert.ToBase64String(imageData); //byte array to base64 string
-                altText[i] = imageObject.Description;
+
+                //Adding Base64 data and alt text as local ImageModel type to array
+                images[i] = new ImageModelWeb (System.Convert.ToBase64String(imageData), imageObject.Description);
             }
         }
         catch (Exception e)//if nothing is retrieved - prints out error
         {
             Console.WriteLine("Status code: " + response.StatusCode);
-            images = new string[1];
-            images[0] = response.StatusCode.ToString();
+            images = new ImageModelWeb[1];
+            images[0] = new ImageModelWeb(null, response.StatusCode.ToString());
         }
+    }
 
-
+    //local datatype class for images
+    public class ImageModelWeb 
+    {
+        public string Base64Data {get; set;}
+        public string AltText {get; set;}
+        
+        public ImageModelWeb (string Base64DataInput, string AltTextInput) {
+            Base64Data = Base64DataInput;
+            AltText = AltTextInput;
+        }
     }
 
     /* Define an item provider - IEnumerable of items to iterate over for Virtualize 
         Code inspired by: https://toxigon.com/implementing-lazy-loading-in-blazor */
-    private async ValueTask<ItemsProviderResult<string>> LoadImages(ItemsProviderRequest request) {
-        return new ItemsProviderResult<string>(images, images.Length);
+    private async ValueTask<ItemsProviderResult<ImageModelWeb>> LoadImages(ItemsProviderRequest request)
+    {
+        return new ItemsProviderResult<ImageModelWeb>(images, images.Length);
     } 
 
     /* Converts the image base64 string into an url the website can render

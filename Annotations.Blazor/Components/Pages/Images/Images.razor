@@ -4,6 +4,7 @@
 
 @inject IHttpClientFactory ClientFactory
 @inject IHttpContextAccessor httpContextAccessor
+@inject NavigationManager NavigationManager
 
 @if (error)
 {
@@ -20,7 +21,7 @@ else
     private bool error = false;//used to determine if there was an error - blazor page displays something different if that was the case
     private string? altText;
 
-    [Parameter] public string imageId { get; set; }//get access to parameter from URL/get request
+    [Parameter] public string imageId { get; set; } = "";//get access to parameter from URL/get request
 
     protected override async Task OnInitializedAsync()
     {
@@ -49,8 +50,10 @@ else
             Console.WriteLine("Status code: " + response.StatusCode);
             image = response.StatusCode.ToString();
             error = true;//there has been an error
-        }
+           
 
+        }
     }
+    
 
 }

@@ -65,7 +65,7 @@
 
 </div>
 <div class = "container DivToScroll">
-    @foreach (var name in datasets)//TODO: dont hardcode these values (e.g. number of images)
+    @foreach (var name in Datasets)//TODO: dont hardcode these values (e.g. number of images)
     {
         <div class="datasetContainers">
             <div style=" display: flex; flex-direction:row; flex-wrap: nowrap">
@@ -90,8 +90,8 @@
 
 
 @code{
-    public List<int>? datasets = new List<int>();//it only works as a list, not an array
-    private bool error = false;//this isn't used yet
+    public List<int>? Datasets = new ();//it only works as a list, not an array
+    
     //TODO: error handling (what blazor pages returns)
 
     protected override async Task OnInitializedAsync()
@@ -110,15 +110,18 @@
         try
         {
             var existingIds = await response.Content.ReadFromJsonAsync<int[]>();//int array of all the ids of all the existing datasets
+            ArgumentNullException.ThrowIfNull(existingIds);
+            await Task.Yield();
             for (int i = 0; i < existingIds.Length; i++)
             {
-                datasets.Add(existingIds[i]);
+                Datasets.Add(existingIds[i]);
             }
         }
         catch (Exception e)
         {
             Console.WriteLine("Status code: " + response.StatusCode);
-            error = true;
+            //create empty list
+            Datasets = new List<int>();
         }
 
     }

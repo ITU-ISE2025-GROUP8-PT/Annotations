@@ -43,7 +43,7 @@
 </style>
 
 
-@if (images==null)//TODO: better error handling - this doesn't even work
+@if (_images==null) //TODO better error handling
 {
     <p><em>No images found</em></p>
 }
@@ -51,7 +51,7 @@ else
 {
     <div style=" display: flex; flex-direction:row;"><!--To make both lines on the same row -->
         
-        <span style="padding:2%; font-weight: bold; width: 90%; font-size: 215%">Dataset @dataset</span>
+        <span style="padding:2%; font-weight: bold; width: 90%; font-size: 215%">Dataset @Dataset</span>
         <button class="filterButton">Filter by...</button>
         
     </div>
@@ -60,9 +60,9 @@ else
    
         
     <div class="container DivToScroll" >
-        @for (int i = 0; i < images.Length; i++)
+        @for (int i = 0; i < _images.Length; i++)
         {
-            <img class = "displayImages" src="data:image;base64, @images[i]" alt="@altText[i]" /><!--src is a URL - it's converted from a string of the byte array--> 
+            <img class = "displayImages" src="data:image;base64, @_images[i]" alt="@_altText[i]" /><!--src is a URL - it's converted from a string of the byte array--> 
         }
     </div>
     
@@ -73,9 +73,9 @@ else
 }
 @code{
     //TODO: code duplication from Image.Filter.razor
-    [Parameter] public string dataset { get; set; }//get access to parameter from URL/get request
-    private string[]? images;//all byte arrays as strings
-    private string[]? altText;
+    [Parameter] public string Dataset { get; set; } = "";//get access to parameter from URL/get request
+    private string[]? _images;//all byte arrays as strings
+    private string[]? _altText;
 
     protected override async Task OnInitializedAsync()
     {
@@ -86,28 +86,38 @@ else
         var client = ClientFactory.CreateClient();
         client.BaseAddress = new("https://localhost:7250");//connect to Web API
 
-        using var requestMessage = new HttpRequestMessage(HttpMethod.Get, $"/images/datasets/{dataset}");//access endpoint
+        using var requestMessage = new HttpRequestMessage(HttpMethod.Get, $"/images/datasets/{Dataset}");//access endpoint
         requestMessage.Headers.Authorization = new("Bearer", accessToken);//bearer token for authorization
 
         using var response = await client.SendAsync(requestMessage);//sending the response
+        if (!response.IsSuccessStatusCode)
+        {
+            Console.WriteLine("Status code: " + response.StatusCode);
+            throw new HttpRequestException($"failed: {response.StatusCode}");
+        }
         try
         {
+            //TODO handle respnse if null
             string[] answer = await response.Content.ReadFromJsonAsync<string[]>();//string array of JSON files of the images as strings
-            images = new string[answer.Length];
-            altText = new string[answer.Length];
+            ArgumentNullException.ThrowIfNull(answer);
+            await Task.Yield();
+            _images = new string[answer.Length];
+            _altText = new string[answer.Length];
             for (int i = 0; i < answer.Length; i++)
             {
                 var imageObject = System.Text.Json.JsonSerializer.Deserialize<ImageModel>(answer[i]);//JSON file becomes imageModel object
+                ArgumentNullException.ThrowIfNull(imageObject);
+                await Task.Yield();
                 var imageData = imageObject.ImageData;
-                images[i] = System.Convert.ToBase64String(imageData);//byte array to string
-                altText[i] = imageObject.Description;
+                _images[i] = System.Convert.ToBase64String(imageData);//byte array to string
+                _altText[i] = imageObject.Description;
             }
         }
         catch (Exception e)//if nothing is retrieved - prints out error
         {
             Console.WriteLine("Status code: " + response.StatusCode);
-            images = new string[1];
-            images[0] = response.StatusCode.ToString();
+            _images = new string[1];
+            _images[0] = response.StatusCode.ToString();
         }
 
     }

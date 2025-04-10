@@ -54,45 +54,49 @@
         margin: 0; 
         width: 21%
     }
-
 </style>
-<div style=" display: flex; flex-direction:row;">
 
-    <span style="margin-left:13%; margin-top:0.0001%; padding-bottom:2%; font-weight: bold; width: 72%; font-size: 215%">Manage datasets</span>
-    <div style="width:15%">
-        <button class="orderingButton">Order by...</button>
-    </div>
+@if (_errorExist)
+{
+    <Error/>
+}
+else
+{
 
-</div>
-<div class = "container DivToScroll">
-    @foreach (var name in Datasets)//TODO: dont hardcode these values (e.g. number of images)
-    {
-        <div class="datasetContainers">
-            <div style=" display: flex; flex-direction:row; flex-wrap: nowrap">
-                <span class = "textForDatasetsA" style="font-weight: bold">Dataset @name</span>
-                <span class = "textForDatasetsB">Annotated by: 1 person</span>
-            </div>
-            <div style=" display: flex; flex-direction:row; flex-wrap: nowrap">
-                <span class = "textForDatasetsA">Number of images: 3</span>
-                <span class = "textForDatasetsB">Reviewed by: 1 person</span>
-            </div>
-            <div style=" display: flex; flex-direction:row; flex-wrap: nowrap">
-                <span style="padding:0; margin: 0;  width: 95.5%;">Category: "?"</span>
-                <a href="https://localhost:7238/images/datasets/@name"><img src="https://www.svgrepo.com/download/64793/inverted-triangle.svg" alt="small black arrow pointing downwards" style="max-height: 30px; width:auto; margin-top: 0.1%; margin-bottom: 0.0001%">
-                </a>
-            </div>
+    <div style=" display: flex; flex-direction:row;">
+
+        <span style="margin-left:13%; margin-top:0.0001%; padding-bottom:2%; font-weight: bold; width: 72%; font-size: 215%">Manage datasets</span>
+        <div style="width:15%">
+            <button class="orderingButton">Order by...</button>
         </div>
-    }
-</div>
 
-
-
+    </div>
+    <div class="container DivToScroll">
+        @foreach (var name in Datasets) //TODO: dont hardcode these values (e.g. number of images)
+        {
+            <div class="datasetContainers">
+                <div style=" display: flex; flex-direction:row; flex-wrap: nowrap">
+                    <span class="textForDatasetsA" style="font-weight: bold">Dataset @name</span>
+                    <span class="textForDatasetsB">Annotated by: 1 person</span>
+                </div>
+                <div style=" display: flex; flex-direction:row; flex-wrap: nowrap">
+                    <span class="textForDatasetsA">Number of images: 3</span>
+                    <span class="textForDatasetsB">Reviewed by: 1 person</span>
+                </div>
+                <div style=" display: flex; flex-direction:row; flex-wrap: nowrap">
+                    <span style="padding:0; margin: 0;  width: 95.5%;">Category: "?"</span>
+                    <a href="https://localhost:7238/images/datasets/@name"><img src="https://www.svgrepo.com/download/64793/inverted-triangle.svg" alt="small black arrow pointing downwards" style="max-height: 30px; width:auto; margin-top: 0.1%; margin-bottom: 0.0001%">
+                    </a>
+                </div>
+            </div>
+        }
+    </div>
+}
 
 
 @code{
     public List<int> Datasets = new ();//it only works as a list, not an array
-    
-    //TODO: error handling (what blazor pages returns)
+    private bool _errorExist = false;
 
     protected override async Task OnInitializedAsync()
     {
@@ -123,6 +127,8 @@
             Console.WriteLine(e.Message);
             //create empty list
             Datasets = new List<int>();
+            _errorExist = true;
+            
         }
 
     }

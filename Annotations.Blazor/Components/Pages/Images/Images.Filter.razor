@@ -6,6 +6,7 @@
 @inject IHttpClientFactory ClientFactory
 @inject IHttpContextAccessor httpContextAccessor
 
+
 <style>
     .displayImages {/*images are a third - three images per line*/
         width: 33%;
@@ -44,11 +45,14 @@
 </style>
 
 
-@if (images==null)//TODO: better error handling - this doesn't even work
+@if (_errorExist)
 {
-    <p><em>No images found</em></p>
+    <Error/>
 }
-else
+else if (_existenseOfImages){
+    <p><em>No images found for category @category </em></p>
+}
+else 
 {
     <div style=" display: flex; flex-direction:row;"><!--To make both lines on the same row -->
         
@@ -74,6 +78,11 @@ else
     [Parameter] public string category { get; set; } = "";//get access to parameter from URL/get request
     private string[] images = new []{""};//all byte arrays as strings
     private string[] altText = new []{""};
+    private bool _errorExist = false;
+    private bool _existenseOfImages = false;
+    
+    
+    [Inject] private NavigationManager Navigation { get; set; } = default!;
 
     protected override async Task OnInitializedAsync()
     {
@@ -91,13 +100,15 @@ else
         try
         {
             string[] answer = await response.Content.ReadFromJsonAsync<string[]>() ?? throw new NoNullAllowedException(); //string array of JSON files of the images as strings
+            if (answer.Length == 0)
+            {
+                _existenseOfImages = true;
+            }
             images = new string[answer.Length];
             altText = new string[answer.Length];
             for (int i = 0; i < answer.Length; i++)
             {
-                var imageObject = System.Text.Json.JsonSerializer.Deserialize<ImageModel>(answer[i]);//JSON file becomes imageModel object
-                ArgumentNullException.ThrowIfNull(imageObject);
-                await Task.Yield();
+                var imageObject = System.Text.Json.JsonSerializer.Deserialize<ImageModel>(answer[i]) ?? throw new NoNullAllowedException();//JSON file becomes imageModel object
                 var imageData = imageObject.ImageData;
                 altText[i] = imageObject.Description;
                 images[i] = System.Convert.ToBase64String(imageData);//byte array to string
@@ -109,6 +120,7 @@ else
             Console.WriteLine(e.Message);
             images = new string[1];
             images[0] = response.StatusCode.ToString();
+            _errorExist = true;
         }
 
     }

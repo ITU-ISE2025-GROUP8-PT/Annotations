@@ -44,11 +44,14 @@
 </style>
 
 
-@if (_images[0] == "") //TODO better error handling
+@if (_errorExist)
 {
-    <p><em>No images found</em></p>
+    <Error/>
 }
-else
+else if (_existenseOfImages)
+{
+    <p><em>No datasets found</em></p>
+} else
 {
     <div style=" display: flex; flex-direction:row;"><!--To make both lines on the same row -->
         
@@ -77,6 +80,8 @@ else
     [Parameter] public string Dataset { get; set; } = "";//get access to parameter from URL/get request
     private string[] _images = new []{""};//all byte arrays as strings
     private string[] _altText = new []{""};
+    private bool _errorExist = false;
+    private bool _existenseOfImages = false;
 
     protected override async Task OnInitializedAsync()
     {
@@ -98,8 +103,11 @@ else
         }
         try
         {
-            //TODO handle respnse if null
             string[] answer = await response.Content.ReadFromJsonAsync<string[]>() ?? throw new NoNullAllowedException();//string array of JSON files of the images as strings
+            if (answer.Length == 0)
+            {
+                _existenseOfImages = true;
+            }
             _images = new string[answer.Length];
             _altText = new string[answer.Length];
             for (int i = 0; i < answer.Length; i++)
@@ -118,6 +126,7 @@ else
             Console.WriteLine(e.Message);
             _images = new string[1];
             _images[0] = response.StatusCode.ToString();
+            _errorExist = true;
         }
 
     }

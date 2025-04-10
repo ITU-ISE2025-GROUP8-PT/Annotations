@@ -1,4 +1,9 @@
-﻿using System.Net.Http.Json;
+﻿/*
+ * The following code is based on https://github.com/dotnet/blazor-samples and https://github.com/dotnet/blazor-samples/tree/main/8.0/BlazorWebAppOidcBff
+ * Provided by Microsoft Corporation under the MIT license.
+ */
+
+using System.Net.Http.Json;
 
 namespace Annotations.Blazor.Client.ApiTest
 {

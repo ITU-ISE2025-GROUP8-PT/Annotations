@@ -1,21 +1,21 @@
 ﻿@page "/ApiAccess"
 @using Microsoft.AspNetCore.Authorization
-@using Annotations.Blazor.Client.ApiTest
-@inject IApiTester ApiTester
+@using ApiTest
 @attribute [Authorize]
+@inject IApiTester ApiTester
 
 <PageTitle>ApiAccesse</PageTitle>
 
 <h1>API Access test</h1>
 
-@if (story == null)
+@if (_story == null)
 {
     <p><em>Loading...</em></p>
 }
 else
 {
     <ul>
-        @foreach (var word in story)
+        @foreach (var word in _story)
         {
             <li>@word</li>
         }
@@ -24,17 +24,17 @@ else
 
 
 @code {
-    private IEnumarable<string>? story;
+    private IEnumerable<string>? _story;
 
     protected override async Task OnInitializedAsync()
     {
         try
         {
-            story = await ApiTester.GetTestStringsAsync();
+            _story = await ApiTester.GetTestStringsAsync();
         }
         catch (IOException e)
         {
-            story = new List<string>().Add(e.Message);
+            _story = [e.Message];
         }
     }
 

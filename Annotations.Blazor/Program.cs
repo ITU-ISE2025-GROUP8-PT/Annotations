@@ -10,7 +10,6 @@ using Annotations.Blazor.Components;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
-using System.Net;
 using Microsoft.AspNetCore.Authentication;
 
 const string oidcScheme = "Annotations OIDC";
@@ -138,6 +137,7 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents()
     .AddInteractiveWebAssemblyComponents();
 
+builder.Services.AddHttpForwarderWithServiceDiscovery();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddHttpClient<IApiTester, ServerApiTester>(httpClient =>
 {

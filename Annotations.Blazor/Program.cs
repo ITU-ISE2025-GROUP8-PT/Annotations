@@ -3,10 +3,15 @@
  * Provided by Microsoft Corporation under the MIT license.
  */
 
+using Yarp.ReverseProxy.Transforms;
+using Annotations.Blazor;
+using Annotations.Blazor.Client.ApiTest;
 using Annotations.Blazor.Components;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+using System.Net;
+using Microsoft.AspNetCore.Authentication;
 
 const string oidcScheme = "Annotations OIDC";
 
@@ -128,18 +133,25 @@ builder.Services.ConfigureCookieOidcRefresh(CookieAuthenticationDefaults.Authent
 builder.Services.AddAuthorization();
 builder.Services.AddCascadingAuthenticationState();
 
-
 // Add services to the container.
 builder.Services.AddRazorComponents()
-    .AddInteractiveServerComponents();
+    .AddInteractiveServerComponents()
+    .AddInteractiveWebAssemblyComponents();
 
 builder.Services.AddHttpContextAccessor();
-builder.Services.AddHttpClient();
+builder.Services.AddHttpClient<IApiTester, ServerApiTester>(httpClient =>
+{
+    httpClient.BaseAddress = new("https://localhost:7250");
+});
 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (!app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment())
+{
+    app.UseWebAssemblyDebugging();
+}
+else
 {
     app.UseExceptionHandler("/Error", createScopeForErrors: true);
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
@@ -152,9 +164,19 @@ app.UseStaticFiles();
 app.UseAntiforgery();
 
 app.MapRazorComponents<App>()
-    .AddInteractiveServerRenderMode();
+    .AddInteractiveServerRenderMode()
+    .AddInteractiveWebAssemblyRenderMode()
+    .AddAdditionalAssemblies(typeof(Annotations.Blazor.Client._Imports).Assembly);
+
+app.MapForwarder("/images/APITest", "https://localhost:7250", transformBuilder =>
+{
+    transformBuilder.AddRequestTransform(async transformContext =>
+    {
+        var accessToken = await transformContext.HttpContext.GetTokenAsync("access_token");
+        transformContext.ProxyRequest.Headers.Authorization = new("Bearer", accessToken);
+    });
+}).RequireAuthorization();
 
 app.MapGroup("/authentication").MapLoginAndLogout();
-app.MapGroup("/images");
 
 app.Run();

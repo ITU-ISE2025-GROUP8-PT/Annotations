@@ -1,3 +1,4 @@
+@using System.Data
 @using Microsoft.AspNetCore.Authentication
 @page "/images/{imageId}"
 @using global::Annotations.Core.Models
@@ -40,7 +41,8 @@ else
         {
             var jsonString = await response.Content.ReadAsStringAsync();//string of JSON file of the image as a string
 
-            var imageObject = System.Text.Json.JsonSerializer.Deserialize<ImageModel>(jsonString);//JSON file becomes imageModel object
+            var imageObject = System.Text.Json.JsonSerializer.Deserialize<ImageModel>(jsonString) ?? throw new NoNullAllowedException(); //JSON file becomes imageModel object
+            
             var imageData = imageObject.ImageData;
             altText = imageObject.Description;
             image = System.Convert.ToBase64String(imageData);//byte array to string

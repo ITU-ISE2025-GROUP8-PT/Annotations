@@ -1,4 +1,5 @@
-﻿@using MatBlazor
+﻿@using System.Data
+@using MatBlazor
 @using Microsoft.AspNetCore.Authentication
 @page "/images/filter/{category}"
 @using global::Annotations.Core.Models
@@ -89,9 +90,7 @@ else
         using var response = await client.SendAsync(requestMessage);//sending the response
         try
         {
-            string[] answer = await response.Content.ReadFromJsonAsync<string[]>();//string array of JSON files of the images as strings
-            ArgumentNullException.ThrowIfNull(answer);
-            await Task.Yield();
+            string[] answer = await response.Content.ReadFromJsonAsync<string[]>() ?? throw new NoNullAllowedException(); //string array of JSON files of the images as strings
             images = new string[answer.Length];
             altText = new string[answer.Length];
             for (int i = 0; i < answer.Length; i++)

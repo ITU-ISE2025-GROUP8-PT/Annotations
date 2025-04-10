@@ -14,8 +14,6 @@ public class Image
     [StringLength(1000)]
     public required string Description { get; set; }
 	[Required]
-    public required byte[] ImageData { get; set; }
-	[Required]
 	[StringLength(100)]
 	public required string Category { get; set; }
     [Required]

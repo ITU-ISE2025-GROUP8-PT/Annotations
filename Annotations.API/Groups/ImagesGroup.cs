@@ -58,8 +58,9 @@ public static class ImagesGroup
         pathBuilder.MapPost("/upload",
             async (IFormFile image, string category, AnnotationsDbContext context, [FromServices] IAzureClientFactory<BlobServiceClient> clientFactory) =>
             {//TODO: more paramters for the other fields in images?
-
+            
                 ValidationResponse response = ValidateImage(image);
+                
                 if (!response.Success)
                 {
                     Console.WriteLine("rejecting image");
@@ -69,6 +70,15 @@ public static class ImagesGroup
                 }
                 else
                 {
+                    string fileExtension = "empty";//TODO: dont do this
+                    foreach (string Filename in ArrayOfFileExtension)
+                    {
+                        if (image.ContentType == "image/" + Filename)
+                        {
+                            fileExtension = "." + Filename;
+                            break;
+                        }
+                    }
                     var blobServiceClient = clientFactory.CreateClient("Default");
                     BlobContainerClient containerClient = blobServiceClient.GetBlobContainerClient("images");
 
@@ -81,9 +91,8 @@ public static class ImagesGroup
                         var thisImage = new ImageModel()//TODO: dont do this - the title, description and datasetsId are hardcoded
                         {
                             Id = counter,
-                            Title = "idk",
+                            Title = "Title",
                             Description = "description",
-                            ImageData = ms.ToArray(),
                             Category = category,
                             DatasetsIds = new List<int>(){1, 2},
                         };
@@ -104,9 +113,11 @@ public static class ImagesGroup
                         }
 
                         string jsonString = System.Text.Json.JsonSerializer.Serialize(thisImage);//objects becomes JSON string
-                        var byteContent = System.Text.Encoding.UTF8.GetBytes(jsonString);//JSON string becomes byte array
+                        var jsonBytes = System.Text.Encoding.UTF8.GetBytes(jsonString);
+                        var byteContent = ms.ToArray();//JSON string becomes byte array
 
-                        BlobClient thisImageBlobClient = containerClient.GetBlobClient($"{counter}.json");
+                        BlobClient jsonImageBlobClient = containerClient.GetBlobClient($"{counter}.json");
+                        BlobClient blobClient = containerClient.GetBlobClient($"{counter}{fileExtension}");
                         counter++;
 
                         var blobHeaders = new BlobHttpHeaders
@@ -115,7 +126,8 @@ public static class ImagesGroup
                         };
 
                         // Trigger the upload function to push the data to blob
-                        await thisImageBlobClient.UploadAsync(new MemoryStream(byteContent), blobHeaders);//uploaded as byte array
+                        await jsonImageBlobClient.UploadAsync(new MemoryStream(jsonBytes), blobHeaders);
+                        await blobClient.UploadAsync(new MemoryStream(byteContent), overwrite:true);//uploaded as byte array
                         //Should it be uploaded as a string instead? So far all endpoints retrieve the JSON files as strings?
                     }
                    
@@ -136,18 +148,21 @@ public static class ImagesGroup
                 var blobServiceClient = clientFactory.CreateClient("Default");
                 BlobContainerClient containerClient = blobServiceClient.GetBlobContainerClient("images");//enters images
 
-               
-                BlobClient blobClient = containerClient.GetBlobClient(imageId + ".json");
-                if (!blobClient.Exists(cts.Token).ToString()
-                        .Contains("404")) //checks if the blobClient is empty/couldn't find the image of that format
+                foreach (string fileExtension in
+                         ArrayOfFileExtension) //takes all of the types of files we allow and see if an image of that format exists with the id
                 {
-                    using var memoryStream = new MemoryStream();
-                    await blobClient.DownloadToAsync(memoryStream);
-                    return Results.File(memoryStream.ToArray(),
-                        "application/json"); //because it is a return statement the for-loop will not continue after finding the image
+                    BlobClient blobClient = containerClient.GetBlobClient(imageId + "." + fileExtension);
+                    if (!blobClient.Exists(cts.Token).ToString()
+                            .Contains("404")) //checks if the blobClient is empty/couldn't find the image of that format
+                    {
+                        var memoryStream = new MemoryStream();
+                        await blobClient.DownloadToAsync(memoryStream);
+                        return Results.File(memoryStream.ToArray(),
+                            "image/" +
+                            fileExtension); //because it is a return statement the for-loop will not continue after finding the image
+                    }
                 }
 
-                
 
                 //will only reach here if it cannot find an image with the id of the correct file type, or else the request will terminate inside the for-loop
                 Console.WriteLine("Cannot retrieve image because it doesn't exist");
@@ -157,6 +172,7 @@ public static class ImagesGroup
         
         pathBuilder.MapDelete("/{imageId}", async (string imageId, [FromServices] IAzureClientFactory<BlobServiceClient> clientFactory) =>
         {
+            //TODO: THIS IS NOT UPDATED
             var cts = new CancellationTokenSource(5000);
 
             var blobServiceClient = clientFactory.CreateClient("Default");
@@ -186,7 +202,7 @@ public static class ImagesGroup
                 var blobServiceClient = clientFactory.CreateClient("Default");
                 BlobContainerClient containerClient = blobServiceClient.GetBlobContainerClient("images");
                 var listOfFiles = containerClient.GetBlobsAsync().AsPages();//all data inside of blobContainer
-              
+                HashSet<int> shouldBeIncluded = new HashSet<int>();
                 HashSet<string> collection = new HashSet<string>();
                 await foreach (Page<BlobItem> blobPage in listOfFiles)
                 {
@@ -194,14 +210,28 @@ public static class ImagesGroup
                     {
                         //goes through all images and check for the category
                         var BlobClient = containerClient.GetBlobClient(blobItem.Name);
-                        using var memoryStream = new MemoryStream();
+                        var memoryStream = new MemoryStream();
                         await BlobClient.DownloadToAsync(memoryStream);
-                        var jsonString = System.Text.Encoding.UTF8.GetString(memoryStream.ToArray());//JSON file as string
-                        var imageObject = System.Text.Json.JsonSerializer.Deserialize<ImageModel>(jsonString);//deserialize so it becomes imageModel
-                        if (imageObject.Category == category)
+                        if (blobItem.Name.EndsWith(".json"))
                         {
-                            collection.Add(jsonString);
+                            var jsonString = System.Text.Encoding.UTF8.GetString(memoryStream.ToArray());//JSON file as string
+                            var imageObject = System.Text.Json.JsonSerializer.Deserialize<ImageModel>(jsonString);//deserialize so it becomes imageModel
+                            if (imageObject.Category == category)
+                            {
+                                shouldBeIncluded.Add(int.Parse(blobItem.Name.Replace(".json", "")));
+                            }
                         }
+                        else
+                        {
+                            if (shouldBeIncluded.Contains(int.Parse(blobItem.Name.Substring(0,blobItem.Name.IndexOf(".")))))
+                            {
+                                var memoryStream2 = new MemoryStream();
+                                await BlobClient.DownloadToAsync(memoryStream2);
+                                
+                                collection.Add(memoryStream2.ToString());
+                            }
+                        }
+                        
                     }
 
                 }

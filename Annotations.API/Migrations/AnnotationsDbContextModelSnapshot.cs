@@ -15,7 +15,7 @@ namespace Annotations.API.Migrations
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "9.0.3");
+            modelBuilder.HasAnnotation("ProductVersion", "9.0.2");
 
             modelBuilder.Entity("Annotations.Core.Entities.Dataset", b =>
                 {
@@ -61,10 +61,6 @@ namespace Annotations.API.Migrations
                         .IsRequired()
                         .HasMaxLength(1000)
                         .HasColumnType("TEXT");
-
-                    b.Property<byte[]>("ImageData")
-                        .IsRequired()
-                        .HasColumnType("BLOB");
 
                     b.Property<string>("Title")
                         .IsRequired()

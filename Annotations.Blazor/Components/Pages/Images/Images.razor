@@ -40,9 +40,9 @@ else
             var jsonString = await response.Content.ReadAsStringAsync();//string of JSON file of the image as a string
 
             var imageObject = System.Text.Json.JsonSerializer.Deserialize<ImageModel>(jsonString);//JSON file becomes imageModel object
-            var imageData = imageObject.ImageData;
+            //var imageData = imageObject.ImageData;
             altText = imageObject.Description;
-            image = System.Convert.ToBase64String(imageData);//byte array to string
+            //image = System.Convert.ToBase64String(imageData);//byte array to string
         }
         catch (Exception e)
         {

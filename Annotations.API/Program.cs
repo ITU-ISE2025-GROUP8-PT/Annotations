@@ -137,7 +137,6 @@ void InitializeTempDatabase()
         Id = 1,
         Title = "Sample Image",
         Description = "This is a sample image.",
-        ImageData = File.ReadAllBytes("../docs/images/Perfusiontech_sampleimage.png"),
         Category = "category",
         DatasetsIds = new List<int>(){0, 1, 2}
         // ImageData = await GetImageDataAsync("Perfusiontech_sampleimage.png"); <-- Eller hvad den nu kommer til at hedde når den smides op

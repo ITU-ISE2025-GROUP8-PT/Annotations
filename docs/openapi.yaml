@@ -6,7 +6,7 @@ info:
     The API allows the Admin user role to upload and delete angiographic images.
     Users can only be created or deleted by any user with the Admin user role, following RBAC principles.
     
-  version: 1.1.0
+  version: 1.2.0
 tags:
   - name: Reviews
     description: Operations related to reviewing angiographic images.
@@ -203,6 +203,53 @@ paths:
                 example: "Successful operation"
           '404':
             description: Datasets not found
+  /images/datasets/{datasetId}:
+    get:
+      summary: Get all images within the specified dataset
+      tags:
+        - Images
+      operationId: getDatasetImages
+      parameters:
+        - in: path
+          name: datasetId
+          description: The dataset id, the pictures shown, belong to
+          required: true
+          schema:
+            type: integer
+            format: "int64"
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: string
+                example: "Successful operation"
+        '404':
+          description: The dataset with the given id, does not exist
+  /images/filter/{category}:
+    get:
+      summary: Get images with the specified category
+      tags:
+        - Images
+      operationId: getFilteredImages
+      parameters:
+        - in: path
+          name: category
+          description: The category given to the filter
+          required: true
+          schema:
+            type: string
+      responses: 
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: string
+                example: "Successful operation"
+        '404':
+          description: No images matching the filter
   /annotations/{annotationId}:
     patch:
       summary: Update an annotation
@@ -349,10 +396,10 @@ paths:
           description: Forbidden (user does not have admin role)
         '401':
           description: Unauthorized (invalid or missing token)        
-  /auth/login:
+  /authentication/login:
     post:
       summary: User login
-      description: User can login to an already created account and receive a user token using Oauth or JWT.
+      description: User can login to an already created account through our userbase on Orchard Core.
       operationId: userLogin
       tags:
         - Users
@@ -382,7 +429,7 @@ paths:
                     type: string
         '400':
           description: Invalid email/password supplied
-  /auth/logout:
+  /authentication/logout:
     post: # post instead of get, becuase both login and logout change the state of the program in some way
       summary: Logs out current logged in user session
       description: ""

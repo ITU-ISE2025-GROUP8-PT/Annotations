@@ -90,7 +90,7 @@
 
 
 @code{
-    public List<int>? Datasets = new ();//it only works as a list, not an array
+    public List<int> Datasets = new ();//it only works as a list, not an array
     
     //TODO: error handling (what blazor pages returns)
 
@@ -120,6 +120,7 @@
         catch (Exception e)
         {
             Console.WriteLine("Status code: " + response.StatusCode);
+            Console.WriteLine(e.Message);
             //create empty list
             Datasets = new List<int>();
         }

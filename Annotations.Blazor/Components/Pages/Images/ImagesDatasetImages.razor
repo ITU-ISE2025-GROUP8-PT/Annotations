@@ -43,7 +43,7 @@
 </style>
 
 
-@if (_images==null) //TODO better error handling
+@if (_images[0] == "") //TODO better error handling
 {
     <p><em>No images found</em></p>
 }
@@ -74,8 +74,8 @@ else
 @code{
     //TODO: code duplication from Image.Filter.razor
     [Parameter] public string Dataset { get; set; } = "";//get access to parameter from URL/get request
-    private string[]? _images;//all byte arrays as strings
-    private string[]? _altText;
+    private string[] _images = new []{""};//all byte arrays as strings
+    private string[] _altText = new []{""};
 
     protected override async Task OnInitializedAsync()
     {
@@ -116,6 +116,7 @@ else
         catch (Exception e)//if nothing is retrieved - prints out error
         {
             Console.WriteLine("Status code: " + response.StatusCode);
+            Console.WriteLine(e.Message);
             _images = new string[1];
             _images[0] = response.StatusCode.ToString();
         }

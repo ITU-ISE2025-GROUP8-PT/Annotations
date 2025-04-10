@@ -70,9 +70,9 @@ else
 
 }
 @code{
-    [Parameter] public string category { get; set; }//get access to parameter from URL/get request
-    private string[]? images;//all byte arrays as strings
-    private string[]? altText;
+    [Parameter] public string category { get; set; } = "";//get access to parameter from URL/get request
+    private string[] images = new []{""};//all byte arrays as strings
+    private string[] altText = new []{""};
 
     protected override async Task OnInitializedAsync()
     {
@@ -90,11 +90,15 @@ else
         try
         {
             string[] answer = await response.Content.ReadFromJsonAsync<string[]>();//string array of JSON files of the images as strings
+            ArgumentNullException.ThrowIfNull(answer);
+            await Task.Yield();
             images = new string[answer.Length];
             altText = new string[answer.Length];
             for (int i = 0; i < answer.Length; i++)
             {
                 var imageObject = System.Text.Json.JsonSerializer.Deserialize<ImageModel>(answer[i]);//JSON file becomes imageModel object
+                ArgumentNullException.ThrowIfNull(imageObject);
+                await Task.Yield();
                 var imageData = imageObject.ImageData;
                 altText[i] = imageObject.Description;
                 images[i] = System.Convert.ToBase64String(imageData);//byte array to string
@@ -103,6 +107,7 @@ else
         catch (Exception e)//if nothing is retrieved - prints out error
         {
             Console.WriteLine("Status code: " + response.StatusCode);
+            Console.WriteLine(e.Message);
             images = new string[1];
             images[0] = response.StatusCode.ToString();
         }

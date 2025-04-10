@@ -139,12 +139,15 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents()
     .AddInteractiveWebAssemblyComponents();
 
-builder.Services.AddHttpForwarderWithServiceDiscovery();
+builder.Services.AddHttpForwarder();
 builder.Services.AddHttpContextAccessor();
+
+/*
 builder.Services.AddHttpClient<IApiTester, ServerApiTester>(httpClient =>
 {
     httpClient.BaseAddress = new("https://localhost:7250");
 });
+*/
 
 var app = builder.Build();
 

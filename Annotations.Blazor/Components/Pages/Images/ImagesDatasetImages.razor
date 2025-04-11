@@ -9,13 +9,11 @@
 
 @if (_errorExist)
 {
-    <p><em>This Dataset is empty.</em></p>
     <Error/>
 }
-else if (_existenseOfImages) @if (images == null) //This will show on screen in a milisecond before imgs load. Should it be "Loading..."?
-
+else if (!_existenseOfImages) //This will show on screen in a milisecond before imgs load. Should it be "Loading..."?
 {
-    <p><em>No datasets found</em></p>
+    <p><em>This Dataset is empty.</em></p>
 } else
 {
     <div style=" display: flex; flex-direction:row;"><!--To make both lines on the same row -->
@@ -37,15 +35,10 @@ else if (_existenseOfImages) @if (images == null) //This will show on screen in 
 
 @code{
     //TODO: code duplication from Image.Filter.razor
-    [Parameter] public string dataset { get; set; } //get access to parameter from URL/get request
+    [Parameter] public string dataset { get; set; } = "";//get access to parameter from URL/get request
     public ImageModelWeb[]? images; //all imgs from API turned into local datatype class (see further down)
-    
-    //Will run when site is initialized
-    [Parameter] public string Dataset { get; set; } = "";//get access to parameter from URL/get request
-    private string[] _images = new []{""};//all byte arrays as strings
-    private string[] _altText = new []{""};
     private bool _errorExist = false;
-    private bool _existenseOfImages = false;
+    private bool _existenseOfImages = true;
 
     protected override async Task OnInitializedAsync()
     {
@@ -83,10 +76,9 @@ else if (_existenseOfImages) @if (images == null) //This will show on screen in 
             
             if (answer.Length == 0)
             {
-                _existenseOfImages = true;
+                _existenseOfImages = false;
             }
-            _images = new string[answer.Length];
-            _altText = new string[answer.Length];
+            
             for (int i = 0; i < answer.Length; i++)
             {
                 //JSON file becomes ImageModel object

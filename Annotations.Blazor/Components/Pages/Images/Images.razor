@@ -1,4 +1,5 @@
 @page "/images/{imageId}"
+@using System.Data
 @using global::Annotations.Core.Models
 
 @inject IHttpClientFactory ClientFactory
@@ -6,9 +7,12 @@
 
 @if (error)
 {
-    <p><em>No image found</em></p>
+    <Error/>
 }
-else
+else if (!imgExist)
+{
+    <p><em>No image found for @imageId</em></p>
+} else
 {
     <div class="container DivToScroll">
         <img class="displaySoloImage" src="data:image;base64, @image" alt="@altText" /><!--src is a URL - it's converted from a string of the byte array--> 
@@ -17,7 +21,8 @@ else
 @code{
 
     private string? image;//byte array as string
-    private bool error = false;//used to determine if there was an error - blazor page displays something different if that was the case
+    private bool error = false;
+    private bool imgExist = true;
     private string? altText;
 
     [Parameter] public string imageId { get; set; }//get access to parameter from URL/get request
@@ -38,8 +43,11 @@ else
         try
         {
             var jsonString = await response.Content.ReadAsStringAsync();//string of JSON file of the image as a string
-
-            var imageObject = System.Text.Json.JsonSerializer.Deserialize<ImageModel>(jsonString);//JSON file becomes imageModel object
+            if (jsonString.Length == 0)
+            {
+                imgExist = false;
+            }
+            var imageObject = System.Text.Json.JsonSerializer.Deserialize<ImageModel>(jsonString) ?? throw new NoNullAllowedException();//JSON file becomes imageModel object
             var imageData = imageObject.ImageData;
             altText = imageObject.Description;
             image = System.Convert.ToBase64String(imageData);//byte array to string

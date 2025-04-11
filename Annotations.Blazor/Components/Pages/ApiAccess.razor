@@ -35,7 +35,7 @@ else
         var accessToken = await httpContext.GetTokenAsync("access_token") ?? throw new InvalidOperationException("No access_token was saved");
 
         var client = ClientFactory.CreateClient();
-        client.BaseAddress = new("https://localhost:7250");
+        client.BaseAddress = new("http://localhost:7250");
 
         using var requestMessage = new HttpRequestMessage(HttpMethod.Get, "/images/apitest");
         requestMessage.Headers.Authorization = new("Bearer", accessToken);

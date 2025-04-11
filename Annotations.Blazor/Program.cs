@@ -8,6 +8,9 @@ using MatBlazor;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using System.Net;
+using System.Net.Sockets;
 
 const string oidcScheme = "Annotations OIDC";
 
@@ -42,6 +45,27 @@ builder.Services.AddAuthentication(oidcScheme)
 
         oidcOptions.CallbackPath = new PathString("/signin-oidc");
         oidcOptions.SignedOutCallbackPath = new PathString("/signout-callback-oidc");
+
+        // https://stackoverflow.com/a/68410484
+        oidcOptions.Events = new OpenIdConnectEvents()
+        {
+            OnRedirectToIdentityProvider = context =>
+            {
+                var uriBuilder = new UriBuilder(context.ProtocolMessage.RedirectUri);
+                uriBuilder.Scheme = "https";
+                uriBuilder.Port = context.HttpContext.Request.Host.Port ?? -1;
+                context.ProtocolMessage.RedirectUri = uriBuilder.ToString();
+                return Task.FromResult(0);
+            },
+            OnRedirectToIdentityProviderForSignOut = context =>
+            {
+                var uriBuilder = new UriBuilder(context.ProtocolMessage.PostLogoutRedirectUri);
+                uriBuilder.Scheme = "https";
+                uriBuilder.Port = context.HttpContext.Request.Host.Port ?? -1;
+                context.ProtocolMessage.PostLogoutRedirectUri = uriBuilder.ToString();
+                return Task.FromResult(0);
+            }
+        };
         
         /* The RemoteSignOutPath is the "Front-channel logout URL" for remote single 
          * sign-out. The default value is "/signout-oidc".

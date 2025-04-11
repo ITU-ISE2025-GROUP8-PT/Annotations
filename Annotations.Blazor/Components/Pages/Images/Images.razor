@@ -1,33 +1,26 @@
-@using System.Data
-@using Microsoft.AspNetCore.Authentication
 @page "/images/{imageId}"
 @using global::Annotations.Core.Models
 
 @inject IHttpClientFactory ClientFactory
 @inject IHttpContextAccessor httpContextAccessor
 
-
 @if (error)
 {
     <p><em>No image found</em></p>
 }
-else if (!imgExist)
-{
-    <p><em>No image found for @imageId</em></p>
-} 
 else
 {
-    <img src="data:image;base64, @image" alt="@altText" /><!--src is a URL - it's converted from a string of the byte array--> 
-
+    <div class="container DivToScroll">
+        <img class="displaySoloImage" src="data:image;base64, @image" alt="@altText" /><!--src is a URL - it's converted from a string of the byte array--> 
+    </div>
 }
 @code{
 
     private string? image;//byte array as string
-    private bool error = false;
-    private bool imgExist = true;
+    private bool error = false;//used to determine if there was an error - blazor page displays something different if that was the case
     private string? altText;
 
-    [Parameter] public string imageId { get; set; } = "";//get access to parameter from URL/get request
+    [Parameter] public string imageId { get; set; }//get access to parameter from URL/get request
 
     protected override async Task OnInitializedAsync()
     {
@@ -45,13 +38,8 @@ else
         try
         {
             var jsonString = await response.Content.ReadAsStringAsync();//string of JSON file of the image as a string
-            if (jsonString.Length == 0)
-            {
-                imgExist = false;
-            }
 
-            var imageObject = System.Text.Json.JsonSerializer.Deserialize<ImageModel>(jsonString) ?? throw new NoNullAllowedException(); //JSON file becomes imageModel object
-            
+            var imageObject = System.Text.Json.JsonSerializer.Deserialize<ImageModel>(jsonString);//JSON file becomes imageModel object
             var imageData = imageObject.ImageData;
             altText = imageObject.Description;
             image = System.Convert.ToBase64String(imageData);//byte array to string
@@ -59,11 +47,10 @@ else
         catch (Exception e)
         {
             Console.WriteLine("Status code: " + response.StatusCode);
-            Console.WriteLine(e.Message);
             image = response.StatusCode.ToString();
-            error = true;
+            error = true;//there has been an error
         }
+
     }
-    
 
 }

@@ -1,136 +1,117 @@
 ﻿@page "/images/datasets"
+@using global::Annotations.Core.Models
 @using Microsoft.AspNetCore.Authentication
 
 @inject IHttpClientFactory ClientFactory
 @inject IHttpContextAccessor httpContextAccessor
-<style>
-    .container {
-        display: flex;
-        flex-direction: column;
-    }
-    .datasetContainers {
-        background-color: #e3e7ee;
-        padding-top: 0.8%;
-        padding-bottom: 0.3%;
-        padding-left: 1%;
-        margin-bottom: 1%;
-        margin-top: 1%;
-        border-radius: 10px 10px 10px 10px;
-    }
-    .DivToScroll{
-        background-color: #F5F5F5;
-        border: 1px solid #DDDDDD;
-        border-radius: 4px 0 4px 0;
-        color: #3B3C3E;
-        left: -1px;
-        max-height: 100vh;
-        overflow-x:hidden;/*this creates the scrollbar. It's appearance cannot be changed*/
-        padding: 1.5%;
-        scrollbar-width: auto;
-        max-width: 67vw;
-    }
-    .orderingButton {/*for functionality later on*/
-        border: 5px;
-        cursor: pointer;
-        background-color: transparent;
-        font-size: 130%;
-        text-align: center;
-        margin-top:20%;
-        margin-left: 10%;
-        text-decoration: underline;
-    }
-    .ordering{/*maybe used for later*/
-        margin-left: 10%;
-        text-decoration: underline;
-        font-size: 130%;
-    }
-    .textForDatasetsA{/*used to control the width/placement*/
-        padding:0; /*makes it so the lines are close together*/
-        margin: 0; 
-        width: 80%;
-    }
-    .textForDatasetsB {
-        padding:0; 
-        margin: 0; 
-        width: 21%
-    }
-</style>
+@inject NavigationManager NavigationManager
 
-@if (_errorExist)
-{
-    <Error/>
-}
-else
-{
-
-    <div style=" display: flex; flex-direction:row;">
-
-        <span style="margin-left:13%; margin-top:0.0001%; padding-bottom:2%; font-weight: bold; width: 72%; font-size: 215%">Manage datasets</span>
-        <div style="width:15%">
-            <button class="orderingButton">Order by...</button>
-        </div>
-
+<div style=" display: flex; flex-direction:row;">
+    <span style="margin-left:13%; margin-top:0.0001%; padding-bottom:2%; font-weight: bold; width: 72%; font-size: 215%">Manage datasets</span>
+    <div style="width:15%">
+        <button class="orderingButton">Order by...</button>
     </div>
-    <div class="container DivToScroll">
-        @foreach (var name in Datasets) //TODO: dont hardcode these values (e.g. number of images)
-        {
-            <div class="datasetContainers">
-                <div style=" display: flex; flex-direction:row; flex-wrap: nowrap">
-                    <span class="textForDatasetsA" style="font-weight: bold">Dataset @name</span>
-                    <span class="textForDatasetsB">Annotated by: 1 person</span>
-                </div>
-                <div style=" display: flex; flex-direction:row; flex-wrap: nowrap">
-                    <span class="textForDatasetsA">Number of images: 3</span>
-                    <span class="textForDatasetsB">Reviewed by: 1 person</span>
-                </div>
-                <div style=" display: flex; flex-direction:row; flex-wrap: nowrap">
-                    <span style="padding:0; margin: 0;  width: 95.5%;">Category: "?"</span>
-                    <a href="https://localhost:7238/images/datasets/@name"><img src="https://www.svgrepo.com/download/64793/inverted-triangle.svg" alt="small black arrow pointing downwards" style="max-height: 30px; width:auto; margin-top: 0.1%; margin-bottom: 0.0001%">
-                    </a>
-                </div>
-            </div>
-        }
-    </div>
-}
+</div>
 
+<MatThemeProvider Theme="_theme">
+    <MatTable Items="Datasets" class="table-formatting">
+        <MatTableHeader>
+            <th>Dataset ID</th>
+            <th>No. of Images</th>
+            <th>Category</th>
+            <th>Annotated By</th>
+            <th>Reviewed By</th>
+        </MatTableHeader>
+        <MatTableRow>
+            <td>
+                <MatButtonLink href="@($"https://localhost:7238/images/datasets/{context.Id}")">@context.Id</MatButtonLink>
+            </td>
+            <td>
+                @context.ImageIds.Count
+            </td>
+            <td>
+                @context.Category
+            </td>
+            <td>
+                @context.AnnotatedBy
+            </td>
+            <td>
+                @context.ReviewedBy
+            </td>
+        </MatTableRow>
+    </MatTable>
+</MatThemeProvider>
 
 @code{
-    public List<int> Datasets = new ();//it only works as a list, not an array
-    private bool _errorExist = false;
+    public List<Dataset>? Datasets = new List<Dataset>();//it only works as a list, not an array
+    private bool _error; //this isn't used yet
+    //TODO: error handling (what blazor pages returns)
+    
+    private MatTheme _theme = new MatTheme()
+    {
+        Primary = MatThemeColors.Green._800.Value
+    };
 
     protected override async Task OnInitializedAsync()
     {
-        var httpContext = httpContextAccessor.HttpContext ?? throw new InvalidOperationException("No HttpContext available");//make connection
-
-        var accessToken = await httpContext.GetTokenAsync("access_token") ?? throw new InvalidOperationException("No access_token was saved");//authorization
-
-        var client = ClientFactory.CreateClient();
-        client.BaseAddress = new("https://localhost:7250");//connect to Web API
-
-        using var requestMessage = new HttpRequestMessage(HttpMethod.Get, $"/images/datasets");//access endpoint
-        requestMessage.Headers.Authorization = new("Bearer", accessToken);//bearer token for authorization
-
-        using var response = await client.SendAsync(requestMessage);//sending the response
         try
         {
-            var existingIds = await response.Content.ReadFromJsonAsync<int[]>();//int array of all the ids of all the existing datasets
-            ArgumentNullException.ThrowIfNull(existingIds);
-            await Task.Yield();
-            for (int i = 0; i < existingIds.Length; i++)
+            var httpContext = httpContextAccessor.HttpContext ?? throw new InvalidOperationException("No HttpContext available");//make connection
+            var accessToken = await httpContext.GetTokenAsync("access_token") ?? throw new InvalidOperationException("No access_token was saved");//authorization
+            var client = ClientFactory.CreateClient();
+            client.BaseAddress = new("https://localhost:7250");//connect to Web API
+            using var requestMessage = new HttpRequestMessage(HttpMethod.Get, $"/images/datasets/");//access endpoint
+            requestMessage.Headers.Authorization = new("Bearer", accessToken);//bearer token for authorization
+            
+            using var response = await client.SendAsync(requestMessage);//sending the response
+            if (response.IsSuccessStatusCode)
             {
-                Datasets.Add(existingIds[i]);
+                var datasetmodels = await response.Content.ReadFromJsonAsync<DatasetModel[]>();//int array of all the ids of all the existing datasets
+                ArgumentNullException.ThrowIfNull(datasetmodels);
+                await Task.Yield();
+                foreach (var datasetmodel in datasetmodels)
+                {
+                    Datasets.Add(new Dataset(datasetmodel.Id,
+                    datasetmodel.ImageIds,
+                    datasetmodel.Category,
+                    datasetmodel.AnnotatedBy,
+                    datasetmodel.ReviewedBy));
+                }
+            }
+
+            else
+            {
+                _error = true;
+                Console.WriteLine("Status code: " + response.StatusCode);
             }
         }
         catch (Exception e)
         {
-            Console.WriteLine("Status code: " + response.StatusCode);
-            Console.WriteLine(e.Message);
-            //create empty list
-            Datasets = new List<int>();
-            _errorExist = true;
-            
+            _error = true;
+            Console.WriteLine("Unknown error: " + e.Message);
         }
-
     }
-
+    
+    // Dataset model - to be expanded
+    public class Dataset
+    {
+        public int Id { get; set; }
+        
+        public List<int> ImageIds{ get; set; }
+   
+        public string Category { get; set; }
+   
+        public int AnnotatedBy { get; set; }
+ 
+        public int ReviewedBy { get; set; }
+        
+        public Dataset(int id, List<int> imageIds, string category, int annotatedBy, int reviewedBy)
+        {
+            Id = id;
+            ImageIds = imageIds;
+            Category = category;
+            AnnotatedBy = annotatedBy;
+            ReviewedBy = reviewedBy;
+        }
+    }
 }

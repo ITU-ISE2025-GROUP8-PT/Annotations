@@ -1,6 +1,7 @@
-﻿@page "/images/datasets/"
-@rendermode InteractiveServer
+﻿@page "/images/datasets"
 @using global::Annotations.Core.Models
+@using Microsoft.AspNetCore.Authentication
+
 @inject IHttpClientFactory ClientFactory
 @inject IHttpContextAccessor httpContextAccessor
 @inject NavigationManager NavigationManager
@@ -66,6 +67,8 @@
             if (response.IsSuccessStatusCode)
             {
                 var datasetmodels = await response.Content.ReadFromJsonAsync<DatasetModel[]>();//int array of all the ids of all the existing datasets
+                ArgumentNullException.ThrowIfNull(datasetmodels);
+                await Task.Yield();
                 foreach (var datasetmodel in datasetmodels)
                 {
                     Datasets.Add(new Dataset(datasetmodel.Id,

@@ -1,15 +1,22 @@
-﻿@rendermode InteractiveServer
+@rendermode InteractiveServer
 @page "/images/datasets/{dataset}/"
+@using System.Data
 @using global::Annotations.Core.Models
 @inject IHttpClientFactory ClientFactory
 @inject IHttpContextAccessor httpContextAccessor
 
-  
-@if (images == null) //This will show on screen in a milisecond before imgs load. Should it be "Loading..."?
+
+
+@if (_errorExist)
 {
     <p><em>This Dataset is empty.</em></p>
+    <Error/>
 }
-else
+else if (_existenseOfImages) @if (images == null) //This will show on screen in a milisecond before imgs load. Should it be "Loading..."?
+
+{
+    <p><em>No datasets found</em></p>
+} else
 {
     <div style=" display: flex; flex-direction:row;"><!--To make both lines on the same row -->
         <span style="padding:2%; font-weight: bold; width: 90%; font-size: 215%">Dataset @dataset</span>
@@ -34,6 +41,12 @@ else
     public ImageModelWeb[]? images; //all imgs from API turned into local datatype class (see further down)
     
     //Will run when site is initialized
+    [Parameter] public string Dataset { get; set; } = "";//get access to parameter from URL/get request
+    private string[] _images = new []{""};//all byte arrays as strings
+    private string[] _altText = new []{""};
+    private bool _errorExist = false;
+    private bool _existenseOfImages = false;
+
     protected override async Task OnInitializedAsync()
     {
         //make connection to website
@@ -54,22 +67,34 @@ else
         requestMessage.Headers.Authorization = new("Bearer", accessToken);
 
         //sending the response
-        using var response = await client.SendAsync(requestMessage);
-        
+        using var response = await client.SendAsync(requestMessage);//sending the response
+        if (!response.IsSuccessStatusCode)
+        {
+            Console.WriteLine("Status code: " + response.StatusCode);
+            throw new HttpRequestException($"failed: {response.StatusCode}");
+        }
         try
         {
             //string array of JSON files of the images as strings
-            string[] answer = await response.Content.ReadFromJsonAsync<string[]>();
+            string[] answer = await response.Content.ReadFromJsonAsync<string[]>() ?? throw new NoNullAllowedException();//string array of JSON files of the images as strings
             
             //initialize array for storing images to be shown on the webpage
             images = new ImageModelWeb[answer.Length];
             
+            if (answer.Length == 0)
+            {
+                _existenseOfImages = true;
+            }
+            _images = new string[answer.Length];
+            _altText = new string[answer.Length];
             for (int i = 0; i < answer.Length; i++)
             {
                 //JSON file becomes ImageModel object
-                var imageObject = System.Text.Json.JsonSerializer.Deserialize<ImageModel>(answer[i]);
-                
+                var imageObject = System.Text.Json.JsonSerializer.Deserialize<ImageModel>(answer[i]);//JSON file becomes imageModel object
+                ArgumentNullException.ThrowIfNull(imageObject);
+                await Task.Yield();
                 //Byte array data for the image
+
                 var imageData = imageObject.ImageData;
 
                 //Adding Base64 data and alt text as local ImageModel type to array
@@ -79,8 +104,10 @@ else
         catch (Exception e)//if nothing is retrieved - prints out error
         {
             Console.WriteLine("Status code: " + response.StatusCode);
+            Console.WriteLine(e.Message);
             images = new ImageModelWeb[1];
             images[0] = new ImageModelWeb(null, response.StatusCode.ToString());
+            _errorExist = true;
         }
     }
 

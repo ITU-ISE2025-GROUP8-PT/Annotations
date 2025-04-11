@@ -5,7 +5,7 @@
 namespace Annotations.API.Migrations
 {
     /// <inheritdoc />
-    public partial class updatedimagetype : Migration
+    public partial class UpdatedImageType : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

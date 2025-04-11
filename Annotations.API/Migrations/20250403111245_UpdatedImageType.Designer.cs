@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Annotations.API.Migrations
 {
     [DbContext(typeof(AnnotationsDbContext))]
-    [Migration("20250403111245_updatedimagetype")]
-    partial class updatedimagetype
+    [Migration("20250403111245_UpdatedImageType")]
+    partial class UpdatedImageType
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

@@ -29,7 +29,7 @@ else
         var accessToken = await httpContext.GetTokenAsync("access_token") ?? throw new InvalidOperationException("No access_token was saved");//authorization
 
         var client = ClientFactory.CreateClient();
-        client.BaseAddress = new("https://localhost:7250");//connect to Web API
+        client.BaseAddress = new("http://localhost:7250");//connect to Web API
 
         using var requestMessage = new HttpRequestMessage(HttpMethod.Get, $"/images/{imageId}");//access endpoint
         requestMessage.Headers.Authorization = new("Bearer", accessToken);//bearer token for authorization

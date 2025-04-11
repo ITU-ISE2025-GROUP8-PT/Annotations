@@ -24,6 +24,6 @@ public class ServerApiTester(HttpClient httpClient, IHttpContextAccessor httpCon
         response.EnsureSuccessStatusCode();
 
         return await response.Content.ReadFromJsonAsync<string[]>() ??
-            throw new IOException("No weather forecast!");
+            throw new IOException("API test unsuccessful. No JSON obtained!");
     }
 }

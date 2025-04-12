@@ -13,6 +13,11 @@
     </div>
 </div>
 
+@if (_error)
+{
+    <Error/>
+}
+
 <MatThemeProvider Theme="_theme">
     <MatTable Items="Datasets" class="table-formatting">
         <MatTableHeader>

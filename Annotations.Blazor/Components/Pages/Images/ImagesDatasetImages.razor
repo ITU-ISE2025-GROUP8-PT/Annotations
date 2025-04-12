@@ -36,7 +36,7 @@ else if (!_existenseOfImages) //This will show on screen in a milisecond before 
 @code{
     //TODO: code duplication from Image.Filter.razor
     [Parameter] public string dataset { get; set; } = "";//get access to parameter from URL/get request
-    public ImageModelWeb[]? images; //all imgs from API turned into local datatype class (see further down)
+    public ImageModelWeb[] images = Array.Empty<ImageModelWeb>(); //all imgs from API turned into local datatype class (see further down)
     private bool _errorExist = false;
     private bool _existenseOfImages = true;
 
@@ -98,7 +98,7 @@ else if (!_existenseOfImages) //This will show on screen in a milisecond before 
             Console.WriteLine("Status code: " + response.StatusCode);
             Console.WriteLine(e.Message);
             images = new ImageModelWeb[1];
-            images[0] = new ImageModelWeb(null, response.StatusCode.ToString());
+            images[0] = new ImageModelWeb("", response.StatusCode.ToString());
             _errorExist = true;
         }
     }
@@ -119,7 +119,8 @@ else if (!_existenseOfImages) //This will show on screen in a milisecond before 
         Code inspired by: https://toxigon.com/implementing-lazy-loading-in-blazor */
     private async ValueTask<ItemsProviderResult<ImageModelWeb>> LoadImages(ItemsProviderRequest request)
     {
-        return new ItemsProviderResult<ImageModelWeb>(images, images.Length);
+        
+         return new ItemsProviderResult<ImageModelWeb>(images, images.Length);
     } 
 
     /* Converts the image base64 string into an url the website can render

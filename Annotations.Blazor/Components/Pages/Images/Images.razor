@@ -25,7 +25,7 @@ else if (!imgExist)
     private bool imgExist = true;
     private string? altText;
 
-    [Parameter] public string imageId { get; set; }//get access to parameter from URL/get request
+    [Parameter] public string imageId { get; set; } = ""; //get access to parameter from URL/get request
 
     protected override async Task OnInitializedAsync()
     {
@@ -55,7 +55,9 @@ else if (!imgExist)
         catch (Exception e)
         {
             Console.WriteLine("Status code: " + response.StatusCode);
+            Console.WriteLine(e.Message);
             image = response.StatusCode.ToString();
+            
             error = true;//there has been an error
         }
 

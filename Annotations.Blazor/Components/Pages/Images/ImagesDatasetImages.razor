@@ -119,7 +119,7 @@ else if (!_existenseOfImages) //This will show on screen in a milisecond before 
         Code inspired by: https://toxigon.com/implementing-lazy-loading-in-blazor */
     private async ValueTask<ItemsProviderResult<ImageModelWeb>> LoadImages(ItemsProviderRequest request)
     {
-        
+        await Task.Yield();
          return new ItemsProviderResult<ImageModelWeb>(images, images.Length);
     } 
 

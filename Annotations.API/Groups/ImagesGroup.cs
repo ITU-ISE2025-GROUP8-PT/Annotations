@@ -267,7 +267,6 @@ public static class ImagesGroup
 
             if (datasetModel == null)
             {
-                Console.WriteLine("No dataset found");
                 throw new Exception("No dataset found");
             };
             

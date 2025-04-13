@@ -63,7 +63,6 @@ else if (!_existenseOfImages) //This will show on screen in a milisecond before 
         using var response = await client.SendAsync(requestMessage);//sending the response
         if (!response.IsSuccessStatusCode)
         {
-            Console.WriteLine("Status code: " + response.StatusCode);
             throw new HttpRequestException($"failed: {response.StatusCode}");
         }
         try

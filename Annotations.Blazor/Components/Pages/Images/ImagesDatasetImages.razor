@@ -93,10 +93,9 @@ else if (!_existenseOfImages) //This will show on screen in a milisecond before 
                 images[i] = new ImageModelWeb (System.Convert.ToBase64String(imageData), imageObject.Description);
             }
         }
-        catch (Exception e)//if nothing is retrieved - prints out error
+        catch //if nothing is retrieved - prints out error
         {
             Console.WriteLine("Status code: " + response.StatusCode);
-            Console.WriteLine(e.Message);
             images = new ImageModelWeb[1];
             images[0] = new ImageModelWeb("", response.StatusCode.ToString());
             _errorExist = true;

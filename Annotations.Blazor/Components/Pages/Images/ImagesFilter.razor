@@ -70,10 +70,9 @@ else
                 images[i] = System.Convert.ToBase64String(imageData);//byte array to string
             }
         }
-        catch (Exception e)//if nothing is retrieved - prints out error
+        catch //if nothing is retrieved - prints out error
         {
             Console.WriteLine("Status code: " + response.StatusCode);
-            Console.WriteLine(e.Message);
             images = new string[1];
             images[0] = response.StatusCode.ToString();
             _errorExist = true;

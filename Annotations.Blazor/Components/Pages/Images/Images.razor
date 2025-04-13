@@ -52,10 +52,9 @@ else if (!imgExist)
             altText = imageObject.Description;
             image = System.Convert.ToBase64String(imageData);//byte array to string
         }
-        catch (Exception e)
+        catch 
         {
             Console.WriteLine("Status code: " + response.StatusCode);
-            Console.WriteLine(e.Message);
             image = response.StatusCode.ToString();
             
             error = true;//there has been an error

@@ -9,7 +9,7 @@
 {
     <Error/>
 }
-else if (_existenseOfImages){
+else if (!_existenseOfImages){
     <p><em>No images found for category @category </em></p>
 }
 else 
@@ -35,7 +35,7 @@ else
     private string[] images = new []{""};//all byte arrays as strings
     private string[] altText = new []{""};
     private bool _errorExist = false;
-    private bool _existenseOfImages = false;
+    private bool _existenseOfImages = true;
     
     
     [Inject] private NavigationManager Navigation { get; set; } = default!;
@@ -58,7 +58,7 @@ else
             string[] answer = await response.Content.ReadFromJsonAsync<string[]>() ?? throw new NoNullAllowedException(); //string array of JSON files of the images as strings
             if (answer.Length == 0)
             {
-                _existenseOfImages = true;
+                _existenseOfImages = false;
             }
             images = new string[answer.Length];
             altText = new string[answer.Length];

@@ -39,7 +39,4 @@ public class RoleBasedAccessControlPlaywrightTests : PageTest
         await Page.GetByRole(AriaRole.Heading, new() { Name = "You are not welcome here!" }).ClickAsync();
         await Page.GetByRole(AriaRole.Img, new() { Name = "Access Denied" }).ClickAsync();
     }
-    
-
-    
 }

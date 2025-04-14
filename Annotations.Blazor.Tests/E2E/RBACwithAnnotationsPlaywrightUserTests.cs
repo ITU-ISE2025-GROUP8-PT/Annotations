@@ -16,7 +16,6 @@ public class RBACwithAnnotationsPlaywrightUserTests : PageTest
         };
     }
     
-    
     [Fact]
     public async Task AccessNotDeniedDatasets()
     {
@@ -30,7 +29,4 @@ public class RBACwithAnnotationsPlaywrightUserTests : PageTest
         await Page.GetByRole(AriaRole.Cell, new() { Name = "Annotated By" }).ClickAsync();
         await Page.GetByRole(AriaRole.Cell, new() { Name = "Reviewed By" }).ClickAsync();
     }    
-
-    
-    
 }

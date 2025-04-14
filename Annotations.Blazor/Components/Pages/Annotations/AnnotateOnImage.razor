@@ -78,7 +78,6 @@
                                                       Label="Annotation"
                                                       FullWidth="true"
                                                       Immediate="true"
-                                                      @ref="textFieldRef"
                                                       Id="annotationTextField"
                                                       Style="background: white">
                                         </MatTextField>
@@ -153,7 +152,6 @@
     }
 
     private ElementReference imageContainer;
-    private MatTextField<string> textFieldRef;
     private bool showTextField = false;
     private Annotation currentAnnotation = new();
     private List<Annotation> savedAnnotations = new();
@@ -204,5 +202,5 @@
         public double Top { get; set; }
     }
 
-    [Inject] private IJSRuntime JSRuntime { get; set; }
+    [Inject] private IJSRuntime JSRuntime { get; set; } = default!;
 }

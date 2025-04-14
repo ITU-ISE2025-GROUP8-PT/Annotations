@@ -25,8 +25,7 @@ public class RBACwithAnnotationsPlaywrightUserTests : PageTest
         await Page.GetByText("Items per Page:").ClickAsync();
         await Page.GetByRole(AriaRole.Cell, new() { Name = "Dataset ID" }).ClickAsync();
         await Page.GetByRole(AriaRole.Cell, new() { Name = "No. of Images" }).ClickAsync();
-        await Page.GetByRole(AriaRole.Cell, new() { Name = "Category" }).ClickAsync();
         await Page.GetByRole(AriaRole.Cell, new() { Name = "Annotated By" }).ClickAsync();
         await Page.GetByRole(AriaRole.Cell, new() { Name = "Reviewed By" }).ClickAsync();
-    }    
+    }
 }

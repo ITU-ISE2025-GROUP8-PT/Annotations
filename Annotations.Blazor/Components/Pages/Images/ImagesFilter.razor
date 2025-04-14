@@ -1,14 +1,18 @@
-﻿@page "/images/filter/{category}"
+@page "/images/filter/{category}"
+@using System.Data
 @using global::Annotations.Core.Models
 @inject IHttpClientFactory ClientFactory
 @inject IHttpContextAccessor httpContextAccessor
 
 
-@if (images==null)//TODO: better error handling - this doesn't even work
+@if (_errorExist)
 {
-    <p><em>No images found</em></p>
+    <Error/>
 }
-else
+else if (!_existenseOfImages){
+    <p><em>No images found for category @category </em></p>
+}
+else 
 {
     <div style=" display: flex; flex-direction:row;"><!--To make both lines on the same row -->
         
@@ -27,9 +31,14 @@ else
 }
 
 @code{
-    [Parameter] public string category { get; set; }//get access to parameter from URL/get request
-    private string[]? images;//all byte arrays as strings
-    private string[]? altText;
+    [Parameter] public string category { get; set; } = "";//get access to parameter from URL/get request
+    private string[] images = new []{""};//all byte arrays as strings
+    private string[] altText = new []{""};
+    private bool _errorExist = false;
+    private bool _existenseOfImages = true;
+    
+    
+    [Inject] private NavigationManager Navigation { get; set; } = default!;
 
     protected override async Task OnInitializedAsync()
     {
@@ -46,22 +55,27 @@ else
         using var response = await client.SendAsync(requestMessage);//sending the response
         try
         {
-            string[] answer = await response.Content.ReadFromJsonAsync<string[]>();//string array of JSON files of the images as strings
+            string[] answer = await response.Content.ReadFromJsonAsync<string[]>() ?? throw new NoNullAllowedException(); //string array of JSON files of the images as strings
+            if (answer.Length == 0)
+            {
+                _existenseOfImages = false;
+            }
             images = new string[answer.Length];
             altText = new string[answer.Length];
             for (int i = 0; i < answer.Length; i++)
             {
-                var imageObject = System.Text.Json.JsonSerializer.Deserialize<ImageModel>(answer[i]);//JSON file becomes imageModel object
+                var imageObject = System.Text.Json.JsonSerializer.Deserialize<ImageModel>(answer[i]) ?? throw new NoNullAllowedException();//JSON file becomes imageModel object
                 var imageData = imageObject.ImageData;
                 altText[i] = imageObject.Description;
                 images[i] = System.Convert.ToBase64String(imageData);//byte array to string
             }
         }
-        catch (Exception e)//if nothing is retrieved - prints out error
+        catch //if nothing is retrieved - prints out error
         {
             Console.WriteLine("Status code: " + response.StatusCode);
             images = new string[1];
             images[0] = response.StatusCode.ToString();
+            _errorExist = true;
         }
 
     }

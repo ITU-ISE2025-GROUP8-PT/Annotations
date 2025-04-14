@@ -1,9 +1,8 @@
-﻿@page "/images/datasets/"
-@rendermode InteractiveServer
+﻿@page "/images/datasets"
 @using global::Annotations.Core.Models
 @inject IHttpClientFactory ClientFactory
 @inject IHttpContextAccessor httpContextAccessor
-@inject NavigationManager NavigationManager
+
 
 <div style=" display: flex; flex-direction:row;">
     <span style="margin-left:13%; margin-top:0.0001%; padding-bottom:2%; font-weight: bold; width: 72%; font-size: 215%">Manage datasets</span>
@@ -11,6 +10,11 @@
         <button class="orderingButton">Order by...</button>
     </div>
 </div>
+
+@if (_error)
+{
+    <Error/>
+}
 
 <MatThemeProvider Theme="_theme">
     <MatTable Items="Datasets" class="table-formatting">
@@ -42,7 +46,7 @@
 </MatThemeProvider>
 
 @code{
-    public List<Dataset>? Datasets = new List<Dataset>();//it only works as a list, not an array
+    public List<Dataset> Datasets = new List<Dataset>();//it only works as a list, not an array
     private bool _error; //this isn't used yet
     //TODO: error handling (what blazor pages returns)
     
@@ -66,6 +70,8 @@
             if (response.IsSuccessStatusCode)
             {
                 var datasetmodels = await response.Content.ReadFromJsonAsync<DatasetModel[]>();//int array of all the ids of all the existing datasets
+                ArgumentNullException.ThrowIfNull(datasetmodels);
+                await Task.Yield();
                 foreach (var datasetmodel in datasetmodels)
                 {
                     Datasets.Add(new Dataset(datasetmodel.Id,
@@ -82,10 +88,10 @@
                 Console.WriteLine("Status code: " + response.StatusCode);
             }
         }
-        catch (Exception e)
+        catch 
         {
             _error = true;
-            Console.WriteLine("Unknown error: " + e.Message);
+            
         }
     }
     

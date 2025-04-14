@@ -14,10 +14,10 @@ namespace Annotations.API.Groups;
 
 public static class ImagesGroup
 {
-    private static int counter = 0;//change this - it gets reset every time the program resets
+    private static int _counter = 0;//change this - it gets reset every time the program resets
     private record ValidationResponse(bool Success, string Message);
     
-    private static string[] ArrayOfFileExtension = {"png", "jpg", "jpeg"};
+    private static string[] _arrayOfFileExtension = {"png", "jpg", "jpeg"};
 
 
 
@@ -37,9 +37,9 @@ public static class ImagesGroup
         { 
             return new ValidationResponse(false, "File doesn't exist.");
         }
-        foreach (string FileExtension in ArrayOfFileExtension)
+        foreach (string fileExtension in _arrayOfFileExtension)
         {
-            if (file.ContentType.Contains(FileExtension))
+            if (file.ContentType.Contains(fileExtension))
             {
                 //if the image is the correct type, it will be uploaded, since it fulfills the other criterias
                 //upload image to db
@@ -80,7 +80,7 @@ public static class ImagesGroup
                         await image.OpenReadStream().CopyToAsync(ms);
                         var thisImage = new ImageModel()//TODO: dont do this - the title, description and datasetsId are hardcoded
                         {
-                            Id = counter,
+                            Id = _counter,
                             Title = "idk",
                             Description = "description",
                             ImageData = ms.ToArray(),
@@ -94,10 +94,11 @@ public static class ImagesGroup
                         inputs the names (ids) of datasets, and we can use below code (without
                         hard-coded ids) to cross-add the images to the relevant datasets.
                         */
-                        var NeededDataset = context.Datasets.Select(Dataset => Dataset).
+                        var neededDataset = context.Datasets.Select(Dataset => Dataset).
                         Where(Dataset => Dataset.Id == 1 || Dataset.Id == 2);//TODO dont do this - this is hardcoded for testing
                         
-                        foreach (Dataset dataset in NeededDataset)
+                        foreach (Dataset dataset in neededDataset)
+                            
                         {
                             dataset.ImageIds.Add(thisImage.Id);//adds images to the datasets
                             await context.SaveChangesAsync();
@@ -106,8 +107,8 @@ public static class ImagesGroup
                         string jsonString = System.Text.Json.JsonSerializer.Serialize(thisImage);//objects becomes JSON string
                         var byteContent = System.Text.Encoding.UTF8.GetBytes(jsonString);//JSON string becomes byte array
 
-                        BlobClient thisImageBlobClient = containerClient.GetBlobClient($"{counter}.json");
-                        counter++;
+                        BlobClient thisImageBlobClient = containerClient.GetBlobClient($"{_counter}.json");
+                        _counter++;
 
                         var blobHeaders = new BlobHttpHeaders
                         {
@@ -198,6 +199,9 @@ public static class ImagesGroup
                         await BlobClient.DownloadToAsync(memoryStream);
                         var jsonString = System.Text.Encoding.UTF8.GetString(memoryStream.ToArray());//JSON file as string
                         var imageObject = System.Text.Json.JsonSerializer.Deserialize<ImageModel>(jsonString);//deserialize so it becomes imageModel
+                        if (imageObject == null)
+                        {
+                            throw new Exception("image object is null");}
                         if (imageObject.Category == category)
                         {
                             collection.Add(jsonString);
@@ -260,11 +264,18 @@ public static class ImagesGroup
                 }).Where(DatasetModel => DatasetModel.Id == Int32.Parse(dataset));
                 //there is only one dataset with a certain Id, so no point of taking more
             var datasetModel = await datasets.FirstOrDefaultAsync();
+
+            if (datasetModel == null)
+            {
+                throw new Exception("No dataset found");
+            };
+            
             HashSet<string> collection = new HashSet<string>();
             var blobServiceClient = clientFactory.CreateClient("Default");
             BlobContainerClient containerClient = blobServiceClient.GetBlobContainerClient("images");
             //foreach (DatasetModel datasetModel in datasets)//guaranteed to only be one dataset in "datasets", so this is not linear time. 
             //{//there is a better way of doing this
+            
                 foreach (int ids in datasetModel.ImageIds)
                 {
                     Console.WriteLine(ids);

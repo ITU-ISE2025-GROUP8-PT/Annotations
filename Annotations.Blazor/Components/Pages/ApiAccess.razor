@@ -3,6 +3,7 @@
 @inject IHttpClientFactory ClientFactory
 @inject IHttpContextAccessor httpContextAccessor
 @attribute [Authorize]
+@attribute [Authorize(Roles = "Administrator")]
 
 <PageTitle>ApiAccesse</PageTitle>
 

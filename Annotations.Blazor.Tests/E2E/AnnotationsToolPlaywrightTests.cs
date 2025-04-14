@@ -6,7 +6,7 @@ namespace Annotations.Blazor.Tests.E2E;
 
 public class AnnotationsToolPlaywrightTests: PageTest
 {
-    private const string AuthStatePath = "../../../../playwright/.auth/orchard-state.json";
+    private const string AuthStatePath = "../../../../playwright/.auth/orchard-state-with-AnnotationsUser.json";
     
     public override BrowserNewContextOptions ContextOptions()
     {

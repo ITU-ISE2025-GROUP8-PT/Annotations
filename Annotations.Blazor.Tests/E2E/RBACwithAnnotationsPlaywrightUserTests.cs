@@ -4,7 +4,7 @@ using Microsoft.Playwright.Xunit;
 
 namespace Annotations.Blazor.Tests.E2E;
 
-public class RBACwithAnnotationsUserTests : PageTest
+public class RBACwithAnnotationsPlaywrightUserTests : PageTest
 {
     private const string AuthStatePath = "../../../../playwright/.auth/orchard-state-with-AnnotationsUser.json";
     

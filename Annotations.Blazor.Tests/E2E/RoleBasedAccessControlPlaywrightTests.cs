@@ -4,7 +4,7 @@ using Microsoft.Playwright;
 
 namespace Annotations.Blazor.Tests.E2E;
 
-public class RoleBasedAccessControlTests : PageTest
+public class RoleBasedAccessControlPlaywrightTests : PageTest
 {
     private const string AuthStatePath = "../../../../playwright/.auth/orchard-state.json";
     

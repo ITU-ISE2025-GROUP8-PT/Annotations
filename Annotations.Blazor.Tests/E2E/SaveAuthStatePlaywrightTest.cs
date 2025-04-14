@@ -28,7 +28,9 @@ public class SaveAuthStatePlaywrightTest
         {
             Path = "../../../../playwright/.auth/orchard-state.json"
         });
-    }    [Fact]
+    }    
+    
+    [Fact]
     public async Task SaveAuthenticatedStateAnnotationsUser()
     {
         string[] loginCred = await File.ReadAllLinesAsync("../../../../playwright/.auth/testUserAnnotationsUser.txt");

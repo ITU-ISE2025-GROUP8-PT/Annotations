@@ -3,6 +3,7 @@
 @page "/images/annotations"
 @implements IDisposable
 @inject NavigationManager Navigation
+@attribute [Authorize(Roles = "Administrator, Manager, AnnotationsUser")]
 
 <PageTitle>Annotations</PageTitle>
 <AuthorizeView>

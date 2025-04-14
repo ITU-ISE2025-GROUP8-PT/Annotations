@@ -3,6 +3,7 @@
 @using global::Annotations.Core.Models
 @inject IHttpClientFactory ClientFactory
 @inject IHttpContextAccessor httpContextAccessor
+@attribute [Authorize(Roles = "Administrator, Manager, AnnotationsUser")]
 
   
 @if (images == null) //This will show on screen in a milisecond before imgs load. Should it be "Loading..."?

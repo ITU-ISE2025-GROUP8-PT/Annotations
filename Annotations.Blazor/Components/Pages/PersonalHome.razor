@@ -2,6 +2,7 @@
 @inject NavigationManager Navigation
 @rendermode InteractiveServer
 @page "/home/{userid}"
+@attribute [Authorize(Roles = "Administrator, Manager, AnnotationsUser")]
 
 <style>
     .mat-layout-grid-cell{

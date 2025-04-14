@@ -28,5 +28,27 @@ public class SaveAuthStatePlaywrightTest
         {
             Path = "../../../../playwright/.auth/orchard-state.json"
         });
+    }    [Fact]
+    public async Task SaveAuthenticatedStateAnnotationsUser()
+    {
+        string[] loginCred = await File.ReadAllLinesAsync("../../../../playwright/.auth/testUserAnnotationsUser.txt");
+        using var playwright = await Playwright.CreateAsync();
+        await using var browser = await playwright.Chromium.LaunchAsync();
+        var context = await browser.NewContextAsync();
+        var page = await context.NewPageAsync();
+
+        await page.GotoAsync("https://localhost:7238/authentication/login");
+
+        await page.GetByLabel("Username or email address").FillAsync(loginCred[0]);
+        
+        await page.GetByLabel("Password").FillAsync(loginCred[1]);
+        await page.GetByRole(AriaRole.Button, new PageGetByRoleOptions { Name = "Log in" }).ClickAsync();
+        
+        await page.WaitForURLAsync("https://localhost:7238/");
+
+        await context.StorageStateAsync(new()
+        {
+            Path = "../../../../playwright/.auth/orchard-state-with-AnnotationsUser.json"
+        });
     }
 }

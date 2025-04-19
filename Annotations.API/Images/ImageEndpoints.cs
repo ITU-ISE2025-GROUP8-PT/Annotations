@@ -21,15 +21,9 @@ public class ImageEndpoints
     /// </summary>
     private static Delegate ImagesUploadDelegate => async (
         IFormFile       image,
-        string          series,
+        long            series,
         ClaimsPrincipal user) =>
     {
-        if (user == null)
-        {
-            // Deny anonymous.
-            return Results.Forbid();
-        }
-        
         using MemoryStream stream = new MemoryStream();
         await image.OpenReadStream().CopyToAsync(stream);
 

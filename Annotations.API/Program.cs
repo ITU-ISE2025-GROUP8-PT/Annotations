@@ -80,7 +80,7 @@ builder.Services.AddAzureClients(clientBuilder =>
 var app = builder.Build();
 
 
-ImageEndpoints.MapEndpoints(app.MapGroup("/images"));
+ImageEndpoints.MapEndpoints(app.MapGroup("/Images"));
 
 
 // Development/Debugging middleware.

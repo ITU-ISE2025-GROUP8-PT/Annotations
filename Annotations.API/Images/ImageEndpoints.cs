@@ -13,20 +13,26 @@ public class ImageEndpoints
     public static void MapEndpoints(RouteGroupBuilder groupBuilder)
     {
         groupBuilder.DisableAntiforgery(); // Disabled as this is an API, which will not serve any forms.
-        groupBuilder.MapPost("/upload", ImagesUploadDelegate).RequireAuthorization();
+        groupBuilder.MapPost("/Upload", UploadImage).RequireAuthorization();
     }
 
     /// <summary>
-    /// <para>Delegate for <c>/images/upload</c> POST request.</para>
+    /// Handler method for post request to upload an image.
     /// </summary>
-    private static Delegate ImagesUploadDelegate => async (
+    /// <param name="image"></param>
+    /// <param name="series"></param>
+    /// <param name="user"></param>
+    /// <returns></returns>
+    static async Task<IResult> UploadImage(
         IFormFile       image,
         long            series,
-        ClaimsPrincipal user) =>
+        ClaimsPrincipal user,
+        [FromServices] IImageUploader uploader
+        )
     {
         using MemoryStream stream = new MemoryStream();
         await image.OpenReadStream().CopyToAsync(stream);
 
         return Results.Created();
-    };
+    }
 }

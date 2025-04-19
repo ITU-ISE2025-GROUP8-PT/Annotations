@@ -4,10 +4,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Annotations.API;
 
-public class AnnotationsDbContext : IdentityDbContext<User>
+public class AnnotationsDbContext : DbContext
 {
-    
-
     public AnnotationsDbContext(DbContextOptions<AnnotationsDbContext> options) : base(options)
     {
         

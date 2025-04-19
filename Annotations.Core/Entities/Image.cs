@@ -1,28 +1,36 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Annotations.Core.Entities;
 
+/// <summary>
+/// Entity representing an image for research use. 
+/// </summary>
 public class Image
 {
-    
-	[Required]
-	public required int Id { get; set; }
-	[Required]
-    [StringLength(100)]
-    public required string Title { get; set; }
-	[Required]
-    [StringLength(1000)]
-    public required string Description { get; set; }
-	[Required]
-    public required byte[] ImageData { get; set; }
-	[Required]
-	[StringLength(100)]
-	public required string Category { get; set; }
-    [Required]
-    public required List<int> DatasetsIds { get; set; }
-}
+    /// <summary>
+    /// <para>A unique and randomly generated short string.</para>
+    /// <para>Should also be used for Blob Storage entries.</para>
+    /// </summary>
+    [Key]
+	public required string ImageId { get; set; }
 
-    /*Later add foreign keys:
-    UploadedBy (referencing AdminId)
-    DeletedBy (referencing AdminId)
-    */
+    /// <summary>
+    /// <para>The time and date that the image was uploaded.</para>
+    /// </summary>
+    [Required]
+    public required DateTime TimeUploaded { get; set; }
+
+    /// <summary>
+    /// <para>User that uploaded the image.</para>
+    /// </summary>
+    [Required]
+    public required User UploadedBy { get; set; }
+
+    /// <summary>
+    /// <para>The original filename as received at upload.</para>
+    /// </summary>
+    [Required]
+    [StringLength(255)] // Limit with most file systems.
+    public required string OriginalFilename { get; set; }
+}

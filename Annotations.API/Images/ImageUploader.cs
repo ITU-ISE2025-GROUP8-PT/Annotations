@@ -4,6 +4,7 @@ using Azure.Storage.Blobs.Models;
 using System.Net.Mime;
 using Annotations.Core.Entities;
 using Microsoft.IdentityModel.Tokens;
+using System.Net;
 
 namespace Annotations.API.Images;
 
@@ -30,9 +31,9 @@ public interface IImageUploader
 
 public sealed class ImageUploaderResult
 {
-    public required bool Success { get; set; }
-    public string Error { get; set; } = String.Empty;
-    public string ImageId { get; set; } = String.Empty;
+    public required int StatusCode { get; set; }
+    public string Error { get; set; } = string.Empty;
+    public string ImageId { get; set; } = string.Empty;
 }
 
 
@@ -52,6 +53,7 @@ public class ImageUploader : IImageUploader
     public Stream? InputStream { get; set; }
     public User? UploadedBy { get; set; }
 
+
     public ImageUploader(
         AnnotationsDbContext dbContext,
         IAzureClientFactory<BlobServiceClient> clientFactory)
@@ -60,6 +62,7 @@ public class ImageUploader : IImageUploader
         _clientFactory = clientFactory;
     }
 
+
     public async Task<ImageUploaderResult> StoreAsync()
     {
         // Validate instance
@@ -67,7 +70,15 @@ public class ImageUploader : IImageUploader
         if (ContentType == null) throw new ArgumentNullException(nameof(ContentType));
         if (InputStream == null) throw new ArgumentNullException(nameof(InputStream));
         if (UploadedBy == null) throw new ArgumentNullException(nameof(UploadedBy));
-        ThrowBadContent();
+
+        if (!_validMediaTypes.Contains(ContentType!))
+        {
+            return new ImageUploaderResult
+            {
+                StatusCode = (int) HttpStatusCode.UnsupportedMediaType,
+                Error = $"Media type is not allowed, allowed types are JPEG, PNG and WebP"
+            };
+        }
 
         // Get blob client
         var imageId = Guid.NewGuid().ToString();
@@ -113,18 +124,8 @@ public class ImageUploader : IImageUploader
         // Return result and URI.
         return new ImageUploaderResult
         { 
-            Success = true,
+            StatusCode = (int) HttpStatusCode.Created,
             ImageId = imageId,
         };
     }
-
-    /// <summary>
-    /// Method throws an exception if instance should not allow image to be stored.
-    /// </summary>
-    /// <exception cref="InvalidOperationException"></exception>
-    private void ThrowBadContent()
-    {
-        if (!_validMediaTypes.Contains(ContentType!)) throw new InvalidOperationException("Media type not allowed");
-    }
-    // TODO: Provide a public method to validate that input validation passes these tests.
 }

@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Http;
 using System.Security.Claims;
 using Annotations.API.Users;
+using System.Text;
+using System.Text.Json;
 
 namespace Annotations.API.Images;
 
@@ -20,10 +22,11 @@ public class ImageEndpoints
     /// <summary>
     /// Handler method for post request to upload an image.
     /// </summary>
-    static async Task<IResult> UploadImage(
+    static async Task<ImageUploaderResult> UploadImage(
         IFormFile       image,
         long?           addToSeries,
         ClaimsPrincipal claimsPrincipal,
+        HttpContext     httpContext,
         [FromServices] IImageUploader uploader,
         [FromServices] IUserService   userService
         )
@@ -37,6 +40,8 @@ public class ImageEndpoints
 
         var uploaderResult = await uploader.StoreAsync();
 
-        return Results.Created($"{uploaderResult.ImageId}", uploaderResult);
+        httpContext.Response.StatusCode = uploaderResult.StatusCode;
+
+        return uploaderResult;
     }
 }

@@ -6,8 +6,12 @@ using Annotations.Core.Entities;
 
 namespace Annotations.API.Images;
 
+/// <summary>
+/// Defines a transient service with which a single image can be uploaded to the Annotations application.
+/// </summary>
 public interface IImageUploader
 {
+    string? OriginalFilename { get; set; }
     ContentType? ContentType { get; set; }
     Stream? InputStream { get; set; }
     User? Uploader { get; set; }
@@ -21,15 +25,26 @@ public interface IImageUploader
     Task StoreAsync();
 }
 
+public class ImageUploaderResult
+{
+    public required bool Success { get; set; }
+    public string Error { get; set; } = String.Empty;
+    public string ImageId { get; set; } = String.Empty;
+}
 
 
+
+/// <summary>
+/// Implementation of IImageUploader service for Annotations using <c>AnnotationsDbContext</c> and Azure Storage.
+/// </summary>
 public class ImageUploader : IImageUploader
 {
     private static readonly HashSet<string> _validMediaTypes = new(["image/jpeg", "image/png", "image/webp"]);
 
-    private readonly AnnotationsDbContext _context;
+    private readonly AnnotationsDbContext _dbContext;
     private readonly IAzureClientFactory<BlobServiceClient> _clientFactory;
 
+    public string? OriginalFilename { get; set; }
     public ContentType? ContentType { get; set; }
     public Stream? InputStream { get; set; }
     public User? Uploader { get; set; }
@@ -38,13 +53,14 @@ public class ImageUploader : IImageUploader
         AnnotationsDbContext dbContext,
         IAzureClientFactory<BlobServiceClient> clientFactory)
     {
-        _context = dbContext;
+        _dbContext = dbContext;
         _clientFactory = clientFactory;
     }
 
     public async Task StoreAsync()
     {
         // Validate instance
+        if (OriginalFilename == null) throw new ArgumentNullException(nameof(OriginalFilename));
         if (ContentType == null) throw new ArgumentNullException(nameof(ContentType));
         if (InputStream == null) throw new ArgumentNullException(nameof(InputStream));
         if (Uploader == null) throw new ArgumentNullException(nameof(Uploader));
@@ -72,7 +88,24 @@ public class ImageUploader : IImageUploader
         await blob.UploadAsync(InputStream);
 
         // Update database
+        var imageEntity = new Image
+        {
+            ImageId = imageId,
+            TimeUploaded = DateTime.UtcNow,
+            UploadedBy = Uploader,
+            OriginalFilename = OriginalFilename
+        };
 
+        try // Blob is deleted in case of failure to update the database. 
+        {
+            _dbContext.Add(imageEntity);
+            await _dbContext.SaveChangesAsync();
+        }
+        catch (Exception)
+        {
+            await blob.DeleteAsync();
+            throw;
+        }
     }
 
     /// <summary>

@@ -30,4 +30,14 @@ public class AnnotationsDbContext : DbContext
         Images = Set<Image>();
         ImageSeries = Set<ImageSeries>();
     }
+
+    protected override void OnModelCreating(ModelBuilder builder)
+    {
+        base.OnModelCreating(builder);
+
+        builder.Entity<ImageSeries>()
+            .HasMany(series => series.Images)
+            .WithMany(img => img.InImageSeries)
+            .UsingEntity(config => config.ToTable("ImagesInImageSeries"));
+    }
 }

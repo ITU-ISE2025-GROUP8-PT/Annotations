@@ -26,6 +26,7 @@ public class UserService : IUserService
             UserId      = claimsPrincipal.FindFirstValue("sub") ?? throw new ArgumentNullException(nameof(claimsPrincipal)),
             UserName    = claimsPrincipal.Identity!.Name ?? throw new ArgumentNullException(nameof(claimsPrincipal)),
         };
+
         await _dbContext.AddAsync(newUser);
         await _dbContext.SaveChangesAsync();
         

@@ -78,13 +78,21 @@ builder.Services.AddAzureClients(clientBuilder =>
     clientBuilder.AddQueueServiceClient(builder.Configuration["AzureStorageConnection"]!);
     clientBuilder.AddTableServiceClient(builder.Configuration["AzureStorageConnection"]!);
 });
-var app = builder.Build();
 
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddTransient<IImageUploader, ImageUploader>();
 
-ImageEndpoints.MapEndpoints(app.MapGroup("/Images"));
 
+var app = builder.Build();
+
+
+using (var scope = app.Services.CreateScope())
+{
+    using var context = scope.ServiceProvider.GetRequiredService<AnnotationsDbContext>();
+    context.Database.Migrate();
+}
+
+ImageEndpoints.MapEndpoints(app.MapGroup("/Images"));
 
 // Development/Debugging middleware.
 if (app.Environment.IsDevelopment())

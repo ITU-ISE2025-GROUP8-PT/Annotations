@@ -80,15 +80,15 @@ public class ImageUploader : IImageUploader
             throw new InvalidOperationException("GUID already present in medical-image blob storage");
         }
 
+        // Upload image to storage
+        await blob.UploadAsync(InputStream);
+
         // Set content type in headers
         var headers = new BlobHttpHeaders
         {
             ContentType = ContentType
         };
         await blob.SetHttpHeadersAsync(headers);
-
-        // Upload image to storage
-        await blob.UploadAsync(InputStream);
 
         // Update database
         var imageEntity = new Image
@@ -110,6 +110,7 @@ public class ImageUploader : IImageUploader
             throw;
         }
 
+        // Return result and URI.
         return new ImageUploaderResult
         { 
             Success = true,

@@ -22,7 +22,7 @@ public class ImageEndpoints
     /// </summary>
     static async Task<IResult> UploadImage(
         IFormFile       image,
-        long            series,
+        long?           addToSeries,
         ClaimsPrincipal claimsPrincipal,
         [FromServices] IImageUploader uploader,
         [FromServices] IUserService   userService
@@ -30,12 +30,9 @@ public class ImageEndpoints
     {
         var user = await userService.TryFindUserAsync(claimsPrincipal) ?? await userService.CreateUser(claimsPrincipal);
 
-        using MemoryStream stream = new MemoryStream();
-        await image.OpenReadStream().CopyToAsync(stream);
-
         uploader.OriginalFilename = image.FileName;
         uploader.ContentType      = image.ContentType;
-        uploader.InputStream      = stream;
+        uploader.InputStream      = image.OpenReadStream();
         uploader.UploadedBy       = user;
 
         var uploaderResult = await uploader.StoreAsync();

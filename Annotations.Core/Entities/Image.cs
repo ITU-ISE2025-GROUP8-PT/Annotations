@@ -33,4 +33,9 @@ public class Image
     [Required]
     [StringLength(255)] // Limit with most file systems.
     public required string OriginalFilename { get; set; }
+
+    /// <summary>
+    /// Image series containing this image.
+    /// </summary>
+    public ICollection<ImageSeries> InImageSeries { get; set; } = [];
 }

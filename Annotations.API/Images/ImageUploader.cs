@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Azure;
 using Azure.Storage.Blobs.Models;
 using System.Net.Mime;
+using Annotations.Core.Entities;
 
 namespace Annotations.API.Images;
 
@@ -9,6 +10,7 @@ public interface IImageUploader
 {
     ContentType? ContentType { get; set; }
     Stream? InputStream { get; set; }
+    User? Uploader { get; set; }
 
     /// <summary>
     /// <para>Stores the image in the application data stores.</para>
@@ -30,6 +32,7 @@ public class ImageUploader : IImageUploader
 
     public ContentType? ContentType { get; set; }
     public Stream? InputStream { get; set; }
+    public User? Uploader { get; set; }
 
     public ImageUploader(
         AnnotationsDbContext dbContext,
@@ -44,6 +47,7 @@ public class ImageUploader : IImageUploader
         // Validate instance
         if (ContentType == null) throw new ArgumentNullException(nameof(ContentType));
         if (InputStream == null) throw new ArgumentNullException(nameof(InputStream));
+        if (Uploader == null) throw new ArgumentNullException(nameof(Uploader));
         ThrowBadContent();
 
         // Get blob client
@@ -66,6 +70,9 @@ public class ImageUploader : IImageUploader
 
         // Upload image to storage
         await blob.UploadAsync(InputStream);
+
+        // Update database
+
     }
 
     /// <summary>

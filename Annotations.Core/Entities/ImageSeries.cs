@@ -2,6 +2,9 @@
 
 namespace Annotations.Core.Entities;
 
+/// <summary>
+/// Entity representing an image series. Means to arrange images for research jobs.
+/// </summary>
 public class ImageSeries
 {
     /// <summary>
@@ -9,6 +12,11 @@ public class ImageSeries
     /// </summary>
     [Key]
     public long ImageSeriesId { get; set; }
+
+    /// <summary>
+    /// <para>Collection of images in the image series.</para>
+    /// </summary>
+    public ICollection<Image> Images { get; set; } = [];
 
     /// <summary>
     /// <para>User that created the image series.</para>

@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Identity;
 namespace Annotations.Core.Entities;
 
 /// <summary>
-/// <para>User entity for the purpose of storing user information for app specific purposes.</para>
+/// <para>Entity for the purpose of storing user information for app specific purposes.</para>
 /// </summary>
 public class User
 {

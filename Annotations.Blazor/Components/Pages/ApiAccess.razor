@@ -30,9 +30,11 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        var httpContext = httpContextAccessor.HttpContext ?? throw new InvalidOperationException("No HttpContext available");
+        var httpContext = httpContextAccessor.HttpContext 
+            ?? throw new InvalidOperationException("No HttpContext available");
 
-        var accessToken = await httpContext.GetTokenAsync("access_token") ?? throw new InvalidOperationException("No access_token was saved");
+        var accessToken = await httpContext.GetTokenAsync("access_token") 
+            ?? throw new InvalidOperationException("No access_token was saved");
 
         var client = ClientFactory.CreateClient();
         client.BaseAddress = new("https://localhost:7250");

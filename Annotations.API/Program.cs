@@ -1,5 +1,6 @@
 using Annotations.API;
 using Annotations.API.Images;
+using Annotations.API.Users;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Data.Sqlite;
@@ -79,6 +80,8 @@ builder.Services.AddAzureClients(clientBuilder =>
 });
 var app = builder.Build();
 
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddTransient<IImageUploader, ImageUploader>();
 
 ImageEndpoints.MapEndpoints(app.MapGroup("/Images"));
 

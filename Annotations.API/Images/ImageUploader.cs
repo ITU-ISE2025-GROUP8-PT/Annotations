@@ -3,6 +3,7 @@ using Microsoft.Extensions.Azure;
 using Azure.Storage.Blobs.Models;
 using System.Net.Mime;
 using Annotations.Core.Entities;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Annotations.API.Images;
 
@@ -12,9 +13,9 @@ namespace Annotations.API.Images;
 public interface IImageUploader
 {
     string? OriginalFilename { get; set; }
-    ContentType? ContentType { get; set; }
+    string? ContentType { get; set; }
     Stream? InputStream { get; set; }
-    User? Uploader { get; set; }
+    User? UploadedBy { get; set; }
 
     /// <summary>
     /// <para>Stores the image in the application data stores.</para>
@@ -45,9 +46,9 @@ public class ImageUploader : IImageUploader
     private readonly IAzureClientFactory<BlobServiceClient> _clientFactory;
 
     public string? OriginalFilename { get; set; }
-    public ContentType? ContentType { get; set; }
+    public string? ContentType { get; set; }
     public Stream? InputStream { get; set; }
-    public User? Uploader { get; set; }
+    public User? UploadedBy { get; set; }
 
     public ImageUploader(
         AnnotationsDbContext dbContext,
@@ -63,7 +64,7 @@ public class ImageUploader : IImageUploader
         if (OriginalFilename == null) throw new ArgumentNullException(nameof(OriginalFilename));
         if (ContentType == null) throw new ArgumentNullException(nameof(ContentType));
         if (InputStream == null) throw new ArgumentNullException(nameof(InputStream));
-        if (Uploader == null) throw new ArgumentNullException(nameof(Uploader));
+        if (UploadedBy == null) throw new ArgumentNullException(nameof(UploadedBy));
         ThrowBadContent();
 
         // Get blob client
@@ -80,7 +81,7 @@ public class ImageUploader : IImageUploader
         // Set content type in headers
         var headers = new BlobHttpHeaders
         {
-            ContentType = ContentType.MediaType
+            ContentType = ContentType
         };
         await blob.SetHttpHeadersAsync(headers);
 
@@ -92,7 +93,7 @@ public class ImageUploader : IImageUploader
         {
             ImageId = imageId,
             TimeUploaded = DateTime.UtcNow,
-            UploadedBy = Uploader,
+            UploadedBy = UploadedBy,
             OriginalFilename = OriginalFilename
         };
 
@@ -114,7 +115,7 @@ public class ImageUploader : IImageUploader
     /// <exception cref="InvalidOperationException"></exception>
     private void ThrowBadContent()
     {
-        if (_validMediaTypes.Contains(ContentType!.MediaType)) throw new InvalidOperationException("Media type not allowed");
+        if (!_validMediaTypes.Contains(ContentType!)) throw new InvalidOperationException("Media type not allowed");
     }
     // TODO: Provide a public method to validate that input validation passes these tests.
 }

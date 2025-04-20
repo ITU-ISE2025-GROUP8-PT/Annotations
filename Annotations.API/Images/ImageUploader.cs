@@ -13,9 +13,24 @@ namespace Annotations.API.Images;
 /// </summary>
 public interface IImageUploader
 {
-    string? OriginalFilename { get; set; }
-    string? ContentType { get; set; }
+    /// <summary>
+    /// Original filename. Will be stored as metadata. 
+    /// </summary>
+    string OriginalFilename { get; set; }
+
+    /// <summary>
+    /// Media type being uploaded. 
+    /// </summary>
+    string ContentType { get; set; }
+
+    /// <summary>
+    /// Data stream to upload from. Obtained i.e. using <c>IFormFile.OpenReadStream()</c>
+    /// </summary>
     Stream? InputStream { get; set; }
+
+    /// <summary>
+    /// User uploading the file. 
+    /// </summary>
     User? UploadedBy { get; set; }
 
     /// <summary>
@@ -31,8 +46,19 @@ public interface IImageUploader
 
 public sealed class ImageUploaderResult
 {
+    /// <summary>
+    /// Status code for HTTP response.
+    /// </summary>
     public required int StatusCode { get; set; }
+
+    /// <summary>
+    /// Error message if applicable.
+    /// </summary>
     public string Error { get; set; } = string.Empty;
+
+    /// <summary>
+    /// URI of created resource for return with "201 Created" response.
+    /// </summary>
     public string ImageId { get; set; } = string.Empty;
 }
 
@@ -48,8 +74,8 @@ public class ImageUploader : IImageUploader
     private readonly AnnotationsDbContext _dbContext;
     private readonly IAzureClientFactory<BlobServiceClient> _clientFactory;
 
-    public string? OriginalFilename { get; set; }
-    public string? ContentType { get; set; }
+    public string OriginalFilename { get; set; } = string.Empty;
+    public string ContentType { get; set; } = string.Empty;
     public Stream? InputStream { get; set; }
     public User? UploadedBy { get; set; }
 
@@ -65,43 +91,98 @@ public class ImageUploader : IImageUploader
 
     public async Task<ImageUploaderResult> StoreAsync()
     {
-        // Validate instance
-        if (OriginalFilename == null) throw new ArgumentNullException(nameof(OriginalFilename));
-        if (ContentType == null) throw new ArgumentNullException(nameof(ContentType));
-        if (InputStream == null) throw new ArgumentNullException(nameof(InputStream));
-        if (UploadedBy == null) throw new ArgumentNullException(nameof(UploadedBy));
-
-        if (!_validMediaTypes.Contains(ContentType!))
+        var problemResult = ValidateInputProperties();
+        if (problemResult != null)
         {
-            return new ImageUploaderResult
-            {
-                StatusCode = (int) HttpStatusCode.UnsupportedMediaType,
-                Error = $"Media type is not allowed, allowed types are JPEG, PNG and WebP"
-            };
+            return problemResult;
         }
 
-        // Get blob client
+        var imageId = await UploadToStorage();
+
+        try
+        {
+            await UpdateDatabase(imageId);
+        }
+        catch (Exception)
+        {
+            await DeleteBlobForAbort(imageId);
+            throw;
+        }
+
+        return new ImageUploaderResult
+        {
+            StatusCode = (int)HttpStatusCode.Created,
+            ImageId = imageId,
+        };
+    }
+
+
+    private ImageUploaderResult? ValidateInputProperties()
+    {
+        if (OriginalFilename == string.Empty) 
+            return new ImageUploaderResult
+            { 
+                StatusCode = (int) HttpStatusCode.BadRequest,
+                Error = "Filename is missing"
+            };
+
+        if (!_validMediaTypes.Contains(ContentType))
+            return new ImageUploaderResult
+            {
+                StatusCode = (int)HttpStatusCode.UnsupportedMediaType,
+                Error = "Media type is not allowed. Allowed types are JPEG, PNG and WebP"
+            };
+
+        if (UploadedBy == null) throw new ArgumentNullException(
+            nameof(UploadedBy), 
+            "Coding error - Uploading user entity is missing");
+
+        return null;
+    }
+
+
+    private async Task<string> UploadToStorage()
+    {
+        if (ContentType == string.Empty) throw new InvalidOperationException("Media type cannot be empty");
+
         var imageId = Guid.NewGuid().ToString();
+
         var blob = _clientFactory.CreateClient("Default")
             .GetBlobContainerClient("medical-image")
             .GetBlobClient(imageId);
 
-        if (blob.Exists()) // Handles an extremely remote collision possibility
+        if (blob.Exists()) // Handles an extremely remote possibility of ID collision.
         {
             throw new InvalidOperationException("GUID already present in medical-image blob storage");
         }
 
-        // Upload image to storage
-        await blob.UploadAsync(InputStream);
-
-        // Set content type in headers
         var headers = new BlobHttpHeaders
         {
             ContentType = ContentType
         };
-        await blob.SetHttpHeadersAsync(headers);
 
-        // Update database
+        await blob.UploadAsync(InputStream, headers);
+        return imageId;
+    }
+
+
+    private async Task DeleteBlobForAbort(string imageId)
+    {
+        var blob = _clientFactory.CreateClient("Default")
+            .GetBlobContainerClient("medical-image")
+            .GetBlobClient(imageId);
+
+        if (blob.Exists())
+        {
+            await blob.DeleteAsync();
+        }
+    }
+
+
+    private async Task UpdateDatabase(string imageId)
+    {
+        if (UploadedBy == null) throw new NullReferenceException(nameof(UploadedBy));
+
         var imageEntity = new Image
         {
             ImageId = imageId,
@@ -110,22 +191,7 @@ public class ImageUploader : IImageUploader
             OriginalFilename = OriginalFilename
         };
 
-        try // Blob is deleted in case of failure to update the database. 
-        {
-            await _dbContext.AddAsync(imageEntity);
-            await _dbContext.SaveChangesAsync();
-        }
-        catch (Exception)
-        {
-            await blob.DeleteAsync();
-            throw;
-        }
-
-        // Return result and URI.
-        return new ImageUploaderResult
-        { 
-            StatusCode = (int) HttpStatusCode.Created,
-            ImageId = imageId,
-        };
+        await _dbContext.AddAsync(imageEntity);
+        await _dbContext.SaveChangesAsync();
     }
 }

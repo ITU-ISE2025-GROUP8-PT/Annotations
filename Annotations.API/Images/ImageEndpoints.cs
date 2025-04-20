@@ -16,13 +16,13 @@ public class ImageEndpoints
     public static void MapEndpoints(RouteGroupBuilder groupBuilder)
     {
         groupBuilder.DisableAntiforgery(); // Disabled as this is an API, which will not serve any forms.
-        groupBuilder.MapPost("/Upload", UploadImage).RequireAuthorization();
+        groupBuilder.MapPost("/Upload", UploadImageHandler).RequireAuthorization();
     }
 
     /// <summary>
     /// Handler method for post request to upload an image.
     /// </summary>
-    static async Task<ImageUploaderResult> UploadImage(
+    static async Task<ImageUploaderResult> UploadImageHandler(
         IFormFile       image,
         long?           addToSeries,
         ClaimsPrincipal claimsPrincipal,

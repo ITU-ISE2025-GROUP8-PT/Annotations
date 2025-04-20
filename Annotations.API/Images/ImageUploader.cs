@@ -23,7 +23,7 @@ public interface IImageUploader
     /// An exception is thrown if instance is set up incorrectly.</para>
     /// </summary>
     /// <returns></returns>
-    Task StoreAsync();
+    Task<ImageUploaderResult> StoreAsync();
 }
 
 
@@ -60,7 +60,7 @@ public class ImageUploader : IImageUploader
         _clientFactory = clientFactory;
     }
 
-    public async Task StoreAsync()
+    public async Task<ImageUploaderResult> StoreAsync()
     {
         // Validate instance
         if (OriginalFilename == null) throw new ArgumentNullException(nameof(OriginalFilename));
@@ -109,6 +109,12 @@ public class ImageUploader : IImageUploader
             await blob.DeleteAsync();
             throw;
         }
+
+        return new ImageUploaderResult
+        { 
+            Success = true,
+            ImageId = imageId,
+        };
     }
 
     /// <summary>

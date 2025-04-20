@@ -38,8 +38,8 @@ public class ImageEndpoints
         uploader.InputStream      = stream;
         uploader.UploadedBy       = user;
 
-        await uploader.StoreAsync();
+        var uploaderResult = await uploader.StoreAsync();
 
-        return Results.Created();
+        return Results.Created($"{uploaderResult.ImageId}", uploaderResult);
     }
 }

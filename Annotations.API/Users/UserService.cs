@@ -1,4 +1,5 @@
 ﻿using Annotations.Core.Entities;
+using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
 namespace Annotations.API.Users;
@@ -11,13 +12,28 @@ public interface IUserService
 
 public class UserService : IUserService
 {
-    public Task<User> CreateUser(ClaimsPrincipal claimsPrincipal)
+    private readonly AnnotationsDbContext _dbContext;
+
+    public UserService(AnnotationsDbContext dbContext)
     {
-        throw new NotImplementedException();
+        _dbContext = dbContext;
     }
 
-    public Task<User?> TryFindUserAsync(ClaimsPrincipal claimsPrincipal)
+    public async Task<User> CreateUser(ClaimsPrincipal claimsPrincipal)
     {
-        throw new NotImplementedException();
+        var newUser = new User
+        {
+            UserId      = claimsPrincipal.FindFirstValue("sub") ?? throw new ArgumentNullException(nameof(claimsPrincipal)),
+            UserName    = claimsPrincipal.Identity!.Name ?? throw new ArgumentNullException(nameof(claimsPrincipal)),
+        };
+        await _dbContext.AddAsync(newUser);
+        await _dbContext.SaveChangesAsync();
+        
+        return newUser;
+    }
+
+    public async Task<User?> TryFindUserAsync(ClaimsPrincipal claimsPrincipal)
+    {
+        return await _dbContext.Users.FindAsync(claimsPrincipal.FindFirstValue("sub"));
     }
 }

@@ -26,7 +26,9 @@ public interface IImageUploader
     Task StoreAsync();
 }
 
-public class ImageUploaderResult
+
+
+public sealed class ImageUploaderResult
 {
     public required bool Success { get; set; }
     public string Error { get; set; } = String.Empty;
@@ -99,7 +101,7 @@ public class ImageUploader : IImageUploader
 
         try // Blob is deleted in case of failure to update the database. 
         {
-            _dbContext.Add(imageEntity);
+            await _dbContext.AddAsync(imageEntity);
             await _dbContext.SaveChangesAsync();
         }
         catch (Exception)

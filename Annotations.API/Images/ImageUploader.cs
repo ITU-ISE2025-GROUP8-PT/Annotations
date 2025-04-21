@@ -1,9 +1,7 @@
 ﻿using Azure.Storage.Blobs;
 using Microsoft.Extensions.Azure;
 using Azure.Storage.Blobs.Models;
-using System.Net.Mime;
 using Annotations.Core.Entities;
-using Microsoft.IdentityModel.Tokens;
 using System.Net;
 
 namespace Annotations.API.Images;

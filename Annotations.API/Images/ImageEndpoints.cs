@@ -1,14 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Http;
 using System.Security.Claims;
 using Annotations.API.Users;
-using System.Text;
-using System.Text.Json;
-using System.Threading.Tasks;
-using Microsoft.Net.Http.Headers;
 
 namespace Annotations.API.Images;
 
+/// <summary>
+/// Group of endpoints and handlers for medical images in Annotations.
+/// </summary>
 public class ImageEndpoints
 {
     /// <summary>

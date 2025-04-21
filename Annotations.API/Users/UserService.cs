@@ -1,5 +1,4 @@
 ﻿using Annotations.Core.Entities;
-using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
 namespace Annotations.API.Users;

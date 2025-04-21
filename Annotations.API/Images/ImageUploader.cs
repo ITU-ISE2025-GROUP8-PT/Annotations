@@ -119,7 +119,7 @@ public class ImageUploader : IImageUploader
 
         return new ImageUploaderResult
         {
-            StatusCode = (int)HttpStatusCode.Created,
+            StatusCode = (int) HttpStatusCode.Created,
             ImageId = imageId,
         };
     }

@@ -1,4 +1,4 @@
-﻿namespace Annotations.API.ImageSeries;
+﻿namespace Annotations.API.Dataset;
 
 public interface IImageSeriesService
 {

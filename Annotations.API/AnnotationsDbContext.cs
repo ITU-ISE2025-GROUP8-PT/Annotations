@@ -1,5 +1,4 @@
 using Annotations.Core.Entities;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace Annotations.API;
@@ -22,20 +21,20 @@ public class AnnotationsDbContext : DbContext
     /// <summary>
     /// Database set of image series.
     /// </summary>
-    public DbSet<Core.Entities.ImageSeries> ImageSeries { get; set; }
+    public DbSet<ImageSeries> ImageSeries { get; set; }
     
     public AnnotationsDbContext(DbContextOptions<AnnotationsDbContext> options) : base(options)
     {
         Users = Set<User>();
         Images = Set<Image>();
-        ImageSeries = Set<Core.Entities.ImageSeries>();
+        ImageSeries = Set<ImageSeries>();
     }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
 
-        builder.Entity<Core.Entities.ImageSeries>()
+        builder.Entity<ImageSeries>()
             .HasMany(series => series.Images)
             .WithMany(img => img.InImageSeries)
             .UsingEntity<ImageSeriesEntry>();

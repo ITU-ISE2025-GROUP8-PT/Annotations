@@ -69,13 +69,17 @@ public class ImageUploader : IImageUploader
 {
     private static readonly HashSet<string> _validMediaTypes = new(["image/jpeg", "image/png", "image/webp"]);
 
-    private readonly AnnotationsDbContext _dbContext;
-    private readonly IAzureClientFactory<BlobServiceClient> _clientFactory;
 
     public string OriginalFilename { get; set; } = string.Empty;
     public string ContentType { get; set; } = string.Empty;
     public Stream? InputStream { get; set; }
     public User? UploadedBy { get; set; }
+
+
+    private readonly AnnotationsDbContext _dbContext;
+    private readonly IAzureClientFactory<BlobServiceClient> _clientFactory;
+
+    private bool buildStarted;
 
 
     public ImageUploader(
@@ -89,6 +93,12 @@ public class ImageUploader : IImageUploader
 
     public async Task<ImageUploaderResult> StoreAsync()
     {
+        if (buildStarted)
+        {
+            throw new InvalidOperationException("Operation was already started.");
+        }
+        buildStarted = true;
+
         var problemResult = ValidateInputProperties();
         if (problemResult != null)
         {

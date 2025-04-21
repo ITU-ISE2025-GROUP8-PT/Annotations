@@ -60,8 +60,26 @@ namespace Annotations.API.ImageSeries
         public User? CreatedBy { get; set; }
         public string Category { get; set; } = string.Empty;
 
+
+        private readonly AnnotationsDbContext _dbContext;
+
+        private bool buildStarted;
+
+
+        public ImageSeriesBuilder(AnnotationsDbContext dbContext)
+        {
+            _dbContext = dbContext;
+        }
+
+
         public Task<ImageSeriesBuilderResult> BuildAsync()
         {
+            if (buildStarted)
+            {
+                throw new InvalidOperationException("Operation was already started.");
+            }
+            buildStarted = true;
+
             throw new NotImplementedException();
         }
     }

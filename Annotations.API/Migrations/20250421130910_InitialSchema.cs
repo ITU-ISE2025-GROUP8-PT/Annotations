@@ -30,7 +30,8 @@ namespace Annotations.API.Migrations
                     ImageId = table.Column<string>(type: "TEXT", nullable: false),
                     TimeUploaded = table.Column<DateTime>(type: "TEXT", nullable: false),
                     UploadedByUserId = table.Column<string>(type: "TEXT", nullable: false),
-                    OriginalFilename = table.Column<string>(type: "TEXT", maxLength: 255, nullable: false)
+                    OriginalFilename = table.Column<string>(type: "TEXT", maxLength: 255, nullable: false),
+                    IsDeleted = table.Column<bool>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {

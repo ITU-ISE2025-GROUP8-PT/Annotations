@@ -22,6 +22,9 @@ namespace Annotations.API.Migrations
                     b.Property<string>("ImageId")
                         .HasColumnType("TEXT");
 
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("OriginalFilename")
                         .IsRequired()
                         .HasMaxLength(255)

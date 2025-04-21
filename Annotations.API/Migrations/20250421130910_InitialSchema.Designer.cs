@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Annotations.API.Migrations
 {
     [DbContext(typeof(AnnotationsDbContext))]
-    [Migration("20250420173423_InitialSchema")]
+    [Migration("20250421130910_InitialSchema")]
     partial class InitialSchema
     {
         /// <inheritdoc />
@@ -24,6 +24,9 @@ namespace Annotations.API.Migrations
                 {
                     b.Property<string>("ImageId")
                         .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("OriginalFilename")
                         .IsRequired()

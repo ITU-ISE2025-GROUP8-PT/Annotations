@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Annotations.API.Migrations
 {
     [DbContext(typeof(AnnotationsDbContext))]
-    [Migration("20250421130910_InitialSchema")]
+    [Migration("20250421165641_InitialSchema")]
     partial class InitialSchema
     {
         /// <inheritdoc />
@@ -61,11 +61,39 @@ namespace Annotations.API.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("TimeCreated")
+                        .HasColumnType("TEXT");
+
                     b.HasKey("ImageSeriesId");
 
                     b.HasIndex("CreatedByUserId");
 
                     b.ToTable("ImageSeries");
+                });
+
+            modelBuilder.Entity("Annotations.Core.Entities.ImageSeriesEntry", b =>
+                {
+                    b.Property<string>("ImageId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<long>("ImageSeriesId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("OrderNumber")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("ImageId", "ImageSeriesId");
+
+                    b.HasIndex("ImageSeriesId");
+
+                    b.ToTable("ImageSeriesEntry");
                 });
 
             modelBuilder.Entity("Annotations.Core.Entities.User", b =>
@@ -80,21 +108,6 @@ namespace Annotations.API.Migrations
                     b.HasKey("UserId");
 
                     b.ToTable("Users");
-                });
-
-            modelBuilder.Entity("ImageImageSeries", b =>
-                {
-                    b.Property<string>("ImagesImageId")
-                        .HasColumnType("TEXT");
-
-                    b.Property<long>("InImageSeriesImageSeriesId")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("ImagesImageId", "InImageSeriesImageSeriesId");
-
-                    b.HasIndex("InImageSeriesImageSeriesId");
-
-                    b.ToTable("ImagesInImageSeries", (string)null);
                 });
 
             modelBuilder.Entity("Annotations.Core.Entities.Image", b =>
@@ -119,19 +132,24 @@ namespace Annotations.API.Migrations
                     b.Navigation("CreatedBy");
                 });
 
-            modelBuilder.Entity("ImageImageSeries", b =>
+            modelBuilder.Entity("Annotations.Core.Entities.ImageSeriesEntry", b =>
                 {
                     b.HasOne("Annotations.Core.Entities.Image", null)
                         .WithMany()
-                        .HasForeignKey("ImagesImageId")
+                        .HasForeignKey("ImageId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Annotations.Core.Entities.ImageSeries", null)
-                        .WithMany()
-                        .HasForeignKey("InImageSeriesImageSeriesId")
+                        .WithMany("ImageEntries")
+                        .HasForeignKey("ImageSeriesId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Annotations.Core.Entities.ImageSeries", b =>
+                {
+                    b.Navigation("ImageEntries");
                 });
 #pragma warning restore 612, 618
         }

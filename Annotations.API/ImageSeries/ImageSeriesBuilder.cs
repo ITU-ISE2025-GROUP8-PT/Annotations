@@ -16,7 +16,7 @@ namespace Annotations.API.ImageSeries
         /// <summary>
         /// Optionally, a collection of images initially included.
         /// </summary>
-        ICollection<Image> Images { get; set; }
+        ICollection<string> ImageIds { get; set; }
 
         /// <summary>
         /// User that created the image series.
@@ -56,7 +56,7 @@ namespace Annotations.API.ImageSeries
     public class ImageSeriesBuilder : IImageSeriesBuilder
     {
         public string Name { get; set; } = string.Empty;
-        public ICollection<Image> Images { get; set; } = [];
+        public ICollection<string> ImageIds { get; set; } = [];
         public User? CreatedBy { get; set; }
         public string Category { get; set; } = string.Empty;
 

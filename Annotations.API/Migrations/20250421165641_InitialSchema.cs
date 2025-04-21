@@ -50,8 +50,11 @@ namespace Annotations.API.Migrations
                 {
                     ImageSeriesId = table.Column<long>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
+                    Name = table.Column<string>(type: "TEXT", nullable: false),
+                    TimeCreated = table.Column<DateTime>(type: "TEXT", nullable: false),
                     CreatedByUserId = table.Column<string>(type: "TEXT", nullable: false),
-                    Category = table.Column<string>(type: "TEXT", nullable: false)
+                    Category = table.Column<string>(type: "TEXT", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -65,24 +68,25 @@ namespace Annotations.API.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ImagesInImageSeries",
+                name: "ImageSeriesEntry",
                 columns: table => new
                 {
-                    ImagesImageId = table.Column<string>(type: "TEXT", nullable: false),
-                    InImageSeriesImageSeriesId = table.Column<long>(type: "INTEGER", nullable: false)
+                    ImageSeriesId = table.Column<long>(type: "INTEGER", nullable: false),
+                    ImageId = table.Column<string>(type: "TEXT", nullable: false),
+                    OrderNumber = table.Column<int>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ImagesInImageSeries", x => new { x.ImagesImageId, x.InImageSeriesImageSeriesId });
+                    table.PrimaryKey("PK_ImageSeriesEntry", x => new { x.ImageId, x.ImageSeriesId });
                     table.ForeignKey(
-                        name: "FK_ImagesInImageSeries_ImageSeries_InImageSeriesImageSeriesId",
-                        column: x => x.InImageSeriesImageSeriesId,
+                        name: "FK_ImageSeriesEntry_ImageSeries_ImageSeriesId",
+                        column: x => x.ImageSeriesId,
                         principalTable: "ImageSeries",
                         principalColumn: "ImageSeriesId",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_ImagesInImageSeries_Images_ImagesImageId",
-                        column: x => x.ImagesImageId,
+                        name: "FK_ImageSeriesEntry_Images_ImageId",
+                        column: x => x.ImageId,
                         principalTable: "Images",
                         principalColumn: "ImageId",
                         onDelete: ReferentialAction.Cascade);
@@ -99,16 +103,16 @@ namespace Annotations.API.Migrations
                 column: "CreatedByUserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ImagesInImageSeries_InImageSeriesImageSeriesId",
-                table: "ImagesInImageSeries",
-                column: "InImageSeriesImageSeriesId");
+                name: "IX_ImageSeriesEntry_ImageSeriesId",
+                table: "ImageSeriesEntry",
+                column: "ImageSeriesId");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "ImagesInImageSeries");
+                name: "ImageSeriesEntry");
 
             migrationBuilder.DropTable(
                 name: "ImageSeries");

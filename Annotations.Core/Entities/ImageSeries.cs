@@ -20,6 +20,11 @@ public class ImageSeries
     public ICollection<Image> Images { get; set; } = [];
 
     /// <summary>
+    /// Image series entries. Intended for additional information, i.e. a list ordering.
+    /// </summary>
+    public ICollection<ImageSeriesEntry> ImageEntries { get; set; } = [];
+
+    /// <summary>
     /// Name of image series.
     /// </summary>
     [Required]

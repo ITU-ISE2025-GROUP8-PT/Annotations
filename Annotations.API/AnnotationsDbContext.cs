@@ -22,22 +22,22 @@ public class AnnotationsDbContext : DbContext
     /// <summary>
     /// Database set of image series.
     /// </summary>
-    public DbSet<ImageSeries> ImageSeries { get; set; }
+    public DbSet<Core.Entities.ImageSeries> ImageSeries { get; set; }
     
     public AnnotationsDbContext(DbContextOptions<AnnotationsDbContext> options) : base(options)
     {
         Users = Set<User>();
         Images = Set<Image>();
-        ImageSeries = Set<ImageSeries>();
+        ImageSeries = Set<Core.Entities.ImageSeries>();
     }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
 
-        builder.Entity<ImageSeries>()
+        builder.Entity<Core.Entities.ImageSeries>()
             .HasMany(series => series.Images)
             .WithMany(img => img.InImageSeries)
-            .UsingEntity(config => config.ToTable("ImagesInImageSeries"));
+            .UsingEntity<ImageSeriesEntry>();
     }
 }

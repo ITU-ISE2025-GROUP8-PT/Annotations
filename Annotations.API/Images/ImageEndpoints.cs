@@ -17,7 +17,7 @@ public class ImageEndpoints
     {
         groupBuilder.RequireAuthorization().DisableAntiforgery(); // Disabled as this is an API, which will not serve any forms.
         groupBuilder.MapPost("/Upload", UploadImageHandler);
-        groupBuilder.MapGet("/Download/{imageid}", DownloadImageHandler);
+        groupBuilder.MapGet("/Download/{imageId}", DownloadImageHandler);
     }
 
 
@@ -51,11 +51,13 @@ public class ImageEndpoints
     /// <summary>
     /// Handler for get request to download full image from storage.
     /// </summary>
-    /// <param name="imageid">URI for image to download.</param>
+    /// <param name="imageId">URI for image to download.</param>
     static IResult DownloadImageHandler(
-        [FromRoute] string imageid
+        [FromRoute] string imageId,
+        HttpContext httpContext,
+        [FromServices] IImageService imageService
         )
     {
-        return Results.Text(imageid);
+        return Results.Text(imageId);
     }
 }

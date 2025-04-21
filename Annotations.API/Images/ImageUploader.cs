@@ -129,7 +129,7 @@ public class ImageUploader : IImageUploader
         if (!_validMediaTypes.Contains(ContentType))
             return new ImageUploaderResult
             {
-                StatusCode = (int)HttpStatusCode.UnsupportedMediaType,
+                StatusCode = (int) HttpStatusCode.UnsupportedMediaType,
                 Error = "Media type is not allowed. Allowed types are JPEG, PNG and WebP"
             };
 

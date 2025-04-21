@@ -34,6 +34,11 @@ public sealed class ImageDownloadResult
     /// Download stream. Empty stream in case of failure.
     /// </summary>
     public Stream Stream { get; set; } = Stream.Null;
+
+    /// <summary>
+    /// Content type. "text/plain" in case of failure.
+    /// </summary>
+    public string ContentType { get; set; } = "text/plain";
 }
 
 
@@ -65,10 +70,13 @@ public class ImageService : IImageService
             Error = "Image not found"
         };
 
+        var properties = await blob.GetPropertiesAsync();
+
         return new ImageDownloadResult
         {
             StatusCode = (int) HttpStatusCode.OK,
-            Stream = await blob.OpenReadAsync()
+            Stream = await blob.OpenReadAsync(),
+            ContentType = properties.Value.ContentType
         };
     }
 }

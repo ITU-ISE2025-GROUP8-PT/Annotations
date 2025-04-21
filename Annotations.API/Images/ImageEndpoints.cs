@@ -4,6 +4,8 @@ using System.Security.Claims;
 using Annotations.API.Users;
 using System.Text;
 using System.Text.Json;
+using System.Threading.Tasks;
+using Microsoft.Net.Http.Headers;
 
 namespace Annotations.API.Images;
 
@@ -43,7 +45,6 @@ public class ImageEndpoints
         var uploaderResult = await uploader.StoreAsync();
 
         httpContext.Response.StatusCode = uploaderResult.StatusCode;
-
         return uploaderResult;
     }
 
@@ -52,12 +53,15 @@ public class ImageEndpoints
     /// Handler for get request to download full image from storage.
     /// </summary>
     /// <param name="imageId">URI for image to download.</param>
-    static IResult DownloadImageHandler(
+    static async Task<IResult> DownloadImageHandler(
         [FromRoute] string imageId,
         HttpContext httpContext,
         [FromServices] IImageService imageService
         )
     {
-        return Results.Text(imageId);
+        var downloadResult = await imageService.DownloadImageAsync(imageId);
+
+        httpContext.Response.StatusCode = downloadResult.StatusCode;
+        return Results.Stream(downloadResult.Stream, contentType: downloadResult.ContentType, fileDownloadName: imageId);
     }
 }

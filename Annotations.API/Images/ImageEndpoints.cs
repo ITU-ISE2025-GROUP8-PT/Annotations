@@ -15,16 +15,18 @@ public class ImageEndpoints
     /// <param name="groupBuilder"></param>
     public static void MapEndpoints(RouteGroupBuilder groupBuilder)
     {
-        groupBuilder.DisableAntiforgery(); // Disabled as this is an API, which will not serve any forms.
-        groupBuilder.MapPost("/Upload", UploadImageHandler).RequireAuthorization();
+        groupBuilder.RequireAuthorization().DisableAntiforgery(); // Disabled as this is an API, which will not serve any forms.
+        groupBuilder.MapPost("/Upload", UploadImageHandler);
+        groupBuilder.MapGet("/Download/{imageid}", DownloadImageHandler);
     }
 
+
     /// <summary>
-    /// Handler method for post request to upload an image.
+    /// Handler for post request to upload an image.
     /// </summary>
     static async Task<ImageUploaderResult> UploadImageHandler(
         IFormFile       image,
-        long?           addToSeries,
+        long?           addToSeries, // TODO: Allow upload into existing image series directly.
         ClaimsPrincipal claimsPrincipal,
         HttpContext     httpContext,
         [FromServices] IImageUploader uploader,
@@ -43,5 +45,17 @@ public class ImageEndpoints
         httpContext.Response.StatusCode = uploaderResult.StatusCode;
 
         return uploaderResult;
+    }
+
+
+    /// <summary>
+    /// Handler for get request to download full image from storage.
+    /// </summary>
+    /// <param name="imageid">URI for image to download.</param>
+    static IResult DownloadImageHandler(
+        [FromRoute] string imageid
+        )
+    {
+        return Results.Text(imageid);
     }
 }

@@ -18,6 +18,7 @@ public class ImageEndpoints
         groupBuilder.RequireAuthorization().DisableAntiforgery(); // Disabled as this is an API, which will not serve any forms.
         groupBuilder.MapPost("/Upload", UploadImageHandler);
         groupBuilder.MapGet("/Download/{imageId}", DownloadImageHandler);
+        groupBuilder.MapDelete("/Delete/{imageId}", DeleteImageHandler);
     }
 
 
@@ -61,5 +62,21 @@ public class ImageEndpoints
 
         httpContext.Response.StatusCode = downloadResult.StatusCode;
         return Results.Stream(downloadResult.Stream, contentType: downloadResult.ContentType, fileDownloadName: imageId);
+    }
+
+
+    /// <summary>
+    /// Handler for delete request to "soft delete" an image from storage.
+    /// </summary>
+    /// <param name="imageId">URI for image to download.</param>
+    static async Task<IResult> DeleteImageHandler(
+        [FromRoute] string imageId,
+        HttpContext httpContext,
+        [FromServices] IImageService imageService
+        )
+    {
+        var httpResult = await imageService.DeleteImageAsync(imageId);
+
+        return Results.StatusCode((int)httpResult);
     }
 }

@@ -99,7 +99,7 @@ public class ImageUploader : IImageUploader
 
         try
         {
-            await UpdateDatabase(imageId);
+            await AddMetaDataToDatabase(imageId);
         }
         catch (Exception)
         {
@@ -177,7 +177,7 @@ public class ImageUploader : IImageUploader
     }
 
 
-    private async Task UpdateDatabase(string imageId)
+    private async Task AddMetaDataToDatabase(string imageId)
     {
         if (UploadedBy == null) throw new NullReferenceException(nameof(UploadedBy));
 

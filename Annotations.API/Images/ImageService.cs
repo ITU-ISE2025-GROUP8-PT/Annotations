@@ -1,5 +1,7 @@
 ﻿using Azure.Storage.Blobs;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Azure;
+using Azure.Storage.Blobs.Models;
 using System.Net;
 
 namespace Annotations.API.Images;
@@ -14,6 +16,13 @@ public interface IImageService
     /// </summary>
     /// <param name="imageId">URI for image to download.</param>
     Task<ImageDownloadResult> DownloadImageAsync(string imageId);
+
+    /// <summary>
+    /// Deletes image from blob storage, and soft deletes its metadata entry from the database.
+    /// </summary>
+    /// <param name="imageId">URI for image to delete.</param>
+    /// <returns></returns>
+    Task<HttpStatusCode> DeleteImageAsync(string imageId);
 }
 
 
@@ -78,5 +87,36 @@ public class ImageService : IImageService
             Stream = await blob.OpenReadAsync(),
             ContentType = properties.Value.ContentType
         };
+    }
+
+
+    public async Task<HttpStatusCode> DeleteImageAsync(string imageId)
+    {
+        var blob = _clientFactory.CreateClient("Default")
+            .GetBlobContainerClient("medical-image")
+            .GetBlobClient(imageId);
+
+        if (!blob.Exists()) return HttpStatusCode.NotFound;
+
+        await blob.DeleteAsync(snapshotsOption: DeleteSnapshotsOption.IncludeSnapshots);
+
+        try
+        {
+            var imageData = await _dbContext.Images
+            .Where(data => data.ImageId == imageId)
+            .SingleOrDefaultAsync();
+
+            if (imageData == null) return HttpStatusCode.NoContent;
+
+            imageData.IsDeleted = true;
+            await _dbContext.SaveChangesAsync();
+        }
+        catch (Exception)
+        {
+            await blob.UndeleteAsync();
+            throw;
+        }
+        
+        return HttpStatusCode.NoContent;
     }
 }

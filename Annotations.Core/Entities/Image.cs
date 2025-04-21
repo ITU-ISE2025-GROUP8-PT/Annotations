@@ -16,19 +16,19 @@ public class Image
 	public required string ImageId { get; set; }
 
     /// <summary>
-    /// <para>The time and date that the image was uploaded.</para>
+    /// The time and date that the image was uploaded.
     /// </summary>
     [Required]
     public required DateTime TimeUploaded { get; set; }
 
     /// <summary>
-    /// <para>User that uploaded the image.</para>
+    /// User that uploaded the image.
     /// </summary>
     [Required]
     public required User UploadedBy { get; set; }
 
     /// <summary>
-    /// <para>The original filename as received at upload.</para>
+    /// The original filename as received at upload.
     /// </summary>
     [Required]
     [StringLength(255)] // Limit with most file systems.
@@ -38,4 +38,9 @@ public class Image
     /// Image series containing this image.
     /// </summary>
     public ICollection<ImageSeries> InImageSeries { get; set; } = [];
+
+    /// <summary>
+    /// Marks this image as deleted.
+    /// </summary>
+    public bool IsDeleted { get; set; }
 }

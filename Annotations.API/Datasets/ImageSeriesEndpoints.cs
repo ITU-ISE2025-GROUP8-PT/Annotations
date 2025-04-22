@@ -69,7 +69,7 @@ public class ImageSeriesEndpoints
         [FromServices] IImageSeriesService imageSeriesService
         )
     {
-        var httpResult = await imageSeriesService.DeleteImageSeriesAsync(imageSeriesId);
+        var httpResult = await imageSeriesService.MarkAsDeletedAsync(imageSeriesId);
 
         return Results.StatusCode((int) httpResult);
     }

@@ -14,7 +14,7 @@ public interface IImageSeriesService
     /// <summary>
     /// Marks the image series as deleted. (soft delete)
     /// </summary>
-    Task<HttpStatusCode> DeleteImageSeriesAsync(long imageSeriesId);
+    Task<HttpStatusCode> MarkAsDeletedAsync(long imageSeriesId);
 
     /// <summary>
     /// Append a list of images to an existing image series.
@@ -76,14 +76,33 @@ public class ImageSeriesService : IImageSeriesService
     }
 
 
-    public Task<HttpStatusCode> DeleteImageSeriesAsync(long imageSeriesId)
+    public async Task<HttpStatusCode> MarkAsDeletedAsync(long imageSeriesId)
     {
-        throw new NotImplementedException();
+        var imageSeries = await _dbContext.ImageSeries
+            .Where(series => series.ImageSeriesId == imageSeriesId)
+            .SingleOrDefaultAsync();
+
+        if (imageSeries == default(ImageSeries)) return HttpStatusCode.NotFound;
+
+        imageSeries.IsDeleted = true;
+        await _dbContext.SaveChangesAsync();
+
+        return HttpStatusCode.NoContent;
     }
 
 
-    public Task<ImageSeriesResult> AppendImagesAsync(long imageSeriesId, string[] imageIds)
+    public async Task<ImageSeriesResult> AppendImagesAsync(long imageSeriesId, string[] imageIds)
     {
+        var imageSeries = await _dbContext.ImageSeries
+            .Where(series => series.ImageSeriesId == imageSeriesId)
+            .SingleOrDefaultAsync();
+
+        if (imageSeries == default(ImageSeries)) return new ImageSeriesResult
+        {
+            StatusCode = (int)HttpStatusCode.NotFound,
+            Error = "Image series not found"
+        };
+
         throw new NotImplementedException();
     }
 }

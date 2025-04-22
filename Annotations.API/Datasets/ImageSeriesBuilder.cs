@@ -55,7 +55,7 @@ namespace Annotations.API.Datasets
         /// <summary>
         /// Image series entity if successfully created.
         /// </summary>
-        public Core.Entities.ImageSeries? ImageSeries { get; set; }
+        public ImageSeries? ImageSeries { get; set; }
     }
 
 

@@ -1,5 +1,4 @@
-﻿using Annotations.API.Images;
-using Annotations.API.Users;
+﻿using Annotations.API.Users;
 using Annotations.Core.Entities;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;

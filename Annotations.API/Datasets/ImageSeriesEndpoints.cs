@@ -18,6 +18,8 @@ public class ImageSeriesEndpoints
             .DisableAntiforgery(); // Disabled as this is an API, which will not serve any forms.
         groupBuilder.MapPost("/New", NewImageSeriesHandler);
         groupBuilder.MapGet("/Get/{imageSeriesId}", GetImageSeriesHandler);
+        groupBuilder.MapDelete("/Delete/{imageSeriesId}", DeleteImageSeriesHandler);
+        groupBuilder.MapPut("/Append/{imageSeriesId}", AppendImagesHandler);
     }
 
 
@@ -46,6 +48,9 @@ public class ImageSeriesEndpoints
     }
 
 
+    /// <summary>
+    /// Handler for get request to obtain an image series.
+    /// </summary>
     static async Task<ImageSeries?> GetImageSeriesHandler(
         [FromRoute] long imageSeriesId,
         HttpContext httpContext,
@@ -56,5 +61,29 @@ public class ImageSeriesEndpoints
 
         httpContext.Response.StatusCode = getImageSeriesResult.StatusCode;
         return getImageSeriesResult.ImageSeries;
+    }
+
+
+    static async Task<IResult> DeleteImageSeriesHandler(
+        [FromRoute] long imageSeriesId,
+        [FromServices] IImageSeriesService imageSeriesService
+        )
+    {
+        var httpResult = await imageSeriesService.DeleteImageSeriesAsync(imageSeriesId);
+
+        return Results.StatusCode((int) httpResult);
+    }
+
+
+    static async Task<AppendImagesResult> AppendImagesHandler(
+        string[] imageIds,
+        HttpContext httpContext,
+        [FromServices] IImageSeriesService imageSeriesService
+        )
+    {
+        var appendImagesResult = await imageSeriesService.AppendImagesAsync(imageIds);
+
+        httpContext.Response.StatusCode = appendImagesResult.StatusCode;
+        return appendImagesResult;
     }
 }

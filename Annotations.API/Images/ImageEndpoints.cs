@@ -72,12 +72,11 @@ public class ImageEndpoints
     /// <param name="imageId">URI for image to download.</param>
     static async Task<IResult> DeleteImageHandler(
         [FromRoute] string imageId,
-        HttpContext httpContext,
         [FromServices] IImageService imageService
         )
     {
         var httpResult = await imageService.DeleteImageAsync(imageId);
 
-        return Results.StatusCode((int)httpResult);
+        return Results.StatusCode((int) httpResult);
     }
 }

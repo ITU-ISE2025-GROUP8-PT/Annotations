@@ -59,7 +59,7 @@
                             <div class="mat-layout-grid-cell mat-layout-grid-cell-span-9 mat-layout-grid-align-right" style="display: flex; margin-left: auto; gap: 8px;">
                                 <div style="display: flex; justify-content: flex-end; gap: 8px;">
                                     <MatButton>Skip</MatButton>
-                                    <MatButton Style=" color: white; background: #101e2d">Complete</MatButton>
+                                    <MatButton OnClick="CompleteCurrentVessel" Style=" color: white; background: #101e2d">Complete</MatButton>
                                 </div>
                             </div>
                         </div>
@@ -91,17 +91,39 @@
                                     </div>
                                 </div>
                             }
-                            @if (currentVesselAnnotation != null)
-                            {
-                                @foreach (var point in currentVesselAnnotation.Points)
+
+                            <svg style="position: absolute; left: 0; top: 0; width: 100%; height: 100%; pointer-events: none;">
+                                @foreach (var vessel in savedVessels)
                                 {
-                                    <svg style="position: absolute; left: 0; top: 0; width: 100%; height: 100%; pointer-events: none;">
-                                        <circle cx="@point.X" cy="@point.Y" r="8"
-                                                fill="white"
-                                        />
-                                    </svg>
+                                    @foreach (var segment in vessel.Segments)
+                                    {
+                                        <line x1="@segment.StartPoint.X" y1="@segment.StartPoint.Y"
+                                              x2="@segment.EndPoint.X" y2="@segment.EndPoint.Y"
+                                              stroke="white"
+                                              stroke-width="@(segment.Thickness * 2)" />
+                                    }
+                                    @foreach (var point in vessel.Points)
+                                    {
+                                        <circle cx="@point.X" cy="@point.Y" r="8" fill="white"/>
+                                    }
                                 }
-                            }
+                                
+                                @if (currentVesselAnnotation != null)
+                                {
+                                    @foreach (var segment in currentVesselAnnotation.Segments)
+                                    {
+                                        <line x1="@segment.StartPoint.X" y1="@segment.StartPoint.Y"
+                                              x2="@segment.EndPoint.X" y2="@segment.EndPoint.Y"
+                                              stroke="white"
+                                              stroke-width="@(segment.Thickness * 2)"/>
+                                    }
+
+                                    @foreach (var point in currentVesselAnnotation.Points)
+                                    {
+                                        <circle cx="@point.X" cy="@point.Y" r="8" fill="white"/>
+                                    }
+                                }
+                            </svg>
                         </div>
                     </div>
                 </div>
@@ -137,6 +159,7 @@
     {
         currentUrl = Navigation.Uri;
         Navigation.LocationChanged += OnLocationChanged;
+        currentVesselAnnotation = new VesselAnnotation();
     }
 
     private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
@@ -184,8 +207,7 @@
 
     private async Task HandleImageClick(MouseEventArgs e)
     {
-        // Reset for new annotation
-        currentVesselAnnotation = new VesselAnnotation();
+        // Reset for new annotation currentVesselAnnotation = new VesselAnnotation();
         
         // Get click position relative to container
         var rect = await JSRuntime.InvokeAsync<BoundingClientRect>(
@@ -199,20 +221,6 @@
             Y = (int)(e.ClientY - rect.Top),
             Type = currentVesselType
         };
-        
-        if (currentVesselAnnotation.Points.Count > 0)
-        {
-            // Create segment from last point to new point
-            var segment = new VesselSegment
-            {
-                StartPoint = currentVesselAnnotation.Points.Last(),
-                EndPoint = currentPoint,
-                Type = currentVesselType,
-                Thickness = currentThickness
-            };
-            
-            currentVesselAnnotation.Segments.Add(segment);
-        }
         
         showTextField = true;
         StateHasChanged();
@@ -234,26 +242,48 @@
 
     private void SaveAnnotation()
     {
+        // Add the current point to the vessel
         currentVesselAnnotation.Points.Add(currentPoint);
-        
-        if (!string.IsNullOrWhiteSpace(currentPoint.Text))
+    
+        // If we have at least 2 points, create segments
+        if (currentVesselAnnotation.Points.Count > 1)
         {
-            if (currentVesselAnnotation.Points.Count >= 2)
+            var lastPoint = currentVesselAnnotation.Points[^2]; // Second-to-last point
+            var segment = new VesselSegment
             {
-                savedVessels.Add(currentVesselAnnotation);
-                currentVesselAnnotation = new VesselAnnotation(); // Start new vessel
-            }
+                StartPoint = lastPoint,
+                EndPoint = currentPoint,
+                Type = currentVesselType,
+                Thickness = currentThickness,
+                Text = currentPoint.Text
+            };
+            currentVesselAnnotation.Segments.Add(segment);
         }
         
+    
         showTextField = false;
         StateHasChanged();
     }
 
     private void CancelAnnotation()
     {
-        currentVesselAnnotation = null;
+        // Only clear if no points have been saved yet
+        if (currentVesselAnnotation.Points.Count == 0)
+        {
+            currentVesselAnnotation = null;
+        }
         showTextField = false;
         StateHasChanged();
+    }
+    
+    private void CompleteCurrentVessel()
+    {
+        if (currentVesselAnnotation != null && currentVesselAnnotation.Points.Count >= 2)
+        {
+            savedVessels.Add(currentVesselAnnotation);
+            currentVesselAnnotation = new VesselAnnotation();
+            StateHasChanged();
+        }
     }
 
     // JS interop struct

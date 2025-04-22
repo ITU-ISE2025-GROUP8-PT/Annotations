@@ -59,14 +59,19 @@ public class ImageSeriesService : IImageSeriesService
     {
         var imageSeries = await _dbContext.ImageSeries
             .Where(series => series.ImageSeriesId == imageSeriesId)
-            .Include(series => series.Images) // TODO: Likely less data should be returned. Initially this is a demo.
             .Include(series => series.ImageEntries)
             .SingleOrDefaultAsync();
 
         if (imageSeries == default(ImageSeries)) return new ImageSeriesResult
         {
-            StatusCode = (int) HttpStatusCode.NotFound,
+            StatusCode = (int)HttpStatusCode.NotFound,
             Error = "Image series not found"
+        };
+
+        if (imageSeries.IsDeleted) return new ImageSeriesResult
+        {
+            StatusCode = (int)HttpStatusCode.NotFound,
+            Error = $"Image series {imageSeries.ImageSeriesId} is marked as deleted"
         };
 
         return new ImageSeriesResult
@@ -105,6 +110,12 @@ public class ImageSeriesService : IImageSeriesService
             Error = "Image series not found"
         };
 
+        if (imageSeries.IsDeleted) return new ImageSeriesResult
+        {
+            StatusCode = (int) HttpStatusCode.NotFound,
+            Error = $"Image series {imageSeries.ImageSeriesId} is marked as deleted"
+        };
+
         var images = await _dbContext.Images
             .Where(e => imageIds.Contains(e.ImageId))
             .ToListAsync();
@@ -114,7 +125,7 @@ public class ImageSeriesService : IImageSeriesService
             if (image.IsDeleted) return new ImageSeriesResult
             {
                 StatusCode = (int) HttpStatusCode.NotFound,
-                Error = $"Image {image.ImageId} is marked as deleted, does not exist"
+                Error = $"Image {image.ImageId} is marked as deleted"
             };
             imageSeries.ImageEntries.Add(new ImageSeriesEntry 
             { 
@@ -131,7 +142,6 @@ public class ImageSeriesService : IImageSeriesService
             StatusCode = (int) HttpStatusCode.OK,
             ImageSeries = await _dbContext.ImageSeries
                 .Where(series => series.ImageSeriesId == imageSeriesId)
-                .Include(series => series.Images) // TODO: Likely less data should be returned. Initially this is a demo.
                 .Include(series => series.ImageEntries)
                 .SingleOrDefaultAsync()
         };

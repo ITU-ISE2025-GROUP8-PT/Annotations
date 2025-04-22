@@ -9,6 +9,15 @@
 <AuthorizeView>
     <Authorized>
         <MatThemeProvider Theme="@theme">
+            <MatDialog @bind-IsOpen="@showCompletionDialog">
+                <MatDialogTitle>Vessel Completion</MatDialogTitle>
+                <MatDialogContent>
+                    @completionMessage
+                </MatDialogContent>
+                <MatDialogActions>
+                    <MatButton OnClick="@(() => showCompletionDialog = false)">OK</MatButton>
+                </MatDialogActions>
+            </MatDialog>
             <div class="mat-layout-grid">
                 <div class="mat-layout-grid-inner">
                     <div class="mat-layout-grid-cell mat-layout-grid-cell-span-2">
@@ -65,9 +74,9 @@
                         </div>
                         <!-- @ref imageContainer captures the DOM element for position calculations, when annotating --->
                         <div style="position: relative;" @ref="imageContainer">
-                            <img src="img/Skærmbillede%202025-03-27%20kl.%2014.05.56.png" alt = "Annotation Image"
+                            <img src="img/Skærmbillede%202025-03-27%20kl.%2014.05.56.png" alt="Annotation Image"
                                  @onclick="HandleImageClick"
-                                 style="width: 1000px; height: 600px;" />
+                                 style="width: 1000px; height: 600px;"/>
 
                             @if (showTextField)
                             {
@@ -100,14 +109,15 @@
                                         <line x1="@segment.StartPoint.X" y1="@segment.StartPoint.Y"
                                               x2="@segment.EndPoint.X" y2="@segment.EndPoint.Y"
                                               stroke="white"
-                                              stroke-width="@(segment.Thickness * 2)" />
+                                              stroke-width="@(segment.Thickness * 2)"/>
                                     }
+
                                     @foreach (var point in vessel.Points)
                                     {
                                         <circle cx="@point.X" cy="@point.Y" r="8" fill="white"/>
                                     }
                                 }
-                                
+
                                 @if (currentVesselAnnotation != null)
                                 {
                                     @foreach (var segment in currentVesselAnnotation.Segments)
@@ -202,6 +212,9 @@
     
     private ElementReference imageContainer;
     
+    private bool showCompletionDialog = false;
+    private string completionMessage = "";
+    
     /*private VesselAnnotation _currentVesselAnnotation = new();
     private List<VesselAnnotation> savedAnnotations = new(); */
 
@@ -278,10 +291,18 @@
     
     private void CompleteCurrentVessel()
     {
-        if (currentVesselAnnotation != null && currentVesselAnnotation.Points.Count >= 2)
+        if (currentVesselAnnotation.Points.Count >= 2)
         {
             savedVessels.Add(currentVesselAnnotation);
             currentVesselAnnotation = new VesselAnnotation();
+            completionMessage = "Success: Your blood vessel tree has been successfully completed";
+            showCompletionDialog = true;
+            StateHasChanged();
+        }
+        else
+        {
+            completionMessage = "Fail: Your blood vessel tree needs at least two annotations";
+            showCompletionDialog = true;
             StateHasChanged();
         }
     }

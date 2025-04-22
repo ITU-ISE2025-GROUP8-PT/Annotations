@@ -10,10 +10,8 @@
     <Authorized>
         <MatThemeProvider Theme="@theme">
             <MatDialog @bind-IsOpen="@showCompletionDialog">
-                <MatDialogTitle>Vessel Completion</MatDialogTitle>
-                <MatDialogContent>
-                    @completionMessage
-                </MatDialogContent>
+                <MatDialogTitle>@completionTitle</MatDialogTitle>
+                <MatDialogContent>@completionMessage</MatDialogContent>
                 <MatDialogActions>
                     <MatButton OnClick="@(() => showCompletionDialog = false)">OK</MatButton>
                 </MatDialogActions>
@@ -214,6 +212,7 @@
     
     private bool showCompletionDialog = false;
     private string completionMessage = "";
+    private string completionTitle = "";
     
     /*private VesselAnnotation _currentVesselAnnotation = new();
     private List<VesselAnnotation> savedAnnotations = new(); */
@@ -295,13 +294,15 @@
         {
             savedVessels.Add(currentVesselAnnotation);
             currentVesselAnnotation = new VesselAnnotation();
-            completionMessage = "Success: Your blood vessel tree has been successfully completed";
+            completionTitle = "Success";
+            completionMessage = "Your blood vessel tree has been successfully completed";
             showCompletionDialog = true;
             StateHasChanged();
         }
         else
         {
-            completionMessage = "Fail: Your blood vessel tree needs at least two annotations";
+            completionTitle = "Fail";
+            completionMessage = "Your blood vessel tree needs at least two annotations";
             showCompletionDialog = true;
             StateHasChanged();
         }

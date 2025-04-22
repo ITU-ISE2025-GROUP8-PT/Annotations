@@ -1,0 +1,84 @@
+@page "/images/filter/{category}"
+@using System.Data
+@using global::Annotations.Core.Models
+@inject IHttpClientFactory ClientFactory
+@inject IHttpContextAccessor httpContextAccessor
+@attribute [Authorize(Roles = "Administrator, Manager")]
+<!-- Look at the roles, is it only for certain types? -->
+
+@if (_errorExist)
+{
+    <Error/>
+}
+else if (!_existenseOfImages){
+    <p><em>No images found for category @category </em></p>
+}
+else 
+{
+    <div style=" display: flex; flex-direction:row;"><!--To make both lines on the same row -->
+        
+        <span style="padding:2%; font-weight: bold; width: 90%; font-size: 215%">Images of category "@category"</span><!--width is mainly for the placement of the filter button -->
+        <button class="filterButton">Filter by...</button>
+        
+    </div>
+
+        
+    <div class="container DivToScroll">
+        @for (int i = 0; i < images.Length; i++)
+        {
+            <img class="displayImages" alt="@altText[i]" src="data:image;base64, @images[i]"/><!--src is a URL - it's converted from a string of the byte array-->
+        }
+    </div>
+}
+
+@code{
+    [Parameter] public string category { get; set; } = "";//get access to parameter from URL/get request
+    private string[] images = new []{""};//all byte arrays as strings
+    private string[] altText = new []{""};
+    private bool _errorExist = false;
+    private bool _existenseOfImages = true;
+    
+    
+    [Inject] private NavigationManager Navigation { get; set; } = default!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var httpContext = httpContextAccessor.HttpContext ?? throw new InvalidOperationException("No HttpContext available");//make connection
+
+        var accessToken = await httpContext.GetTokenAsync("access_token") ?? throw new InvalidOperationException("No access_token was saved");//authorization
+
+        var client = ClientFactory.CreateClient();
+        client.BaseAddress = new("https://localhost:7250");//connect to Web API
+
+        using var requestMessage = new HttpRequestMessage(HttpMethod.Get, $"/images/filter/{category}");//access endpoint
+        requestMessage.Headers.Authorization = new("Bearer", accessToken);//bearer token for authorization
+
+        using var response = await client.SendAsync(requestMessage);//sending the response
+        try
+        {
+            string[] answer = await response.Content.ReadFromJsonAsync<string[]>() ?? throw new NoNullAllowedException(); //string array of JSON files of the images as strings
+            if (answer.Length == 0)
+            {
+                _existenseOfImages = false;
+            }
+            images = new string[answer.Length];
+            altText = new string[answer.Length];
+            for (int i = 0; i < answer.Length; i++)
+            {
+                var imageObject = System.Text.Json.JsonSerializer.Deserialize<ImageModel>(answer[i]) ?? throw new NoNullAllowedException();//JSON file becomes imageModel object
+                var imageData = imageObject.ImageData;
+                altText[i] = imageObject.Description;
+                images[i] = System.Convert.ToBase64String(imageData);//byte array to string
+            }
+        }
+        catch //if nothing is retrieved - prints out error
+        {
+            Console.WriteLine("Status code: " + response.StatusCode);
+            images = new string[1];
+            images[0] = response.StatusCode.ToString();
+            _errorExist = true;
+        }
+
+    }
+
+}

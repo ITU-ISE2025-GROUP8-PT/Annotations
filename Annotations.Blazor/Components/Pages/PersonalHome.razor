@@ -1,1 +1,115 @@
+@implements IDisposable
+@inject NavigationManager Navigation
+@rendermode InteractiveServer
 @page "/home/{userid}"
+@attribute [Authorize(Roles = "Administrator, Manager, AnnotationsUser")]
+
+<style>
+    .mat-layout-grid-cell{
+        display: flex;
+        align-items: center;
+        min-width: 250px;
+        gap: 30px;
+    }
+    .mat-layout-grid-inner{
+        display: grid;
+        gap: 30px;
+    }
+    .personal-style{
+        border: 5px solid transparent; /* Hidden border with 5px thickness */
+        padding: 10px;
+    }
+
+</style>
+<h2> Welcome user</h2>
+<div class="mat-layout-grid mat-layout-grid-align-left mat-layout-grid-cell-span-3">
+    <div class="mat-layout-grid-inner">
+
+        <!-- First Grid Layer -->
+        <div class="mat-layout-grid-cell "  >
+            <div> This is your personal page. <br/>
+
+                Here you can view your finished tasks or continue to work on you unfinished tasks. <br/>
+
+                Go to profile settings to edit your personal experience. <br/>
+            </div>
+        </div>
+
+        <!-- Second Grid Layer -->
+        <div class="mat-layout-grid-cell">
+            <MatThemeProvider Theme="@theme">
+                <div id="leftButtons">
+                    <table style="border-collapse: collapse;">
+                        @* Link buttons to the correct pages*@
+                        <tr>
+                            <td>
+                                <MatButtonLink Href="/Error" style="width:200%;" Outlined="true">Finished Tasks</MatButtonLink>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <MatButtonLink Href="/Error" style="width:200%;" Outlined="true">Unfinished Tasks</MatButtonLink>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <MatButtonLink Href="/Error" style="width:200%;" Outlined="true">Profile Settings</MatButtonLink>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </MatThemeProvider>
+        </div>
+
+        <!-- Third Grid Layer -->
+        <div class="mat-layout-grid-cell">
+            <div class="mat-layout-grid-inner">
+                <div class="mat-layout-grid-cell">
+                    <img src="img/billede1.png" alt="Profile Picture" style="width: 150px; height: 150px; border-radius: 50%; object-fit: cover;">
+                </div>
+                <div class="mat-layout-grid-cell">
+                    <div class = "personal-style">
+                        <b>Personal Information</b>
+                        <br/>
+                        Jane Doe
+                        <br/>
+                        Surgeon at Frederiksberg Hospital
+                        <br/>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@* insert pie chart here *@
+
+<h3> See your complete overview here</h3>
+<h4 class="mat-subtitle1">Progress</h4>
+<MatProgressCircle Indeterminate="false" Progress=".75"/>
+
+@code {
+    private string? currentUrl;
+
+    MatTheme theme = new MatTheme()
+    {
+        Primary = MatThemeColors.Green._800.Value
+    };
+
+    protected override void OnInitialized()
+    {
+        currentUrl = Navigation.Uri;
+        Navigation.LocationChanged += OnLocationChanged;
+    }
+
+    private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
+    {
+        currentUrl = Navigation.Uri;
+        StateHasChanged();
+    }
+
+    public void Dispose() => Navigation.LocationChanged -= OnLocationChanged;
+}
+
+
+
+

@@ -71,10 +71,10 @@
 
                             @if (showTextField)
                             {
-                                <div style="position: absolute; left: @($"{currentAnnotation.X}px"); top: @($"{currentAnnotation.Y}px")">
+                                <div style="position: absolute; left: @($"{_currentVesselAnnotation.X}px"); top: @($"{_currentVesselAnnotation.Y}px")">
                                     <p>
                                         <!-- the position is auto focused on click position. Bound to currentAnnotation object --->
-                                        <MatTextField @bind-Value="currentAnnotation.Text"
+                                        <MatTextField @bind-Value="_currentVesselAnnotation.Text"
                                                       Label="Annotation"
                                                       FullWidth="true"
                                                       Immediate="true"
@@ -83,7 +83,7 @@
                                         </MatTextField>
                                     </p>
                                     <p>
-                                        <MatSelectItem @bind-Value="@currentAnnotation.Type" Label="Type" Items="@currentAnnotation.Types"></MatSelectItem>
+                                        <MatSelectItem @bind-Value="@_currentVesselAnnotation.Type" Label="Type" Items="@_currentVesselAnnotation.Types"></MatSelectItem>
                                     </p>
                                     <div>
                                         <MatButton OnClick="SaveAnnotation" Style="color: white; background: #101e2d">Save</MatButton>
@@ -93,11 +93,11 @@
                             }
                             @foreach (var ann in savedAnnotations)
                             {
-                                <div style="position: absolute; left: @($"{ann.X}px"); top: @($"{ann.Y}px")">
-                                    <p style="color: white; font-size: xx-small">
-                                        @ann.Text
-                                    </p>
-                                </div>
+                                <svg style="position: absolute; left: 0; top: 0; width: 100%; height: 100%; pointer-events: none;">
+                                    <circle cx="@ann.X" cy="@ann.Y" r="8"
+                                            fill="white"
+                                            stroke="white" stroke-width="2" />
+                                </svg>
                             }
                         </div>
                     </div>
@@ -137,7 +137,7 @@
 
     public void Dispose() => Navigation.LocationChanged -= OnLocationChanged;
     
-    private class Annotation
+    private class VesselAnnotation
     {
         public int X { get; set; }
         public int Y { get; set; }
@@ -153,13 +153,13 @@
 
     private ElementReference imageContainer;
     private bool showTextField = false;
-    private Annotation currentAnnotation = new();
-    private List<Annotation> savedAnnotations = new();
+    private VesselAnnotation _currentVesselAnnotation = new();
+    private List<VesselAnnotation> savedAnnotations = new();
 
     private async Task HandleImageClick(MouseEventArgs e)
     {
         // Reset for new annotation
-        currentAnnotation = new Annotation();
+        _currentVesselAnnotation = new VesselAnnotation();
         
         // Get click position relative to container
         var rect = await JSRuntime.InvokeAsync<BoundingClientRect>(
@@ -168,8 +168,8 @@
         );
         
         // gets X and Y coordinates of click
-        currentAnnotation.X = (int)(e.ClientX - rect.Left);
-        currentAnnotation.Y = (int)(e.ClientY - rect.Top);
+        _currentVesselAnnotation.X = (int)(e.ClientX - rect.Left);
+        _currentVesselAnnotation.Y = (int)(e.ClientY - rect.Top);
         
         showTextField = true;
         StateHasChanged();
@@ -183,9 +183,9 @@
 
     private void SaveAnnotation()
     {
-        if (!string.IsNullOrWhiteSpace(currentAnnotation.Text))
+        if (!string.IsNullOrWhiteSpace(_currentVesselAnnotation.Text))
         {
-            savedAnnotations.Add(currentAnnotation);
+            savedAnnotations.Add(_currentVesselAnnotation);
         }
         showTextField = false;
     }

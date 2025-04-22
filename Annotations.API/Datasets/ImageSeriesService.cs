@@ -139,7 +139,7 @@ public class ImageSeriesService : IImageSeriesService
 
         return new ImageSeriesResult
         {
-            StatusCode = (int) HttpStatusCode.OK,
+            StatusCode = (int) HttpStatusCode.NoContent,
             ImageSeries = await _dbContext.ImageSeries
                 .Where(series => series.ImageSeriesId == imageSeriesId)
                 .Include(series => series.ImageEntries)

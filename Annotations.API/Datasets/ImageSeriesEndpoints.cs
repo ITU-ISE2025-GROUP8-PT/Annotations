@@ -80,7 +80,7 @@ public static class ImageSeriesEndpoints
     /// <summary>
     /// Handler for put request to append images to an image series.
     /// </summary>
-    static async Task<ImageSeriesResult> AppendImagesHandler(
+    static async Task<string> AppendImagesHandler(
         [FromRoute] long imageSeriesId,
         string[] imageIds,
         HttpContext httpContext,
@@ -90,6 +90,6 @@ public static class ImageSeriesEndpoints
         var imageSeriesResult = await imageSeriesService.AppendImagesAsync(imageSeriesId, imageIds);
 
         httpContext.Response.StatusCode = imageSeriesResult.StatusCode;
-        return imageSeriesResult;
+        return imageSeriesResult.Error;
     }
 }

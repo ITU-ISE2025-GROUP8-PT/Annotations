@@ -44,7 +44,7 @@
                 <MatDialogTitle>Set blood vessel thickness</MatDialogTitle>
                 <MatDialogContent>
                     <MatSlider @bind-Value="currentThickness" Min="1" Max="5" Step="0.1"
-                               Label="Thickness" Style="width: 200px;"></MatSlider>
+                               Label="Thickness" Pin="true" Markers="true" Discrete="true" Style="width: 100%;"></MatSlider>
                 </MatDialogContent>
             </MatDialog>
             <div class="mat-layout-grid">
@@ -301,7 +301,6 @@
             currentVesselAnnotation.Segments.Add(segment);
         }
         
-    
         showTextField = false;
         StateHasChanged();
     }

@@ -63,6 +63,9 @@ public class ImageSeriesEndpoints
     }
 
 
+    /// <summary>
+    /// Handler for delete request to "soft delete" an image series.
+    /// </summary>
     static async Task<IResult> DeleteImageSeriesHandler(
         [FromRoute] long imageSeriesId,
         [FromServices] IImageSeriesService imageSeriesService
@@ -74,6 +77,9 @@ public class ImageSeriesEndpoints
     }
 
 
+    /// <summary>
+    /// Handler for put request to append images to an image series.
+    /// </summary>
     static async Task<ImageSeriesResult> AppendImagesHandler(
         [FromRoute] long imageSeriesId,
         string[] imageIds,

@@ -1,7 +1,7 @@
 ﻿using Annotations.Core.Entities;
 using System.Net;
 
-namespace Annotations.API.Dataset
+namespace Annotations.API.Datasets
 {
     /// <summary>
     /// Defines a builder for creating a new image series,

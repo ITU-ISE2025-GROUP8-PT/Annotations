@@ -3,7 +3,7 @@ using Annotations.API.Users;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
-namespace Annotations.API.Dataset;
+namespace Annotations.API.Datasets;
 
 public class ImageSeriesEndpoints
 {

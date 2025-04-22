@@ -1,5 +1,5 @@
 using Annotations.API;
-using Annotations.API.Dataset;
+using Annotations.API.Datasets;
 using Annotations.API.Images;
 using Annotations.API.Users;
 using Microsoft.AspNetCore.Authentication.JwtBearer;

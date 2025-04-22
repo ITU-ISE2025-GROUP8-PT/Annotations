@@ -16,6 +16,37 @@
                     <MatButton OnClick="@(() => showCompletionDialog = false)">OK</MatButton>
                 </MatDialogActions>
             </MatDialog>
+            <MatDialog @bind-IsOpen="@showTextField">
+                <MatDialogTitle>Blood vessel annotation</MatDialogTitle>
+                <MatDialogContent>
+                    <p>
+                        <!-- the position is auto focused on click position. Bound to currentAnnotation object --->
+                        <MatTextField @bind-Value="currentPoint.Text"
+                                      Label="Annotation"
+                                      FullWidth="true"
+                                      Immediate="true"
+                                      Id="annotationTextField"
+                                      Style="background: white">
+                        </MatTextField>
+                    </p>
+                    <p>
+                        <MatSelectItem @bind-Value="@currentPoint.Type" Label="Type" Items="@Types"></MatSelectItem>
+                    </p>
+                </MatDialogContent>
+                <MatDialogActions>
+                    <div>
+                        <MatButton OnClick="SaveAnnotation" Style="color: white; background: #101e2d">Save</MatButton>
+                        <MatButton OnClick="CancelAnnotation" Style="color: white; background: #101e2d">Cancel</MatButton>
+                    </div>
+                </MatDialogActions>
+            </MatDialog>
+            <MatDialog @bind-IsOpen="showThicknessDialog">
+                <MatDialogTitle>Set blood vessel thickness</MatDialogTitle>
+                <MatDialogContent>
+                    <MatSlider @bind-Value="currentThickness" Min="1" Max="5" Step="0.1"
+                               Label="Thickness" Style="width: 200px;"></MatSlider>
+                </MatDialogContent>
+            </MatDialog>
             <div class="mat-layout-grid">
                 <div class="mat-layout-grid-inner">
                     <div class="mat-layout-grid-cell mat-layout-grid-cell-span-2">
@@ -74,40 +105,27 @@
                         <div style="position: relative;" @ref="imageContainer">
                             <img src="img/Skærmbillede%202025-03-27%20kl.%2014.05.56.png" alt="Annotation Image"
                                  @onclick="HandleImageClick"
-                                 style="width: 1000px; height: 600px;"/>
-
-                            @if (showTextField)
-                            {
-                                <div style="position: absolute; left: @($"{currentPoint.X}px"); top: @($"{currentPoint.Y}px")">
-                                    <p>
-                                        <!-- the position is auto focused on click position. Bound to currentAnnotation object --->
-                                        <MatTextField @bind-Value="currentPoint.Text"
-                                                      Label="Annotation"
-                                                      FullWidth="true"
-                                                      Immediate="true"
-                                                      Id="annotationTextField"
-                                                      Style="background: white">
-                                        </MatTextField>
-                                    </p>
-                                    <p>
-                                        <MatSelectItem @bind-Value="@currentPoint.Type" Label="Type" Items="@Types"></MatSelectItem>
-                                    </p>
-                                    <div>
-                                        <MatButton OnClick="SaveAnnotation" Style="color: white; background: #101e2d">Save</MatButton>
-                                        <MatButton OnClick="CancelAnnotation" Style="color: white; background: #101e2d">Cancel</MatButton>
-                                    </div>
-                                </div>
-                            }
-
-                            <svg style="position: absolute; left: 0; top: 0; width: 100%; height: 100%; pointer-events: none;">
+                                 style="width: 1000px; height: 600px; pointer-events: auto"/>
+                            
+                            <svg style="position: absolute; left: 0; top: 0; width: 100%; height: 100%; pointer-events: none">
+                                
                                 @foreach (var vessel in savedVessels)
                                 {
                                     @foreach (var segment in vessel.Segments)
                                     {
                                         <line x1="@segment.StartPoint.X" y1="@segment.StartPoint.Y"
                                               x2="@segment.EndPoint.X" y2="@segment.EndPoint.Y"
+                                              stroke="transparent"
+                                              stroke-width="20"
+                                              @onclick="@(() => HandleSegmentClick(segment))"
+                                              pointer-events="visibleStroke"/>
+
+                                        <!-- Visible line (on top) -->
+                                        <line x1="@segment.StartPoint.X" y1="@segment.StartPoint.Y"
+                                              x2="@segment.EndPoint.X" y2="@segment.EndPoint.Y"
                                               stroke="white"
-                                              stroke-width="@(segment.Thickness * 2)"/>
+                                              stroke-width="@(segment.Thickness * 2)"
+                                              pointer-events="none"/>
                                     }
 
                                     @foreach (var point in vessel.Points)
@@ -122,8 +140,17 @@
                                     {
                                         <line x1="@segment.StartPoint.X" y1="@segment.StartPoint.Y"
                                               x2="@segment.EndPoint.X" y2="@segment.EndPoint.Y"
+                                              stroke="transparent"
+                                              stroke-width="20"
+                                              @onclick="@(() => HandleSegmentClick(segment))"
+                                              pointer-events="visibleStroke"/>
+
+                                        <!-- Visible line (on top) -->
+                                        <line x1="@segment.StartPoint.X" y1="@segment.StartPoint.Y"
+                                              x2="@segment.EndPoint.X" y2="@segment.EndPoint.Y"
                                               stroke="white"
-                                              stroke-width="@(segment.Thickness * 2)"/>
+                                              stroke-width="@(segment.Thickness * 2)"
+                                              pointer-events="none"/>
                                     }
 
                                     @foreach (var point in currentVesselAnnotation.Points)
@@ -168,6 +195,7 @@
         currentUrl = Navigation.Uri;
         Navigation.LocationChanged += OnLocationChanged;
         currentVesselAnnotation = new VesselAnnotation();
+        currentPoint = new VesselPoint();
     }
 
     private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
@@ -213,6 +241,7 @@
     private bool showCompletionDialog = false;
     private string completionMessage = "";
     private string completionTitle = "";
+    private bool showThicknessDialog = false;
     
     /*private VesselAnnotation _currentVesselAnnotation = new();
     private List<VesselAnnotation> savedAnnotations = new(); */
@@ -306,6 +335,13 @@
             showCompletionDialog = true;
             StateHasChanged();
         }
+    }
+
+    private void HandleSegmentClick(VesselSegment segment)
+    {
+        currentThickness = segment.Thickness;
+        showThicknessDialog = true;
+        StateHasChanged();
     }
 
     // JS interop struct

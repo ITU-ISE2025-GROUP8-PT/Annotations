@@ -106,7 +106,7 @@ public class ImageService : IImageService
             .Where(data => data.ImageId == imageId)
             .SingleOrDefaultAsync();
 
-            if (imageData == null) return HttpStatusCode.NoContent;
+            if (imageData == default(Core.Entities.Image)) return HttpStatusCode.NoContent;
 
             imageData.IsDeleted = true;
             await _dbContext.SaveChangesAsync();

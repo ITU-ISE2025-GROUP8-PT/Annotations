@@ -1,5 +1,6 @@
 ﻿using Annotations.API.Images;
 using Annotations.API.Users;
+using Annotations.Core.Entities;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
@@ -16,9 +17,13 @@ public class ImageSeriesEndpoints
         groupBuilder.RequireAuthorization()
             .DisableAntiforgery(); // Disabled as this is an API, which will not serve any forms.
         groupBuilder.MapPost("/New", NewImageSeriesHandler);
+        groupBuilder.MapGet("/Get/{imageSeriesId}", GetImageSeriesHandler);
     }
 
 
+    /// <summary>
+    /// Handler for post request to create an image series.
+    /// </summary>
     static async Task<ImageSeriesBuilderResult> NewImageSeriesHandler(
         string name,
         string category,
@@ -38,5 +43,18 @@ public class ImageSeriesEndpoints
 
         httpContext.Response.StatusCode = builderResult.StatusCode;
         return builderResult;
+    }
+
+
+    static async Task<ImageSeries?> GetImageSeriesHandler(
+        [FromRoute] long imageSeriesId,
+        HttpContext httpContext,
+        [FromServices] IImageSeriesService imageSeriesService
+        )
+    {
+        var getImageSeriesResult = await imageSeriesService.GetImageSeriesAsync(imageSeriesId);
+
+        httpContext.Response.StatusCode = getImageSeriesResult.StatusCode;
+        return getImageSeriesResult.ImageSeries;
     }
 }

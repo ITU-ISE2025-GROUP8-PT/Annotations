@@ -57,10 +57,10 @@ public class ImageSeriesEndpoints
         [FromServices] IImageSeriesService imageSeriesService
         )
     {
-        var getImageSeriesResult = await imageSeriesService.GetImageSeriesAsync(imageSeriesId);
+        var imageSeriesResult = await imageSeriesService.GetImageSeriesAsync(imageSeriesId);
 
-        httpContext.Response.StatusCode = getImageSeriesResult.StatusCode;
-        return getImageSeriesResult.ImageSeries;
+        httpContext.Response.StatusCode = imageSeriesResult.StatusCode;
+        return imageSeriesResult.ImageSeries;
     }
 
 
@@ -75,15 +75,16 @@ public class ImageSeriesEndpoints
     }
 
 
-    static async Task<AppendImagesResult> AppendImagesHandler(
+    static async Task<ImageSeriesResult> AppendImagesHandler(
+        [FromRoute] long imageSeriesId,
         string[] imageIds,
         HttpContext httpContext,
         [FromServices] IImageSeriesService imageSeriesService
         )
     {
-        var appendImagesResult = await imageSeriesService.AppendImagesAsync(imageIds);
+        var imageSeriesResult = await imageSeriesService.AppendImagesAsync(imageSeriesId, imageIds);
 
-        httpContext.Response.StatusCode = appendImagesResult.StatusCode;
-        return appendImagesResult;
+        httpContext.Response.StatusCode = imageSeriesResult.StatusCode;
+        return imageSeriesResult;
     }
 }

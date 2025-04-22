@@ -9,11 +9,25 @@ public interface IImageSeriesService
     /// <summary>
     /// Retrieves an image series from the database.
     /// </summary>
-    Task<GetImageSeriesResult> GetImageSeriesAsync(long imageSeriesId);
+    Task<ImageSeriesResult> GetImageSeriesAsync(long imageSeriesId);
+
+    /// <summary>
+    /// Marks the image series as deleted. (soft delete)
+    /// </summary>
+    Task<HttpStatusCode> DeleteImageSeriesAsync(long imageSeriesId);
+
+    /// <summary>
+    /// Append a list of images to an existing image series.
+    /// </summary>
+    /// <param name="imageSeriesId">Image series to append to.</param>
+    /// <param name="imageIds">An array of one or more image IDs.</param>
+    /// <returns></returns>
+    Task<ImageSeriesResult> AppendImagesAsync(long imageSeriesId, string[] imageIds);
 }
 
 
-public sealed class GetImageSeriesResult
+
+public sealed class ImageSeriesResult
 {
     /// <summary>
     /// Status code for HTTP response.
@@ -29,6 +43,7 @@ public sealed class GetImageSeriesResult
 }
 
 
+
 public class ImageSeriesService : IImageSeriesService
 {
     private readonly AnnotationsDbContext _dbContext;
@@ -40,23 +55,35 @@ public class ImageSeriesService : IImageSeriesService
     }
 
 
-    public async Task<GetImageSeriesResult> GetImageSeriesAsync(long imageSeriesId)
+    public async Task<ImageSeriesResult> GetImageSeriesAsync(long imageSeriesId)
     {
         var imageSeries = await _dbContext.ImageSeries
             .Where(series => series.ImageSeriesId == imageSeriesId)
             .Include(series => series.ImageEntries)
             .SingleOrDefaultAsync();
 
-        if (imageSeries == default(ImageSeries)) return new GetImageSeriesResult
+        if (imageSeries == default(ImageSeries)) return new ImageSeriesResult
         {
             StatusCode = (int)HttpStatusCode.NotFound,
             Error = "Image series not found"
         };
 
-        return new GetImageSeriesResult
+        return new ImageSeriesResult
         {
             StatusCode = (int)HttpStatusCode.OK,
             ImageSeries = imageSeries
         };
+    }
+
+
+    public Task<HttpStatusCode> DeleteImageSeriesAsync(long imageSeriesId)
+    {
+        throw new NotImplementedException();
+    }
+
+
+    public Task<ImageSeriesResult> AppendImagesAsync(long imageSeriesId, string[] imageIds)
+    {
+        throw new NotImplementedException();
     }
 }

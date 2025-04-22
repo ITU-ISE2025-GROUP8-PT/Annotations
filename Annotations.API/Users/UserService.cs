@@ -30,10 +30,12 @@ public class UserService : IUserService
 {
     private readonly AnnotationsDbContext _dbContext;
 
+
     public UserService(AnnotationsDbContext dbContext)
     {
         _dbContext = dbContext;
     }
+
 
     public async Task<User> CreateUser(ClaimsPrincipal claimsPrincipal)
     {
@@ -53,6 +55,7 @@ public class UserService : IUserService
         
         return newUser;
     }
+
 
     public async Task<User?> TryFindUserAsync(ClaimsPrincipal claimsPrincipal)
     {

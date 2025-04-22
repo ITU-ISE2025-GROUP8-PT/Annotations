@@ -18,7 +18,7 @@ public interface IImageService
     Task<ImageDownloadResult> DownloadImageAsync(string imageId);
 
     /// <summary>
-    /// Deletes image from blob storage, and soft deletes its metadata entry from the database.
+    /// Deletes image from blob storage, and marks metadata entry in database as deleted (soft delete).
     /// </summary>
     /// <param name="imageId">URI for image to delete.</param>
     /// <returns></returns>

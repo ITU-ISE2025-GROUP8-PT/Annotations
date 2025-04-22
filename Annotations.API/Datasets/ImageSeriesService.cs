@@ -120,12 +120,24 @@ public class ImageSeriesService : IImageSeriesService
             .Where(e => imageIds.Contains(e.ImageId))
             .ToListAsync();
 
+        if (imageIds.Length != images.Count) return new ImageSeriesResult
+        {
+            StatusCode = (int) HttpStatusCode.NotFound,
+            Error = "One or more images not found"
+        };
+
+        var existingEntries = new HashSet<string>(imageSeries.ImageEntries.Select(e => e.ImageId));
         foreach (var image in images)
         {
             if (image.IsDeleted) return new ImageSeriesResult
             {
                 StatusCode = (int) HttpStatusCode.NotFound,
                 Error = $"Image {image.ImageId} is marked as deleted"
+            };
+            if (existingEntries.Contains(image.ImageId)) return new ImageSeriesResult
+            {
+                StatusCode = (int) HttpStatusCode.BadRequest,
+                Error = $"Image {image.ImageId} already in image series. Duplicate entries not allowed."
             };
             imageSeries.ImageEntries.Add(new ImageSeriesEntry 
             { 

@@ -1,12 +1,12 @@
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.Playwright;
 using Microsoft.Playwright.Xunit;
 
 namespace Annotations.Blazor.Tests.E2E;
 
-public class AnnotationsToolPlaywrightTests: PageTest
+public class RBACwithAnnotationsPlaywrightUserTests : PageTest
 {
-    private const string AuthStatePath = "../../../../playwright/.auth/orchard-state.json";
+    private const string AuthStatePath = "../../../../playwright/.auth/orchard-state-with-AnnotationsUser.json";
     
     public override BrowserNewContextOptions ContextOptions()
     {
@@ -17,7 +17,7 @@ public class AnnotationsToolPlaywrightTests: PageTest
     }
     
     [Fact]
-    public async Task AnnotateOnImage()
+    public async Task AccessNotDeniedAnnotateOnImage()
     {
         await Page.GotoAsync("https://localhost:7238/images/annotations");
         await Page.GetByRole(AriaRole.Img, new() { Name = "Annotation Image" }).ClickAsync();

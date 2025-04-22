@@ -10,12 +10,13 @@ namespace Annotations.API.Images;
 public class ImageEndpoints
 {
     /// <summary>
-    /// Maps all application endpoints for image upload and download. 
+    /// Maps all application endpoints for image upload, retrieval and manipulation.
     /// </summary>
     /// <param name="groupBuilder"></param>
     public static void MapEndpoints(RouteGroupBuilder groupBuilder)
     {
-        groupBuilder.RequireAuthorization().DisableAntiforgery(); // Disabled as this is an API, which will not serve any forms.
+        groupBuilder.RequireAuthorization()
+            .DisableAntiforgery(); // Disabled as this is an API, which will not serve any forms.
         groupBuilder.MapPost("/Upload", UploadImageHandler);
         groupBuilder.MapGet("/Download/{imageId}", DownloadImageHandler);
         groupBuilder.MapDelete("/Delete/{imageId}", DeleteImageHandler);

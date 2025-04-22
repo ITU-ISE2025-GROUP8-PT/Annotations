@@ -1,4 +1,5 @@
 using Annotations.API;
+using Annotations.API.Dataset;
 using Annotations.API.Images;
 using Annotations.API.Users;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -80,8 +81,12 @@ builder.Services.AddAzureClients(clientBuilder =>
 });
 
 builder.Services.AddScoped<IUserService, UserService>();
+
 builder.Services.AddScoped<IImageService, ImageService>();
 builder.Services.AddTransient<IImageUploader, ImageUploader>();
+
+builder.Services.AddScoped<IImageSeriesService, ImageSeriesService>();
+builder.Services.AddTransient<IImageSeriesBuilder, ImageSeriesBuilder>();
 
 
 var app = builder.Build();
@@ -94,6 +99,7 @@ using (var scope = app.Services.CreateScope())
 }
 
 ImageEndpoints.MapEndpoints(app.MapGroup("/Images"));
+ImageSeriesEndpoints.MapEndpoints(app.MapGroup("/ImageSeries"));
 
 // Development/Debugging middleware.
 if (app.Environment.IsDevelopment())

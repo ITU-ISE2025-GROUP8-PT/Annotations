@@ -59,18 +59,19 @@ public class ImageSeriesService : IImageSeriesService
     {
         var imageSeries = await _dbContext.ImageSeries
             .Where(series => series.ImageSeriesId == imageSeriesId)
+            .Include(series => series.Images) // TODO: Likely less data should be returned. Initially this is a demo.
             .Include(series => series.ImageEntries)
             .SingleOrDefaultAsync();
 
         if (imageSeries == default(ImageSeries)) return new ImageSeriesResult
         {
-            StatusCode = (int)HttpStatusCode.NotFound,
+            StatusCode = (int) HttpStatusCode.NotFound,
             Error = "Image series not found"
         };
 
         return new ImageSeriesResult
         {
-            StatusCode = (int)HttpStatusCode.OK,
+            StatusCode = (int) HttpStatusCode.OK,
             ImageSeries = imageSeries
         };
     }
@@ -95,14 +96,44 @@ public class ImageSeriesService : IImageSeriesService
     {
         var imageSeries = await _dbContext.ImageSeries
             .Where(series => series.ImageSeriesId == imageSeriesId)
+            .Include(series => series.ImageEntries)
             .SingleOrDefaultAsync();
 
         if (imageSeries == default(ImageSeries)) return new ImageSeriesResult
         {
-            StatusCode = (int)HttpStatusCode.NotFound,
+            StatusCode = (int) HttpStatusCode.NotFound,
             Error = "Image series not found"
         };
 
-        throw new NotImplementedException();
+        var images = await _dbContext.Images
+            .Where(e => imageIds.Contains(e.ImageId))
+            .ToListAsync();
+
+        foreach (var image in images)
+        {
+            if (image.IsDeleted) return new ImageSeriesResult
+            {
+                StatusCode = (int) HttpStatusCode.NotFound,
+                Error = $"Image {image.ImageId} is marked as deleted, does not exist"
+            };
+            imageSeries.ImageEntries.Add(new ImageSeriesEntry 
+            { 
+                ImageSeriesId = imageSeries.ImageSeriesId,
+                ImageId = image.ImageId,
+                OrderNumber = imageSeries.ImageEntries.Count
+            });
+        }
+
+        await _dbContext.SaveChangesAsync();
+
+        return new ImageSeriesResult
+        {
+            StatusCode = (int) HttpStatusCode.OK,
+            ImageSeries = await _dbContext.ImageSeries
+                .Where(series => series.ImageSeriesId == imageSeriesId)
+                .Include(series => series.Images) // TODO: Likely less data should be returned. Initially this is a demo.
+                .Include(series => series.ImageEntries)
+                .SingleOrDefaultAsync()
+        };
     }
 }

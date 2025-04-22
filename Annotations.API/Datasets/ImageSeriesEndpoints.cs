@@ -5,7 +5,7 @@ using System.Security.Claims;
 
 namespace Annotations.API.Datasets;
 
-public class ImageSeriesEndpoints
+public static class ImageSeriesEndpoints
 {
     /// <summary>
     /// Maps all application endpoints for image series creation, retrieval and manipulation.

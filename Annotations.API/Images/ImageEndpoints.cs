@@ -7,7 +7,7 @@ namespace Annotations.API.Images;
 /// <summary>
 /// Group of endpoints and handlers for medical images in Annotations.
 /// </summary>
-public class ImageEndpoints
+public static class ImageEndpoints
 {
     /// <summary>
     /// Maps all application endpoints for image upload, retrieval and manipulation.

@@ -71,10 +71,10 @@
 
                             @if (showTextField)
                             {
-                                <div style="position: absolute; left: @($"{_currentVesselAnnotation.X}px"); top: @($"{_currentVesselAnnotation.Y}px")">
+                                <div style="position: absolute; left: @($"{currentPoint.X}px"); top: @($"{currentPoint.Y}px")">
                                     <p>
                                         <!-- the position is auto focused on click position. Bound to currentAnnotation object --->
-                                        <MatTextField @bind-Value="_currentVesselAnnotation.Text"
+                                        <MatTextField @bind-Value="currentPoint.Text"
                                                       Label="Annotation"
                                                       FullWidth="true"
                                                       Immediate="true"
@@ -83,7 +83,7 @@
                                         </MatTextField>
                                     </p>
                                     <p>
-                                        <MatSelectItem @bind-Value="@_currentVesselAnnotation.Type" Label="Type" Items="@_currentVesselAnnotation.Types"></MatSelectItem>
+                                        <MatSelectItem @bind-Value="@currentPoint.Type" Label="Type" Items="@Types"></MatSelectItem>
                                     </p>
                                     <div>
                                         <MatButton OnClick="SaveAnnotation" Style="color: white; background: #101e2d">Save</MatButton>
@@ -91,13 +91,16 @@
                                     </div>
                                 </div>
                             }
-                            @foreach (var ann in savedAnnotations)
+                            @if (currentVesselAnnotation != null)
                             {
-                                <svg style="position: absolute; left: 0; top: 0; width: 100%; height: 100%; pointer-events: none;">
-                                    <circle cx="@ann.X" cy="@ann.Y" r="8"
-                                            fill="white"
-                                            stroke="white" stroke-width="2" />
-                                </svg>
+                                @foreach (var point in currentVesselAnnotation.Points)
+                                {
+                                    <svg style="position: absolute; left: 0; top: 0; width: 100%; height: 100%; pointer-events: none;">
+                                        <circle cx="@point.X" cy="@point.Y" r="8"
+                                                fill="white"
+                                        />
+                                    </svg>
+                                }
                             }
                         </div>
                     </div>
@@ -118,6 +121,13 @@
     private bool flowDirectionSet;
     private bool videoReviewed;
     
+    public string[] Types = new[]
+    {
+        "Artery",
+        "Vein",
+        "Flow direction"
+    };
+    
     MatTheme theme = new MatTheme()
     {
         Primary = MatThemeColors.Green._800.Value
@@ -137,29 +147,45 @@
 
     public void Dispose() => Navigation.LocationChanged -= OnLocationChanged;
     
-    private class VesselAnnotation
+    private class VesselPoint
     {
         public int X { get; set; }
         public int Y { get; set; }
         public string Text { get; set; } = "";
-        public string[] Types = new[]
-        {
-            "Artery",
-            "Vein",
-            "Flow direction"
-        };
-        public string Type { get; set; } = "";
+        public string Type { get; set; }
     }
 
-    private ElementReference imageContainer;
+    private class VesselSegment
+    {
+        public VesselPoint StartPoint { get; set; }
+        public VesselPoint EndPoint { get; set; }
+        public string Type { get; set; }
+        public double Thickness { get; set; } = 1.0;
+        public string Text { get; set; } = "";
+    }
+    
+    private class VesselAnnotation
+    {
+        public List<VesselPoint> Points { get; } = new();
+        public List<VesselSegment> Segments { get; } = new();
+    }
+
+    private VesselAnnotation currentVesselAnnotation;
+    private VesselPoint currentPoint;
+    private List<VesselAnnotation> savedVessels = new();
     private bool showTextField = false;
-    private VesselAnnotation _currentVesselAnnotation = new();
-    private List<VesselAnnotation> savedAnnotations = new();
+    private string currentVesselType = ""; // TODO: needs implementation
+    private double currentThickness = 1.0;
+    
+    private ElementReference imageContainer;
+    
+    /*private VesselAnnotation _currentVesselAnnotation = new();
+    private List<VesselAnnotation> savedAnnotations = new(); */
 
     private async Task HandleImageClick(MouseEventArgs e)
     {
         // Reset for new annotation
-        _currentVesselAnnotation = new VesselAnnotation();
+        currentVesselAnnotation = new VesselAnnotation();
         
         // Get click position relative to container
         var rect = await JSRuntime.InvokeAsync<BoundingClientRect>(
@@ -167,12 +193,37 @@
             imageContainer
         );
         
-        // gets X and Y coordinates of click
-        _currentVesselAnnotation.X = (int)(e.ClientX - rect.Left);
-        _currentVesselAnnotation.Y = (int)(e.ClientY - rect.Top);
+        currentPoint = new VesselPoint
+        {
+            X = (int)(e.ClientX - rect.Left),
+            Y = (int)(e.ClientY - rect.Top),
+            Type = currentVesselType
+        };
+        
+        if (currentVesselAnnotation.Points.Count > 0)
+        {
+            // Create segment from last point to new point
+            var segment = new VesselSegment
+            {
+                StartPoint = currentVesselAnnotation.Points.Last(),
+                EndPoint = currentPoint,
+                Type = currentVesselType,
+                Thickness = currentThickness
+            };
+            
+            currentVesselAnnotation.Segments.Add(segment);
+        }
         
         showTextField = true;
         StateHasChanged();
+        
+        /*
+        // gets X and Y coordinates of click
+        currentVesselAnnotation.X = (int)(e.ClientX - rect.Left);
+        currentVesselAnnotation.Y = (int)(e.ClientY - rect.Top);
+        
+        StateHasChanged();
+        */
         
         // focuses the text field on the location of click
         await JSRuntime.InvokeVoidAsync(
@@ -183,16 +234,26 @@
 
     private void SaveAnnotation()
     {
-        if (!string.IsNullOrWhiteSpace(_currentVesselAnnotation.Text))
+        currentVesselAnnotation.Points.Add(currentPoint);
+        
+        if (!string.IsNullOrWhiteSpace(currentPoint.Text))
         {
-            savedAnnotations.Add(_currentVesselAnnotation);
+            if (currentVesselAnnotation.Points.Count >= 2)
+            {
+                savedVessels.Add(currentVesselAnnotation);
+                currentVesselAnnotation = new VesselAnnotation(); // Start new vessel
+            }
         }
+        
         showTextField = false;
+        StateHasChanged();
     }
 
     private void CancelAnnotation()
     {
+        currentVesselAnnotation = null;
         showTextField = false;
+        StateHasChanged();
     }
 
     // JS interop struct

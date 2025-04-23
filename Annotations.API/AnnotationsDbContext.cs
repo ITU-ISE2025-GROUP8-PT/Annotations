@@ -1,38 +1,42 @@
 using Annotations.Core.Entities;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace Annotations.API;
 
-public class AnnotationsDbContext : IdentityDbContext<User>
+/// <summary>
+/// Database context for the annotations application backend.
+/// </summary>
+public class AnnotationsDbContext : DbContext
 {
-    public DbSet<User> Userz { get; set; } // name Users causes issues. Userz is a temporary name
-    public DbSet<Admin> Admins { get; set; }
-    public DbSet<MedicalProfessional> MedicalProfessionals { get; set; }
-    public DbSet<Image> Images { get; set; }
-    public DbSet<Dataset> Datasets { get; set; }
-    public DbSet<VesselPoint> VesselPoints { get; set; }
-    public DbSet<VesselSegment> VesselSegments { get; set; }
-    public DbSet<VesselTree> VesselTrees { get; set; }
+    /// <summary>
+    /// Database set of users.
+    /// </summary>
+    public DbSet<User> Users { get; set; }
 
+    /// <summary>
+    /// Database set of images for research use.
+    /// </summary>
+    public DbSet<Image> Images { get; set; }
+
+    /// <summary>
+    /// Database set of image series.
+    /// </summary>
+    public DbSet<ImageSeries> ImageSeries { get; set; }
+    
     public AnnotationsDbContext(DbContextOptions<AnnotationsDbContext> options) : base(options)
     {
-        Userz = Set<User>();
-        Admins = Set<Admin>();
-        MedicalProfessionals = Set<MedicalProfessional>();
+        Users = Set<User>();
         Images = Set<Image>();
-        Datasets = Set<Dataset>();
-        VesselPoints = Set<VesselPoint>();
-        VesselSegments = Set<VesselSegment>();
-        VesselTrees = Set<VesselTree>();
+        ImageSeries = Set<ImageSeries>();
     }
 
-    /*protected override void OnModelCreating(ModelBuilder modelBuilder)
-	{
-		base.OnModelCreating(modelBuilder);
+    protected override void OnModelCreating(ModelBuilder builder)
+    {
+        base.OnModelCreating(builder);
 
-        modelBuilder.Entity<Dataset>().HasMany(d => d.ImageIds).WithMany().HasForeignKey(i => i.ImageId);
-	}
-    */
-
+        builder.Entity<ImageSeries>()
+            .HasMany(series => series.Images)
+            .WithMany(img => img.InImageSeries)
+            .UsingEntity<ImageSeriesEntry>();
+    }
 }

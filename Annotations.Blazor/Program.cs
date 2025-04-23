@@ -4,6 +4,7 @@
  */
 
 using Annotations.Blazor.Components;
+using Annotations.Blazor.ImageServices;
 using MatBlazor;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.IdentityModel.JsonWebTokens;
@@ -139,6 +140,14 @@ builder.Services.AddRazorComponents()
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddHttpClient();
+builder.Services.AddHttpClient<IImageUploader, ServerImageUploader>(httpClient =>
+{
+    httpClient.BaseAddress = new("https://localhost:7250");
+});
+builder.Services.AddHttpClient<IImageDownloader, ServerImageDownloader>(httpClient =>
+{
+    httpClient.BaseAddress = new("https://localhost:7250");
+});
 
 var app = builder.Build();
 

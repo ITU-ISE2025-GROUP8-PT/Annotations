@@ -50,7 +50,7 @@ namespace Annotations.Blazor.ImageServices
             var formData = new MultipartFormDataContent();
             var memoryStream = new MemoryStream();
             await image.WriteToStreamAsync(memoryStream);
-            formData.Add(new StreamContent(memoryStream), "file", image.Name);
+            formData.Add(new StreamContent(memoryStream), "image", image.Name);
             requestMessage.Content = formData;
             var response = await _httpClient.SendAsync(requestMessage);
             response.EnsureSuccessStatusCode();

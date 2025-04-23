@@ -1,13 +1,15 @@
 @page "/images/upload"
+@using global::Annotations.Blazor.ImageServices
 @rendermode InteractiveServer
 @attribute [Authorize(Roles = "Administrator, Manager")]
+@inject IImageUploader ImageUploader
 
 <h1>Upload New Images</h1>
 
 <MatFileUpload OnChange="@MultipleFilesReady" AllowMultiple="true" Label="Drop files here or Browse"></MatFileUpload>
 
 <ul>
-    @foreach (var f in multiplelist)
+    @foreach (var f in _multiplelist)
     {
         <li>@f</li>
     }
@@ -17,22 +19,37 @@
 
 <MatButton OnClick="@UploadAsImageSeries" Label="Upload as image series"></MatButton>
 
+@if (_imageIDs.Count > 0)
+{
+    <h2>Uploaded Images: @_imageIDs.Count</h2>
+    
+    <ul>
+        @foreach (var f in _imageIDs)
+        {
+            <li>@f</li>
+        }
+    </ul>
+}
+
 
 @code
 {
-    List<string> multiplelist = new List<string>();
+    private List<string> _multiplelist = [];
+    private IMatFileUploadEntry[] _filesList = [];
+    private IList<string> _imageIDs = [];
 
     void MultipleFilesReady(IMatFileUploadEntry[] files)
     {
+        _filesList = files;
         foreach (var file in files)
         {
-            multiplelist.Add($"Name: {file.Name} - Size: {file.Size}");
+            _multiplelist.Add($"Name: {file.Name} - Size: {file.Size}");
         }
     }
 
-    void UploadAsSingleImages()
+    async void UploadAsSingleImages()
     {
-
+        _imageIDs = await ImageUploader.UploadImagesAsync(_filesList);
     }
 
     void UploadAsImageSeries()

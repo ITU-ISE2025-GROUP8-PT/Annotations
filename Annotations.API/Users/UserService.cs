@@ -46,8 +46,8 @@ public class UserService : IUserService
 
         var newUser = new User
         {
-            UserId      = claimsPrincipal.FindFirstValue("sub") ?? throw new ArgumentNullException(nameof(claimsPrincipal)),
-            UserName    = claimsPrincipal.Identity!.Name ?? throw new ArgumentNullException(nameof(claimsPrincipal)),
+            UserId      = claimsPrincipal.FindFirstValue(ClaimTypes.NameIdentifier) ?? throw new ArgumentNullException("user id not found in claim principal"),
+            UserName    = claimsPrincipal.Identity!.Name ?? throw new ArgumentNullException("user name not found in claims principal")
         };
 
         await _dbContext.AddAsync(newUser);

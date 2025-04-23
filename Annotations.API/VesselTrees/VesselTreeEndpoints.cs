@@ -14,6 +14,7 @@ public static class VesselTreesEndpoint
         groupBuilder.MapGet("/Download/{vesselTreeId}", GetVesselTreeHandler);
         
     }
+    
     static async Task<VesselTreeBuilderResult> NewVesselTreeHandler(
         ICollection<VesselSegment> Segments,
         ClaimsPrincipal claimsPrincipal,

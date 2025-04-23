@@ -1,4 +1,5 @@
-﻿using MatBlazor;
+﻿using System.Net.Http.Headers;
+using MatBlazor;
 using Microsoft.AspNetCore.Authentication;
 using Annotations.Core.Results;
 
@@ -30,12 +31,12 @@ namespace Annotations.Blazor.ImageServices
             var imageIDs = new List<string>();
             foreach (var image in images)
             {
-                imageIDs.Add(await uploadSingleImage(image));
+                imageIDs.Add(await UploadSingleImage(image));
             }
             return imageIDs;
         }
 
-        private async Task<string> uploadSingleImage(IMatFileUploadEntry image)
+        private async Task<string> UploadSingleImage(IMatFileUploadEntry image)
         {
             var httpContext = _httpContextAccessor.HttpContext ??
                               throw new InvalidOperationException("No HttpContext available from the IHttpContextAccessor!");
@@ -44,7 +45,7 @@ namespace Annotations.Blazor.ImageServices
                               throw new InvalidOperationException("No access_token was saved");
             
             using var requestMessage = new HttpRequestMessage(HttpMethod.Post, "Images/Upload");
-            requestMessage.Headers.Authorization = new("Bearer", accessToken);
+            requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
             
             var formData = new MultipartFormDataContent();
             var memoryStream = new MemoryStream();

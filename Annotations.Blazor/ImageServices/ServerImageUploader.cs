@@ -43,17 +43,23 @@ namespace Annotations.Blazor.ImageServices
 
             var accessToken = await httpContext.GetTokenAsync("access_token") ??
                               throw new InvalidOperationException("No access_token was saved");
-            
+
+            using var memoryStream = new MemoryStream();
+            await image.WriteToStreamAsync(memoryStream);
+
+            var content = new ByteArrayContent(memoryStream.ToArray());
+            content.Headers.ContentType = MediaTypeHeaderValue.Parse(image.Type);
+
+            var formData = new MultipartFormDataContent();
+            formData.Add(content, "image", image.Name);
+
             using var requestMessage = new HttpRequestMessage(HttpMethod.Post, "Images/Upload");
             requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
-            
-            var formData = new MultipartFormDataContent();
-            var memoryStream = new MemoryStream();
-            await image.WriteToStreamAsync(memoryStream);
-            formData.Add(new StreamContent(memoryStream), "image", image.Name);
             requestMessage.Content = formData;
+
             var response = await _httpClient.SendAsync(requestMessage);
             response.EnsureSuccessStatusCode();
+
             var imageUploaderResult = await response.Content.ReadFromJsonAsync<ImageUploaderResult>() ??
                 throw new IOException("API test unsuccessful. No JSON obtained!");
             return imageUploaderResult.ImageId;

@@ -1,4 +1,5 @@
 ﻿using Annotations.Core.Entities;
+using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
 namespace Annotations.API.Users;
@@ -59,6 +60,8 @@ public class UserService : IUserService
 
     public async Task<User?> TryFindUserAsync(ClaimsPrincipal claimsPrincipal)
     {
-        return await _dbContext.Users.FindAsync(claimsPrincipal.FindFirstValue("sub"));
+        return await _dbContext.Users
+            .Where(user => user.UserId == claimsPrincipal.FindFirstValue(ClaimTypes.NameIdentifier))
+            .SingleOrDefaultAsync();
     }
 }

@@ -102,3 +102,160 @@ h1:focus {
     opacity: 90%;
     color: white;
 }
+
+.container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    overflow-y:scroll;
+}
+
+.DivToScroll{
+    background-color: #F5F5F5;
+    border: 1px solid #DDDDDD;
+    border-radius: 4px 0 4px 0;
+    color: #3B3C3E;
+    left: -1px;
+    max-height: 100vh;
+    overflow-x:hidden;/*this creates the scrollbar. It's appearance cannot be changed*/
+    padding: 1.5%;
+    scrollbar-width: auto;
+}
+
+.filterButton {/*for functionality later on*/
+    text-align: right; 
+    width: 10%;
+    border: 5px;
+    cursor: pointer;
+    background-color: transparent;
+    font-size: 110%;
+    margin-right: 3%;
+    text-decoration: underline;
+}
+
+.orderingButton {/*for functionality later on*/
+    border: 5px;
+    cursor: pointer;
+    background-color: transparent;
+    font-size: 130%;
+    text-align: center;
+    margin-top:20%;
+    margin-left: 10%;
+    text-decoration: underline;
+}
+
+.table-formatting {
+    display: block; /* Required for margin: auto to work */
+    position: relative;
+    border-collapse: collapse;
+    border-spacing: 0;
+    overflow-x: auto;
+    margin: 1% auto; /* Centers horizontally and keeps vertical margin */
+    width: 41.5%;
+    background-color: #e3e7ee;
+    padding: 0.8% 1% 0.3% 1%; /* Shorthand for top, right, bottom, left */
+    border-radius: 10px;
+    text-align: center;
+}
+
+.table-formatting th {
+    text-align: center;
+    padding:0;
+    margin: 2%; 
+    width: 22.5%;
+    height: 0%;
+    font-size: 1rem;
+    border: none;
+    background: #e3e7ee;
+}
+
+.table-formatting td {
+    text-align: center;
+    padding:0;
+    margin: 2%; 
+
+    width: 22.5%;
+    background: #e3e7ee;
+}
+
+.table-formatting tr > td:nth-child(1) {
+    width: 20%; 
+    max-width: 20%;
+    min-width: 20%;
+}
+
+.table-formatting th:nth-child(1){
+    width: 20%; 
+    max-width: 20%;
+    min-width: 20%;
+}
+
+.table-formatting tr > td:nth-child(2) {
+    width: 20%; 
+    max-width: 20%;
+    min-width: 20%;
+}
+
+.table-formatting th:nth-child(2) {
+    width: 20%; 
+    max-width: 20%;
+    min-width: 20%;
+}
+
+.table-formatting tr > td:nth-child(3) {
+    width: 30%; 
+    max-width: 30%;
+    min-width: 30%;
+}
+
+.table-formatting th:nth-child(3) {
+    width: 30%; 
+    max-width: 30%;
+    min-width: 30%;
+}
+
+.table-formatting tr > td:nth-child(4) {
+    width: 20%; 
+    max-width: 20%;
+    min-width: 20%;
+}
+
+.table-formatting th:nth-child(4) {
+    width: 20%; 
+    max-width: 20%;
+    min-width: 20%;
+}
+
+.table-formatting tr > td:nth-child(5) {
+    width: 20%; 
+    max-width: 20%;
+    min-width: 20%;
+}
+
+.table-formatting th:nth-child(5) {
+    width: 20%; 
+    max-width: 20%;
+    min-width: 20%;
+}
+
+.filterButton {/*for functionality later on*/
+    text-align: right; 
+    width: 10%;
+    border: 5px;
+    cursor: pointer;
+    background-color: transparent;
+    font-size: 110%;
+    margin-right: 3%;
+    text-decoration: underline;
+}
+
+.displayImages {/*images are a third - three images per line*/
+    width: 33%;
+    height: 33%;
+    padding: 1%;
+}
+
+.displaySoloImage {/*images are a third - three images per line*/
+    width: 100%;
+    height: 100%;
+}

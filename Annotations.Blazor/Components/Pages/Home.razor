@@ -2,18 +2,17 @@
 @using MatBlazor
 @implements IDisposable
 @inject NavigationManager Navigation
+@rendermode InteractiveServer
+
 
 <PageTitle>Home</PageTitle>
 
 <h1>Annotations - PerfusionTech</h1>
 
 
-<p>
-    This is a template Blazor Application, including some functionality intended for you to get familiar with the Blazor framework. 
-    Play around with it as needed!
 
-</p>
-
+This is a template Blazor Application, including some functionality intended for you to get familiar with the Blazor framework. 
+Play around with it as needed!
 
 <AuthorizeView>
     <Authorized>
@@ -24,12 +23,15 @@
         </form>
     </Authorized>
     <NotAuthorized>
-        <MatButtonLink class="loginbutton" Href="authentication/login">Login</MatButtonLink>
+        You have not signed in yet.
+        <p> Log in or make a new account to get access</p>
     </NotAuthorized>
+    <Authorized>
+        <PersonalHome/>
+    </Authorized>
+
 </AuthorizeView>
     
-
-<MatButtonLink class="SignUpButton" Href="/sign-up">Sign Up</MatButtonLink>
 
 @code {
     private string? currentUrl;

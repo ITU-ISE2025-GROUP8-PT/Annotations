@@ -1,0 +1,121 @@
+﻿@page "/images/datasets"
+@using global::Annotations.Core.Models
+@inject IHttpClientFactory ClientFactory
+@inject IHttpContextAccessor httpContextAccessor
+@inject NavigationManager NavigationManager
+@attribute [Authorize(Roles = "Administrator, Manager")]
+
+<div style=" display: flex; flex-direction:row;">
+    <span style="margin-left:13%; margin-top:0.0001%; padding-bottom:2%; font-weight: bold; width: 72%; font-size: 215%">Manage datasets</span>
+    <div style="width:15%">
+        <button class="orderingButton">Order by...</button>
+    </div>
+</div>
+
+@if (_error)
+{
+    <Error/>
+}
+
+<MatThemeProvider Theme="_theme">
+    <MatTable Items="Datasets" class="table-formatting">
+        <MatTableHeader>
+            <th>Dataset ID</th>
+            <th>No. of Images</th>
+            <th>Category</th>
+            <th>Annotated By</th>
+            <th>Reviewed By</th>
+        </MatTableHeader>
+        <MatTableRow>
+            <td>
+                <MatButtonLink href="@($"https://localhost:7238/images/datasets/{context.Id}")">@context.Id</MatButtonLink>
+            </td>
+            <td>
+                @context.ImageIds.Count
+            </td>
+            <td>
+                @context.Category
+            </td>
+            <td>
+                @context.AnnotatedBy
+            </td>
+            <td>
+                @context.ReviewedBy
+            </td>
+        </MatTableRow>
+    </MatTable>
+</MatThemeProvider>
+
+@code{
+    public List<Dataset> Datasets = new List<Dataset>();//it only works as a list, not an array
+    private bool _error; //this isn't used yet
+    //TODO: error handling (what blazor pages returns)
+    
+    private MatTheme _theme = new MatTheme()
+    {
+        Primary = MatThemeColors.Green._800.Value
+    };
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var httpContext = httpContextAccessor.HttpContext ?? throw new InvalidOperationException("No HttpContext available");//make connection
+            var accessToken = await httpContext.GetTokenAsync("access_token") ?? throw new InvalidOperationException("No access_token was saved");//authorization
+            var client = ClientFactory.CreateClient();
+            client.BaseAddress = new("https://localhost:7250");//connect to Web API
+            using var requestMessage = new HttpRequestMessage(HttpMethod.Get, $"/images/datasets/");//access endpoint
+            requestMessage.Headers.Authorization = new("Bearer", accessToken);//bearer token for authorization
+            
+            using var response = await client.SendAsync(requestMessage);//sending the response
+            if (response.IsSuccessStatusCode)
+            {
+                var datasetmodels = await response.Content.ReadFromJsonAsync<DatasetModel[]>();//int array of all the ids of all the existing datasets
+                ArgumentNullException.ThrowIfNull(datasetmodels);
+                await Task.Yield();
+                foreach (var datasetmodel in datasetmodels)
+                {
+                    Datasets.Add(new Dataset(datasetmodel.Id,
+                    datasetmodel.ImageIds,
+                    datasetmodel.Category,
+                    datasetmodel.AnnotatedBy,
+                    datasetmodel.ReviewedBy));
+                }
+            }
+
+            else
+            {
+                _error = true;
+                Console.WriteLine("Status code: " + response.StatusCode);
+            }
+        }
+        catch 
+        {
+            _error = true;
+            
+        }
+    }
+    
+    // Dataset model - to be expanded
+    public class Dataset
+    {
+        public int Id { get; set; }
+        
+        public List<int> ImageIds{ get; set; }
+   
+        public string Category { get; set; }
+   
+        public int AnnotatedBy { get; set; }
+ 
+        public int ReviewedBy { get; set; }
+        
+        public Dataset(int id, List<int> imageIds, string category, int annotatedBy, int reviewedBy)
+        {
+            Id = id;
+            ImageIds = imageIds;
+            Category = category;
+            AnnotatedBy = annotatedBy;
+            ReviewedBy = reviewedBy;
+        }
+    }
+}

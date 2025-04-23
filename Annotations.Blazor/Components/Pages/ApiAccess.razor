@@ -1,10 +1,9 @@
 ﻿@page "/ApiAccess"
-@using Microsoft.AspNetCore.Authentication
-@using Microsoft.AspNetCore.Authorization
 @using System.Text.Json;
 @inject IHttpClientFactory ClientFactory
 @inject IHttpContextAccessor httpContextAccessor
 @attribute [Authorize]
+@attribute [Authorize(Roles = "Administrator")]
 
 <PageTitle>ApiAccesse</PageTitle>
 
@@ -43,7 +42,21 @@ else
         requestMessage.Headers.Authorization = new("Bearer", accessToken);
 
         using var response = await client.SendAsync(requestMessage);
-        story = await response.Content.ReadFromJsonAsync<string[]>();
+
+        
+        try
+        {
+            story = await response.Content.ReadFromJsonAsync<string[]>();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine("Status code: " + response.StatusCode);
+            Console.WriteLine(e.Message);
+            story = new string[1];
+            story[0] = response.StatusCode.ToString();
+        }
+        
+
     }
 
 }

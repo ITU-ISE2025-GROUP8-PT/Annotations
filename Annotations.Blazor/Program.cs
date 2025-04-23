@@ -4,6 +4,7 @@
  */
 
 using Annotations.Blazor.Components;
+using MatBlazor;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
@@ -53,7 +54,7 @@ builder.Services.AddAuthentication(oidcScheme)
          * of the OpenID Connect authority.
          */
         
-        oidcOptions.Authority = builder.Configuration["OidcAuthority"] ?? throw new InvalidOperationException("OIDC Authority not found");
+        oidcOptions.Authority = builder.Configuration["authentication:oidc:authority"] ?? throw new InvalidOperationException("Missing authentication:oidc:authority");
         
         /* The authority will recognise this application by the client ID. 
          * The client ID is not a secret, but it is not helpful to publish to
@@ -115,7 +116,10 @@ builder.Services.AddAuthentication(oidcScheme)
          * expiration.
          */
     })
-    .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme);
+    .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
+        {
+            options.AccessDeniedPath = "/accessdenied";
+        });
 
 /* ConfigureCookieOidcRefresh attaches a cookie OnValidatePrincipal callback to get
  * a new access token when the current one expires, and reissue a cookie with the
@@ -127,6 +131,7 @@ builder.Services.ConfigureCookieOidcRefresh(CookieAuthenticationDefaults.Authent
 
 builder.Services.AddAuthorization();
 builder.Services.AddCascadingAuthenticationState();
+
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
@@ -154,5 +159,6 @@ app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 
 app.MapGroup("/authentication").MapLoginAndLogout();
+app.MapGroup("/images");
 
 app.Run();

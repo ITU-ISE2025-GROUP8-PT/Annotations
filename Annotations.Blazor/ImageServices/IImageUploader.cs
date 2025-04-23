@@ -8,6 +8,6 @@ namespace Annotations.Blazor.ImageServices
 
         Task<string> ImageSeriesAppendAsync(long imageSeriesId, string[] imageIds);
 
-        Task<string[]> UploadImagesAsync(IMatFileUploadEntry[] images);
+        Task<IList<string>> UploadImagesAsync(IMatFileUploadEntry[] images);
     }
 }

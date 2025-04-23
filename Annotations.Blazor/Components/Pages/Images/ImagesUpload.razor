@@ -1,2 +1,42 @@
 @page "/images/upload"
+@rendermode InteractiveServer
 @attribute [Authorize(Roles = "Administrator, Manager")]
+
+<h1>Upload New Images</h1>
+
+<MatFileUpload OnChange="@MultipleFilesReady" AllowMultiple="true" Label="Drop files here or Browse"></MatFileUpload>
+
+<ul>
+    @foreach (var f in multiplelist)
+    {
+        <li>@f</li>
+    }
+</ul>
+
+<MatButton OnClick="@UploadAsSingleImages" Label="Upload single images"></MatButton>
+
+<MatButton OnClick="@UploadAsImageSeries" Label="Upload as image series"></MatButton>
+
+
+@code
+{
+    List<string> multiplelist = new List<string>();
+
+    void MultipleFilesReady(IMatFileUploadEntry[] files)
+    {
+        foreach (var file in files)
+        {
+            multiplelist.Add($"Name: {file.Name} - Size: {file.Size}");
+        }
+    }
+
+    void UploadAsSingleImages()
+    {
+
+    }
+
+    void UploadAsImageSeries()
+    {
+        
+    }
+}

@@ -117,9 +117,9 @@ builder.Services.AddAuthentication(oidcScheme)
          */
     })
     .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
-        {
-            options.AccessDeniedPath = "/accessdenied";
-        });
+    {
+        options.AccessDeniedPath = "/accessdenied";
+    });
 
 /* ConfigureCookieOidcRefresh attaches a cookie OnValidatePrincipal callback to get
  * a new access token when the current one expires, and reissue a cookie with the

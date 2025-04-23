@@ -9,31 +9,31 @@ public static class VesselTreesEndpoint
 {
     public static void MapEndpoints(RouteGroupBuilder groupBuilder)
     {
-        groupBuilder.RequireAuthorization().DisableAntiforgery();
+        groupBuilder.DisableAntiforgery();
         groupBuilder.MapPost("/Upload", NewVesselTreeHandler);
         groupBuilder.MapGet("/Download/{vesselTreeId}", GetVesselTreeHandler);
         
     }
     static async Task<VesselTreeBuilderResult> NewVesselTreeHandler(
         ICollection<VesselSegment> Segments,
-        int imageId,
-        long?           addToSeries, // TODO: Allow upload into existing image series directly.
         ClaimsPrincipal claimsPrincipal,
         HttpContext     httpContext,
         [FromServices] IVesselTreesBuilder builder,
         [FromServices] IUserService   userService
     )
     {
-        var user = await userService.TryFindUserAsync(claimsPrincipal) ?? await userService.CreateUser(claimsPrincipal);
-
-        builder.ImageId = imageId;
-        builder.CreatedBy = user;
+        Console.WriteLine("enter");
+        //var user = await userService.TryFindUserAsync(claimsPrincipal) ?? await userService.CreateUser(claimsPrincipal);
+        Console.WriteLine("continue");
+        builder.ImageId = 1;
+        //builder.CreatedBy = user;
         builder.Segments = Segments;
         
 
         var uploaderResult = await builder.BuildAsync();
 
         httpContext.Response.StatusCode = uploaderResult.StatusCode;
+        Console.WriteLine("yay");
         return uploaderResult;
     }
     

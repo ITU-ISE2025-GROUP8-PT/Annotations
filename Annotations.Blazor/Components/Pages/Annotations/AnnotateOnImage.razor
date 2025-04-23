@@ -1,6 +1,12 @@
 @* @page "/images/{imageid}/annotations" *@
 @rendermode InteractiveServer
 @page "/images/annotations"
+@inject IHttpClientFactory ClientFactory
+@inject IHttpContextAccessor httpContextAccessor
+@using System.Data
+@using System.Text
+@using System.Text.Json
+@using global::Annotations.Core.Models
 @implements IDisposable
 @inject NavigationManager Navigation
 @attribute [Authorize(Roles = "Administrator, Manager, AnnotationsUser")]
@@ -323,7 +329,7 @@
         StateHasChanged();
     }
     
-    private void CompleteCurrentVessel()
+    private async Task CompleteCurrentVessel()
     {
         if (_currentVesselAnnotation.Points.Count >= 2)
         {
@@ -332,6 +338,31 @@
             _completionTitle = "Success";
             _completionMessage = "Your blood vessel tree has been successfully completed";
             _showCompletionDialog = true;
+            var httpContext = httpContextAccessor.HttpContext ?? throw new InvalidOperationException("No HttpContext available");//make connection
+
+            var accessToken = await httpContext.GetTokenAsync("access_token") ?? throw new InvalidOperationException("No access_token was saved");//authorization
+
+            var client = ClientFactory.CreateClient();
+            client.BaseAddress = new("https://localhost:7250");//connect to Web API
+
+            var segments = _currentVesselAnnotation.Segments;
+            
+            using (var requestMessage = new HttpRequestMessage(HttpMethod.Post, $"/VesselTrees/Upload"))
+            {
+                requestMessage.Content = new StringContent(JsonSerializer.Serialize(segments), Encoding.UTF8, "application/json");
+                var result = await client.SendAsync(requestMessage);
+                Console.Write("maybe");
+            }//access endpoint
+            
+
+            //string queryString = "Segments="
+            /*using (var requestMessage = new HttpRequestMessage(HttpMethod.Post, $"/New"))
+            {
+                requestMessage.Headers.Authorization = new("Bearer", accessToken);//bearer token for authorization
+                requestMessage.Content
+                await client.SendAsync(requestMessage);
+            }//access endpoint*/
+            
             StateHasChanged();
         }
         else

@@ -160,5 +160,6 @@ app.MapRazorComponents<App>()
 
 app.MapGroup("/authentication").MapLoginAndLogout();
 app.MapGroup("/images");
+app.MapGroup("/VesselTrees");
 
 app.Run();

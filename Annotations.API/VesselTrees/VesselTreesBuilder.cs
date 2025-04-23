@@ -68,6 +68,7 @@ public class VesselTreesBuilder : IVesselTreesBuilder
     }
     public async Task<VesselTreeBuilderResult> BuildAsync()
     {
+        Console.WriteLine("build enter");
         if (buildStarted)
         {
             throw new InvalidOperationException("Operation was already started.");
@@ -76,7 +77,7 @@ public class VesselTreesBuilder : IVesselTreesBuilder
 
 
         var vesselTree = await CreateInDatabaseAndReturn();
-
+        Console.WriteLine("create exit");
         return new VesselTreeBuilderResult()
         {
             StatusCode = (int)HttpStatusCode.Created,
@@ -85,18 +86,22 @@ public class VesselTreesBuilder : IVesselTreesBuilder
     }
     private async Task<VesselTree> CreateInDatabaseAndReturn()
     {
-        if (CreatedBy == null) throw new NullReferenceException(nameof(CreatedBy));
+        //if (CreatedBy == null) throw new NullReferenceException(nameof(CreatedBy));
 
         var vesselTreeEntity = new VesselTree()
         {
             ImageId = ImageId,
             Segments = Segments,
-            CreatedBy = CreatedBy
+            CreatedBy = new User()
+            {
+                UserId = "hi",
+                UserName = "me"
+            }
         };
-
+        Console.WriteLine("create new vessel tree");
         await _dbContext.AddAsync(vesselTreeEntity);
         await _dbContext.SaveChangesAsync();
-
+        Console.WriteLine("ooooooh");
         return vesselTreeEntity;
     }
 }

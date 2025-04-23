@@ -41,6 +41,9 @@
     void MultipleFilesReady(IMatFileUploadEntry[] files)
     {
         _filesList = files;
+        _multiplelist.Clear();
+        _imageIDs.Clear();
+
         foreach (var file in files)
         {
             _multiplelist.Add($"Name: {file.Name} - Size: {file.Size}");
@@ -50,10 +53,11 @@
     async void UploadAsSingleImages()
     {
         _imageIDs = await ImageUploader.UploadImagesAsync(_filesList);
+        StateHasChanged();
     }
 
-    void UploadAsImageSeries()
+    async void UploadAsImageSeries()
     {
-        
+        await Task.CompletedTask;
     }
 }

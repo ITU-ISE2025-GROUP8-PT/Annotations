@@ -22,12 +22,18 @@ public class AnnotationsDbContext : DbContext
     /// Database set of image series.
     /// </summary>
     public DbSet<ImageSeries> ImageSeries { get; set; }
+    public DbSet<VesselTree> VesselTrees { get; set; }
+    public DbSet<VesselPoint> VesselPoints { get; set; }
+    public DbSet<VesselSegment> VesselSegments { get; set; }
     
     public AnnotationsDbContext(DbContextOptions<AnnotationsDbContext> options) : base(options)
     {
         Users = Set<User>();
         Images = Set<Image>();
         ImageSeries = Set<ImageSeries>();
+        VesselTrees = Set<VesselTree>();
+        VesselPoints = Set<VesselPoint>();
+        VesselSegments = Set<VesselSegment>();
     }
 
     protected override void OnModelCreating(ModelBuilder builder)

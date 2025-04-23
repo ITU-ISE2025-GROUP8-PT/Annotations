@@ -3,6 +3,7 @@ using System;
 using Annotations.API;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Annotations.API.Migrations
 {
     [DbContext(typeof(AnnotationsDbContext))]
-    partial class AnnotationsDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250423141236_VesselTreeModelAdded")]
+    partial class VesselTreeModelAdded
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.2");
@@ -107,87 +110,6 @@ namespace Annotations.API.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("Annotations.Core.Entities.VesselPoint", b =>
-                {
-                    b.Property<int>("PointId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Text")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Type")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<int>("X")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("Y")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("PointId");
-
-                    b.ToTable("VesselPoints");
-                });
-
-            modelBuilder.Entity("Annotations.Core.Entities.VesselSegment", b =>
-                {
-                    b.Property<int>("SegmentId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("EndPointPointId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("StartPointPointId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Text")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<double>("Thickness")
-                        .HasColumnType("REAL");
-
-                    b.Property<string>("Type")
-                        .HasColumnType("TEXT");
-
-                    b.Property<int?>("VesselTreeId")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("SegmentId");
-
-                    b.HasIndex("EndPointPointId");
-
-                    b.HasIndex("StartPointPointId");
-
-                    b.HasIndex("VesselTreeId");
-
-                    b.ToTable("VesselSegments");
-                });
-
-            modelBuilder.Entity("Annotations.Core.Entities.VesselTree", b =>
-                {
-                    b.Property<int>("VesselTreeId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("CreatedByUserId")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<int>("ImageId")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("VesselTreeId");
-
-                    b.HasIndex("CreatedByUserId");
-
-                    b.ToTable("VesselTrees");
-                });
-
             modelBuilder.Entity("Annotations.Core.Entities.Image", b =>
                 {
                     b.HasOne("Annotations.Core.Entities.User", "UploadedBy")
@@ -225,48 +147,9 @@ namespace Annotations.API.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Annotations.Core.Entities.VesselSegment", b =>
-                {
-                    b.HasOne("Annotations.Core.Entities.VesselPoint", "EndPoint")
-                        .WithMany()
-                        .HasForeignKey("EndPointPointId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Annotations.Core.Entities.VesselPoint", "StartPoint")
-                        .WithMany()
-                        .HasForeignKey("StartPointPointId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Annotations.Core.Entities.VesselTree", null)
-                        .WithMany("Segments")
-                        .HasForeignKey("VesselTreeId");
-
-                    b.Navigation("EndPoint");
-
-                    b.Navigation("StartPoint");
-                });
-
-            modelBuilder.Entity("Annotations.Core.Entities.VesselTree", b =>
-                {
-                    b.HasOne("Annotations.Core.Entities.User", "CreatedBy")
-                        .WithMany()
-                        .HasForeignKey("CreatedByUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("CreatedBy");
-                });
-
             modelBuilder.Entity("Annotations.Core.Entities.ImageSeries", b =>
                 {
                     b.Navigation("ImageEntries");
-                });
-
-            modelBuilder.Entity("Annotations.Core.Entities.VesselTree", b =>
-                {
-                    b.Navigation("Segments");
                 });
 #pragma warning restore 612, 618
         }

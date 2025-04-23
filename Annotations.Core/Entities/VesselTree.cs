@@ -30,7 +30,7 @@ public class VesselSegment
 public class VesselTree
 {
     [Key]
-    public required int VesselTreeId { get; set; }
+    public int VesselTreeId { get; set; }
     [Required]
     public required int ImageId { get; set; }
     [Required]

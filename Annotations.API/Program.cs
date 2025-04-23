@@ -2,6 +2,7 @@ using Annotations.API;
 using Annotations.API.Datasets;
 using Annotations.API.Images;
 using Annotations.API.Users;
+using Annotations.API.VesselTrees;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Data.Sqlite;
@@ -100,6 +101,7 @@ using (var scope = app.Services.CreateScope())
 
 ImageEndpoints.MapEndpoints(app.MapGroup("/Images"));
 ImageSeriesEndpoints.MapEndpoints(app.MapGroup("/ImageSeries"));
+VesselTreeEndpoints.MapEndpoints(app.MapGroup("/VesselTree"));
 
 // Development/Debugging middleware.
 if (app.Environment.IsDevelopment())

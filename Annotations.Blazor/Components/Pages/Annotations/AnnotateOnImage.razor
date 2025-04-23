@@ -1,8 +1,12 @@
 @* @page "/images/{imageid}/annotations" *@
 @rendermode InteractiveServer
 @page "/images/annotations"
+@using global::Annotations.Blazor.Helpers
+@using global::Annotations.Blazor.ImageServices
+
 @implements IDisposable
 @inject NavigationManager Navigation
+@inject IImageDownloader ImageDownloader
 @attribute [Authorize(Roles = "Administrator, Manager, AnnotationsUser")]
 
 <PageTitle>Annotations</PageTitle>
@@ -16,7 +20,7 @@
                     <MatButton OnClick="@(() => _showCompletionDialog = false)">OK</MatButton>
                 </MatDialogActions>
             </MatDialog>
-            
+
             <MatDialog @bind-IsOpen="@_showTextField">
                 <MatDialogTitle>Blood vessel annotation</MatDialogTitle>
                 <MatDialogContent>
@@ -41,7 +45,7 @@
                     </div>
                 </MatDialogActions>
             </MatDialog>
-            
+
             <MatDialog @bind-IsOpen="_showThicknessDialog">
                 <MatDialogTitle>Set blood vessel thickness</MatDialogTitle>
                 <MatDialogContent>
@@ -49,7 +53,7 @@
                                Label="Thickness" Pin="true" Markers="true" Discrete="true" Style="width: 100%;"></MatSlider>
                 </MatDialogContent>
             </MatDialog>
-            
+
             <div class="mat-layout-grid">
                 <div class="mat-layout-grid-inner">
                     <div class="mat-layout-grid-cell mat-layout-grid-cell-span-2">
@@ -104,7 +108,7 @@
                                 </div>
                             </div>
                         </div>
-                        
+
                         <!-- @ref imageContainer captures the DOM element for position calculations, when annotating --->
                         <div style="position: relative;" @ref="_imageContainer">
                             <img src="img/Skærmbillede%202025-03-27%20kl.%2014.05.56.png" alt="Annotation Image"
@@ -115,24 +119,24 @@
                                  @onpointerup="EndDrag"
                                  @onpointerleave="EndDrag"
                                  style="position: absolute; left: 0; top: 0; width: 100%; height: 100%; pointer-events: none">
-                                
+
                                 @foreach (var vessel in _savedVessels)
                                 {
                                     @foreach (var segment in vessel.Segments)
                                     {
                                         <line x1="@segment.StartPoint.X" y1="@segment.StartPoint.Y"
-                                              x2="@segment.EndPoint.X" y2="@segment.EndPoint.Y"
-                                              stroke="transparent"
-                                              stroke-width="20"
-                                              @onclick="@(() => HandleSegmentClick(segment))"
-                                              pointer-events="visibleStroke"/>
+                                        x2="@segment.EndPoint.X" y2="@segment.EndPoint.Y"
+                                        stroke="transparent"
+                                        stroke-width="20"
+                                        @onclick="@(() => HandleSegmentClick(segment))"
+                                        pointer-events="visibleStroke"/>
 
                                         <!-- Visible line (on top) -->
                                         <line x1="@segment.StartPoint.X" y1="@segment.StartPoint.Y"
-                                              x2="@segment.EndPoint.X" y2="@segment.EndPoint.Y"
-                                              stroke="white"
-                                              stroke-width="@(segment.Thickness * 2)"
-                                              pointer-events="none"/>
+                                        x2="@segment.EndPoint.X" y2="@segment.EndPoint.Y"
+                                        stroke="white"
+                                        stroke-width="@(segment.Thickness * 2)"
+                                        pointer-events="none"/>
                                     }
 
                                     @foreach (var point in vessel.Points)
@@ -146,27 +150,27 @@
                                     @foreach (var segment in _currentVesselAnnotation.Segments)
                                     {
                                         <line x1="@segment.StartPoint.X" y1="@segment.StartPoint.Y"
-                                              x2="@segment.EndPoint.X" y2="@segment.EndPoint.Y"
-                                              stroke="transparent"
-                                              stroke-width="20"
-                                              @onclick="@(() => HandleSegmentClick(segment))"
-                                              pointer-events="visibleStroke"/>
+                                        x2="@segment.EndPoint.X" y2="@segment.EndPoint.Y"
+                                        stroke="transparent"
+                                        stroke-width="20"
+                                        @onclick="@(() => HandleSegmentClick(segment))"
+                                        pointer-events="visibleStroke"/>
 
                                         <!-- Visible line (on top) -->
                                         <line x1="@segment.StartPoint.X" y1="@segment.StartPoint.Y"
-                                              x2="@segment.EndPoint.X" y2="@segment.EndPoint.Y"
-                                              stroke="white"
-                                              stroke-width="@(segment.Thickness * 2)"
-                                              pointer-events="none"/>
+                                        x2="@segment.EndPoint.X" y2="@segment.EndPoint.Y"
+                                        stroke="white"
+                                        stroke-width="@(segment.Thickness * 2)"
+                                        pointer-events="none"/>
                                     }
 
                                     @foreach (var point in _currentVesselAnnotation.Points)
                                     {
                                         <circle cx="@point.X" cy="@point.Y" r="10"
-                                                fill="white"
-                                                stroke="white" stroke-width="2"
-                                                @onpointerdown="@(e => StartDrag(e, point))"
-                                                style="cursor: move; pointer-events: all" />
+                                        fill="white"
+                                        stroke="white" stroke-width="2"
+                                        @onpointerdown="@(e => StartDrag(e, point))"
+                                        style="cursor: move; pointer-events: all" />
                                     }
                                 }
                             </svg>
@@ -188,6 +192,8 @@
     private bool _veinsMarked;
     private bool _flowDirectionSet;
     private bool _videoReviewed;
+    private string _imageId = string.Empty;
+    private string _imageData = string.Empty;
 
     private string[] _types =
     [
@@ -195,18 +201,42 @@
         "Vein",
         "Flow direction"
     ];
-    
+
     MatTheme _theme = new MatTheme()
     {
         Primary = MatThemeColors.Green._800.Value
     };
-    
-    protected override void OnInitialized()
+
+    protected override async Task OnInitializedAsync()
     {
         _currentUrl = Navigation.Uri;
         Navigation.LocationChanged += OnLocationChanged;
         _currentVesselAnnotation = new VesselAnnotation();
         _currentPoint = new VesselPoint();
+
+        _imageId = Navigation.QueryString("imageId");
+        if (_imageId != string.Empty)
+        {
+            await SetImageAsync();
+        }
+    }
+
+    /// <summary>
+    /// Source in part: https://learn.microsoft.com/en-us/aspnet/core/blazor/images-and-documents?view=aspnetcore-9.0
+    /// </summary>
+    private async Task SetImageAsync()
+    {
+        var downloadStream = await ImageDownloader.DownloadImageAsync(_imageId);
+        if (downloadStream == null)
+        {
+            return;
+        }
+
+        using var ms = new MemoryStream();
+        downloadStream.Stream.CopyTo(ms);
+        var base64 = System.Convert.ToBase64String(ms.ToArray());
+
+        _imageData = $"data:image;base64,{base64}";
     }
 
     private void OnLocationChanged(object? sender, LocationChangedEventArgs e)

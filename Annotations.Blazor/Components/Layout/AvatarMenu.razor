@@ -1,20 +1,20 @@
 @implements IDisposable
 @inject NavigationManager Navigation
 
-<MatThemeProvider Theme="@menuTheme">
-<AuthorizeView>
-    <Authorized>
+<matthemeprovider theme="@menuTheme">
+<authorizeview>
+    <authorized>
         <form action="authentication/logout" method="post">
-            <AntiforgeryToken />
+            <antiforgerytoken />
             <input type="hidden" name="ReturnUrl" value="@currentUrl" />
-            <MatButton type="submit">Sign out</MatButton>
+            <matbutton type="submit">Sign out</matbutton>
         </form>
-    </Authorized>
-    <NotAuthorized>
-        <MatButtonLink Href="authentication/login">Sign in</MatButtonLink>
-    </NotAuthorized>
-</AuthorizeView>
-</MatThemeProvider>
+    </authorized>
+    <notauthorized>
+        <matbuttonlink href="authentication/login">Sign in</matbuttonlink>
+    </notauthorized>
+</authorizeview>
+</matthemeprovider>
 
 @code {
     private string? currentUrl;

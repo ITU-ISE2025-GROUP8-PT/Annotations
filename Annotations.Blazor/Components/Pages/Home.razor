@@ -5,7 +5,7 @@
 @rendermode InteractiveServer
 
 
-<PageTitle>Home</PageTitle>
+<pagetitle>Home</pagetitle>
 
 <h1>Annotations - PerfusionTech</h1>
 
@@ -14,23 +14,23 @@
 This is a template Blazor Application, including some functionality intended for you to get familiar with the Blazor framework. 
 Play around with it as needed!
 
-<AuthorizeView>
-    <Authorized>
+<authorizeview>
+    <authorized>
         <form action="authentication/logout" method="post">
-            <AntiforgeryToken />
+            <antiforgerytoken />
             <input type="hidden" name="ReturnUrl" value="@currentUrl" />
-            <MatButton class="loginbutton" type="submit">Sign out</MatButton>
+            <matbutton class="loginbutton" type="submit">Sign out</matbutton>
         </form>
-    </Authorized>
-    <NotAuthorized>
+    </authorized>
+    <notauthorized>
         You have not signed in yet.
         <p> Log in or make a new account to get access</p>
     </NotAuthorized>
-    <Authorized>
-        <PersonalHome/>
-    </Authorized>
+    <authorized>
+        <personalhome/>
+    </authorized>
 
-</AuthorizeView>
+</authorizeview>
     
 
 @code {

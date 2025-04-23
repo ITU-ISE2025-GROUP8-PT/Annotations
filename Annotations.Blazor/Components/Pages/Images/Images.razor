@@ -7,7 +7,7 @@
 
 @if (error)
 {
-    <Error/>
+    <error/>
 }
 else if (!imgExist)
 {
@@ -15,12 +15,13 @@ else if (!imgExist)
 } else
 {
     <div class="container DivToScroll">
-        <img class="displaySoloImage" src="data:image;base64, @image" alt="@altText" /><!--src is a URL - it's converted from a string of the byte array--> 
+        <img class="displaySoloImage" src="data:image;base64", @image alt="@altText" />
+        <!--src is a URL - it's converted from a string of the byte array--> 
     </div>
 }
 @code{
 
-    private string? image;//byte array as string
+    private string? image; //byte array as string
     private bool error = false;
     private bool imgExist = true;
     private string? altText;

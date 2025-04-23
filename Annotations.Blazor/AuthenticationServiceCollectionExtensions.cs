@@ -5,7 +5,7 @@ using Microsoft.IdentityModel.JsonWebTokens;
 
 namespace Annotations.Blazor;
 
-public static class AddAuthenticationServices
+public static class AuthenticationServiceCollectionExtensions
 {
  public static IServiceCollection AddAuthenticationServiceCollection(this IServiceCollection services, IConfiguration configuration) 
   {

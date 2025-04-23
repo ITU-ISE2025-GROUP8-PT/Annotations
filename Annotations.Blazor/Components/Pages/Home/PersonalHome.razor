@@ -3,6 +3,7 @@
 @rendermode InteractiveServer
 @page "/home/{userid}"
 @attribute [Authorize(Roles = "Administrator, Manager, AnnotationsUser")]
+@namespace Home
 
 <style>
     .grid-cell{

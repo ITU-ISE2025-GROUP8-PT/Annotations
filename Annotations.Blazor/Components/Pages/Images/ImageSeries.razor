@@ -2,7 +2,6 @@
 @using global::Annotations.Core.Models
 @inject IHttpClientFactory ClientFactory
 @inject IHttpContextAccessor httpContextAccessor
-@inject NavigationManager NavigationManager
 @attribute [Authorize(Roles = "Administrator, Manager")]
 
 <div style=" display: flex; flex-direction:row;">

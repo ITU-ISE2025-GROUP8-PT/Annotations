@@ -12,7 +12,9 @@
 {
     <Error/>
 }
-else if (!_existenseOfImages) //This will show on screen in a milisecond before imgs load. Should it be "Loading..."?
+//This will show on screen in a milisecond before imgs load. Should it be "Loading..."?
+else if (!_existenseOfImages) 
+
 {
     <p><em>This Dataset is empty.</em></p>
 } else
@@ -24,13 +26,13 @@ else if (!_existenseOfImages) //This will show on screen in a milisecond before 
 
     <div class="container DivToScroll" >
     <!--Virtualize is a special loop that loops OverscanCount data - here the imgs received from API-->
-        <Virtualize ItemsProvider="@LoadImages" OverscanCount="15">
+        <virtualize ItemsProvider="@LoadImages" OverscanCount="15">
             <!--OverscanCount must always be divisible by 3! As we have 3 imgs per line-->
             <!--It represents the number of images loaded before and after current position-->
-            <ItemContent>
+            <itemcontent>
                 <img class="displayImages" src="@GetImageSource(@context.Base64Data)" alt="@context.AltText" />
-            </ItemContent>
-        </Virtualize> 
+            </itemcontent>
+        </virtualize> 
     </div> 
 }
 

@@ -16,18 +16,18 @@
     <Error/>
 }
 
-<MatThemeProvider Theme="_theme">
-    <MatTable Items="Datasets" class="table-formatting">
-        <MatTableHeader>
+<matthemeprovider Theme="_theme">
+    <mattable Items="Datasets" class="table-formatting">
+        <mattableheader>
             <th>Dataset ID</th>
             <th>No. of Images</th>
             <th>Category</th>
             <th>Annotated By</th>
             <th>Reviewed By</th>
-        </MatTableHeader>
-        <MatTableRow>
+        </mattableheader>
+        <mattablerow>
             <td>
-                <MatButtonLink href="@($"https://localhost:7238/images/datasets/{context.Id}")">@context.Id</MatButtonLink>
+                <matbuttonlink href="@($"https://localhost:7238/images/datasets/{context.Id}")">@context.Id</matbuttonlink>
             </td>
             <td>
                 @context.ImageIds.Count
@@ -41,9 +41,9 @@
             <td>
                 @context.ReviewedBy
             </td>
-        </MatTableRow>
-    </MatTable>
-</MatThemeProvider>
+        </mattablerow>
+    </mattable>
+</matthemeprovider>
 
 @code{
     public List<Dataset> Datasets = new List<Dataset>();//it only works as a list, not an array

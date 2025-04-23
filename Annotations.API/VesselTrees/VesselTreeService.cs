@@ -23,11 +23,11 @@ public sealed class VesselTreeDownloadResult
     public string ContentType { get; set; } = "text/plain";
 }
 
-public class VesselTreesService : IVesselTreeService
+public class VesselTreeService : IVesselTreeService
 {
     private readonly AnnotationsDbContext _dbContext;
 
-    public VesselTreesService(AnnotationsDbContext dbContext)
+    public VesselTreeService(AnnotationsDbContext dbContext)
     {
         _dbContext = dbContext;
     }

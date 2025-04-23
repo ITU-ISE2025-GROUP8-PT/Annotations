@@ -1,9 +1,8 @@
 .header {
     background-color: rgb(16, 30, 45);
     opacity: 90%;
-    height: 4rem;
+    height: 5rem;
     display: flex;
-    align-items: center;
     justify-content: space-between;
     position: absolute;
     left: 0rem;
@@ -11,10 +10,67 @@
     top: 0rem;
 }
 
+.ContentAlignRight {
+    justify-content: flex-end;
+    place-items: end;
+}
+
+/* Dropdown Button */
+.dropbtn {
+    background-color: transparent;
+    color: rgb(255, 255, 255);
+    font-size: 16px;
+    border: none;
+}
+  
+/* The container <div> - needed to position the dropdown content */
+.dropdown {
+    display: inline-block;
+    padding: 0 8rem 0 0;
+}
+  
+  /* Dropdown Content (Hidden by Default) */
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f1f1f1;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+}
+  
+/* Links inside the dropdown */
+.dropdown-content a {
+    color: rgb(16, 30, 45);
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+}
+  
+/* Change color of dropdown links on hover */
+.dropdown-content a:hover {
+    background-color: #ddd;
+    display: block;
+}
+  
+/* Show the dropdown menu on hover */
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+  
+/* Change the background color of the dropdown button when the dropdown content is shown */
+.dropdown:hover .dropbtn {
+    background-color: #d5d5d5;
+    color: rgb(40, 40, 40);
+}
+
+
+
 #logo {
     height: 2rem;
-    margin: 0 1rem 0 1rem
+    margin: 1rem 3rem 0 1rem;
 }
+
 
 .page {
     position: relative;

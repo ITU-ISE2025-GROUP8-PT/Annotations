@@ -21,7 +21,6 @@
                 <MatDialogTitle>Blood vessel point annotation</MatDialogTitle>
                 <MatDialogContent>
                     <p>
-                        <!-- the position is auto focused on click position. Bound to currentAnnotation object --->
                         <MatTextField @bind-Value="_currentPoint!.Text"
                                       Label="Annotation"
                                       FullWidth="true"
@@ -46,7 +45,6 @@
                 <MatDialogTitle>Blood vessel segment annotation</MatDialogTitle>
                 <MatDialogContent>
                     <p>
-                        <!-- the position is auto focused on click position. Bound to currentAnnotation object --->
                         <MatTextField @bind-Value="_currentSegment!.Text"
                                       Label="Annotation"
                                       FullWidth="true"
@@ -55,7 +53,6 @@
                         </MatTextField>
                     </p>
                     <p>
-                        <!-- the position is auto focused on click position. Bound to currentAnnotation object --->
                         <MatTextField @bind-Value="_currentSegment!.Thickness"
                                       Label="Blood vessel thickness"
                                       FullWidth="true"
@@ -70,7 +67,7 @@
                 <MatDialogActions>
                     <div>
                         <MatButton OnClick="SaveSegmentAnnotation" Style="color: white; background: #101e2d">Save</MatButton>
-                        <MatButton OnClick="CancelPointAnnotation" Style="color: white; background: #101e2d">Cancel</MatButton>
+                        <MatButton OnClick="CancelSegmentAnnotation" Style="color: white; background: #101e2d">Cancel</MatButton>
                     </div>
                 </MatDialogActions>
             </MatDialog>
@@ -156,13 +153,14 @@
                                         <line x1="@segment.StartPoint.X" y1="@segment.StartPoint.Y"
                                               x2="@segment.EndPoint.X" y2="@segment.EndPoint.Y"
                                               stroke="white"
-                                              stroke-width="@(segment.Thickness * 2)"
+                                              stroke-width="2"
                                               pointer-events="none"/>
                                     }
 
                                     @foreach (var point in vessel.Points)
                                     {
-                                        <circle cx="@point.X" cy="@point.Y" r="8" fill="white"/>
+                                        <circle cx="@point.X" cy="@point.Y" r="8" 
+                                                fill="white"/>
                                     }
                                 }
 
@@ -181,7 +179,7 @@
                                         <line x1="@segment.StartPoint.X" y1="@segment.StartPoint.Y"
                                               x2="@segment.EndPoint.X" y2="@segment.EndPoint.Y"
                                               stroke="white"
-                                              stroke-width="@(segment.Thickness * 2)"
+                                              stroke-width="2"
                                               pointer-events="none"/>
                                     }
 
@@ -271,7 +269,7 @@
     private VesselSegment? _currentSegment;
     private List<VesselAnnotation?> _savedVessels = new();
     private bool _showTextField = false;
-    private string _currentVesselType = ""; // TODO: needs implementation
+    private string _currentVesselType = "Artery"; // TODO: needs implementation
     private double _currentThickness;
     
     private ElementReference _imageContainer;

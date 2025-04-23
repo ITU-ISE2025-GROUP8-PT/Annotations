@@ -18,7 +18,7 @@
             </MatDialog>
             
             <MatDialog @bind-IsOpen="@_showTextField">
-                <MatDialogTitle>Blood vessel annotation</MatDialogTitle>
+                <MatDialogTitle>Blood vessel point annotation</MatDialogTitle>
                 <MatDialogContent>
                     <p>
                         <!-- the position is auto focused on click position. Bound to currentAnnotation object --->
@@ -36,18 +36,43 @@
                 </MatDialogContent>
                 <MatDialogActions>
                     <div>
-                        <MatButton OnClick="SaveAnnotation" Style="color: white; background: #101e2d">Save</MatButton>
-                        <MatButton OnClick="CancelAnnotation" Style="color: white; background: #101e2d">Cancel</MatButton>
+                        <MatButton OnClick="SavePointAnnotation" Style="color: white; background: #101e2d">Save</MatButton>
+                        <MatButton OnClick="CancelPointAnnotation" Style="color: white; background: #101e2d">Cancel</MatButton>
                     </div>
                 </MatDialogActions>
             </MatDialog>
             
-            <MatDialog @bind-IsOpen="_showThicknessDialog">
-                <MatDialogTitle>Set blood vessel thickness</MatDialogTitle>
+            <MatDialog @bind-IsOpen="_showSegmentDialog">
+                <MatDialogTitle>Blood vessel segment annotation</MatDialogTitle>
                 <MatDialogContent>
-                    <MatSlider @bind-Value="_currentThickness" Min="1" Max="5" Step="0.1"
-                               Label="Thickness" Pin="true" Markers="true" Discrete="true" Style="width: 100%;"></MatSlider>
+                    <p>
+                        <!-- the position is auto focused on click position. Bound to currentAnnotation object --->
+                        <MatTextField @bind-Value="_currentSegment!.Text"
+                                      Label="Annotation"
+                                      FullWidth="true"
+                                      Immediate="true"
+                                      Style="background: white">
+                        </MatTextField>
+                    </p>
+                    <p>
+                        <!-- the position is auto focused on click position. Bound to currentAnnotation object --->
+                        <MatTextField @bind-Value="_currentSegment!.Thickness"
+                                      Label="Blood vessel thickness"
+                                      FullWidth="true"
+                                      Immediate="true"
+                                      Style="background: white">
+                        </MatTextField>
+                    </p>
+                    <p>
+                        <MatSelectItem @bind-Value="@_currentSegment.Type" Label="Type" Items="@_types"></MatSelectItem>
+                    </p>
                 </MatDialogContent>
+                <MatDialogActions>
+                    <div>
+                        <MatButton OnClick="SaveSegmentAnnotation" Style="color: white; background: #101e2d">Save</MatButton>
+                        <MatButton OnClick="CancelPointAnnotation" Style="color: white; background: #101e2d">Cancel</MatButton>
+                    </div>
+                </MatDialogActions>
             </MatDialog>
             
             <div class="mat-layout-grid">
@@ -207,6 +232,7 @@
         Navigation.LocationChanged += OnLocationChanged;
         _currentVesselAnnotation = new VesselAnnotation();
         _currentPoint = new VesselPoint();
+        _currentSegment = new VesselSegment();
     }
 
     private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
@@ -242,17 +268,18 @@
 
     private VesselAnnotation? _currentVesselAnnotation;
     private VesselPoint? _currentPoint;
+    private VesselSegment? _currentSegment;
     private List<VesselAnnotation?> _savedVessels = new();
     private bool _showTextField = false;
     private string _currentVesselType = ""; // TODO: needs implementation
-    private double _currentThickness = 1.0;
+    private double _currentThickness;
     
     private ElementReference _imageContainer;
     
     private bool _showCompletionDialog = false;
     private string _completionMessage = "";
     private string _completionTitle = "";
-    private bool _showThicknessDialog = false;
+    private bool _showSegmentDialog = false;
     
     private VesselPoint? _draggedPoint;
     
@@ -288,7 +315,7 @@
         */
     }
 
-    private void SaveAnnotation()
+    private void SavePointAnnotation()
     {
         // Add the current point to the vessel
         _currentVesselAnnotation.Points.Add(_currentPoint);
@@ -312,7 +339,7 @@
         StateHasChanged();
     }
 
-    private void CancelAnnotation()
+    private void CancelPointAnnotation()
     {
         // Only clear if no points have been saved yet
         if (_currentVesselAnnotation.Points.Count == 0)
@@ -320,6 +347,21 @@
             _currentVesselAnnotation = null;
         }
         _showTextField = false;
+        StateHasChanged();
+    }
+
+    private void SaveSegmentAnnotation()
+    {
+        Console.WriteLine(_currentSegment.Thickness);
+        Console.WriteLine(_currentSegment.Text);
+        Console.WriteLine(_currentSegment.Type);
+        _showSegmentDialog = false;
+        StateHasChanged();
+    }
+    
+    private void CancelSegmentAnnotation()
+    {
+        _showSegmentDialog = false;
         StateHasChanged();
     }
     
@@ -346,7 +388,8 @@
     private void HandleSegmentClick(VesselSegment segment)
     {
         _currentThickness = segment.Thickness;
-        _showThicknessDialog = true;
+        _currentSegment = segment;
+        _showSegmentDialog = true;
         StateHasChanged();
     }
     

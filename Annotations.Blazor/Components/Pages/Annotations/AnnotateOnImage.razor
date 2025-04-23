@@ -8,21 +8,21 @@
 <PageTitle>Annotations</PageTitle>
 <AuthorizeView>
     <Authorized>
-        <MatThemeProvider Theme="@theme">
-            <MatDialog @bind-IsOpen="@showCompletionDialog">
-                <MatDialogTitle>@completionTitle</MatDialogTitle>
-                <MatDialogContent>@completionMessage</MatDialogContent>
+        <MatThemeProvider Theme="@_theme">
+            <MatDialog @bind-IsOpen="@_showCompletionDialog">
+                <MatDialogTitle>@_completionTitle</MatDialogTitle>
+                <MatDialogContent>@_completionMessage</MatDialogContent>
                 <MatDialogActions>
-                    <MatButton OnClick="@(() => showCompletionDialog = false)">OK</MatButton>
+                    <MatButton OnClick="@(() => _showCompletionDialog = false)">OK</MatButton>
                 </MatDialogActions>
             </MatDialog>
             
-            <MatDialog @bind-IsOpen="@showTextField">
+            <MatDialog @bind-IsOpen="@_showTextField">
                 <MatDialogTitle>Blood vessel annotation</MatDialogTitle>
                 <MatDialogContent>
                     <p>
                         <!-- the position is auto focused on click position. Bound to currentAnnotation object --->
-                        <MatTextField @bind-Value="currentPoint.Text"
+                        <MatTextField @bind-Value="_currentPoint!.Text"
                                       Label="Annotation"
                                       FullWidth="true"
                                       Immediate="true"
@@ -31,7 +31,7 @@
                         </MatTextField>
                     </p>
                     <p>
-                        <MatSelectItem @bind-Value="@currentPoint.Type" Label="Type" Items="@Types"></MatSelectItem>
+                        <MatSelectItem @bind-Value="@_currentPoint.Type" Label="Type" Items="@_types"></MatSelectItem>
                     </p>
                 </MatDialogContent>
                 <MatDialogActions>
@@ -42,10 +42,10 @@
                 </MatDialogActions>
             </MatDialog>
             
-            <MatDialog @bind-IsOpen="showThicknessDialog">
+            <MatDialog @bind-IsOpen="_showThicknessDialog">
                 <MatDialogTitle>Set blood vessel thickness</MatDialogTitle>
                 <MatDialogContent>
-                    <MatSlider @bind-Value="currentThickness" Min="1" Max="5" Step="0.1"
+                    <MatSlider @bind-Value="_currentThickness" Min="1" Max="5" Step="0.1"
                                Label="Thickness" Pin="true" Markers="true" Discrete="true" Style="width: 100%;"></MatSlider>
                 </MatDialogContent>
             </MatDialog>
@@ -62,16 +62,16 @@
                             </div>
                         </div>
                         <div style="margin-top: 50px">
-                            <MatCheckbox @bind-Value="@arteriesMarked">Arteries marked</MatCheckbox>
+                            <MatCheckbox @bind-Value="@_arteriesMarked">Arteries marked</MatCheckbox>
                         </div>
                         <div>
-                            <MatCheckbox @bind-Value="@veinsMarked">Veins marked</MatCheckbox>
+                            <MatCheckbox @bind-Value="@_veinsMarked">Veins marked</MatCheckbox>
                         </div>
                         <div>
-                            <MatCheckbox @bind-Value="@flowDirectionSet">Flow direction set</MatCheckbox>
+                            <MatCheckbox @bind-Value="@_flowDirectionSet">Flow direction set</MatCheckbox>
                         </div>
                         <div>
-                            <MatCheckbox @bind-Value="@videoReviewed">Video reviewed</MatCheckbox>
+                            <MatCheckbox @bind-Value="@_videoReviewed">Video reviewed</MatCheckbox>
                         </div>
                     </div>
                     <div class="mat-layout-grid-cell mat-layout-grid-cell-span-10">
@@ -106,7 +106,7 @@
                         </div>
                         
                         <!-- @ref imageContainer captures the DOM element for position calculations, when annotating --->
-                        <div style="position: relative;" @ref="imageContainer">
+                        <div style="position: relative;" @ref="_imageContainer">
                             <img src="img/Skærmbillede%202025-03-27%20kl.%2014.05.56.png" alt="Annotation Image"
                                  @onclick="HandleImageClick"
                                  style="width: 1000px; height: 600px; pointer-events: auto"/>
@@ -116,7 +116,7 @@
                                  @onpointerleave="EndDrag"
                                  style="position: absolute; left: 0; top: 0; width: 100%; height: 100%; pointer-events: none">
                                 
-                                @foreach (var vessel in savedVessels)
+                                @foreach (var vessel in _savedVessels)
                                 {
                                     @foreach (var segment in vessel.Segments)
                                     {
@@ -141,9 +141,9 @@
                                     }
                                 }
 
-                                @if (currentVesselAnnotation != null)
+                                @if (_currentVesselAnnotation != null)
                                 {
-                                    @foreach (var segment in currentVesselAnnotation.Segments)
+                                    @foreach (var segment in _currentVesselAnnotation.Segments)
                                     {
                                         <line x1="@segment.StartPoint.X" y1="@segment.StartPoint.Y"
                                               x2="@segment.EndPoint.X" y2="@segment.EndPoint.Y"
@@ -160,7 +160,7 @@
                                               pointer-events="none"/>
                                     }
 
-                                    @foreach (var point in currentVesselAnnotation.Points)
+                                    @foreach (var point in _currentVesselAnnotation.Points)
                                     {
                                         <circle cx="@point.X" cy="@point.Y" r="10"
                                                 fill="white"
@@ -183,35 +183,35 @@
 
 
 @code {
-    private string? currentUrl;
-    private bool arteriesMarked;
-    private bool veinsMarked;
-    private bool flowDirectionSet;
-    private bool videoReviewed;
-    
-    public string[] Types = new[]
-    {
+    private string? _currentUrl;
+    private bool _arteriesMarked;
+    private bool _veinsMarked;
+    private bool _flowDirectionSet;
+    private bool _videoReviewed;
+
+    private string[] _types =
+    [
         "Artery",
         "Vein",
         "Flow direction"
-    };
+    ];
     
-    MatTheme theme = new MatTheme()
+    MatTheme _theme = new MatTheme()
     {
         Primary = MatThemeColors.Green._800.Value
     };
     
     protected override void OnInitialized()
     {
-        currentUrl = Navigation.Uri;
+        _currentUrl = Navigation.Uri;
         Navigation.LocationChanged += OnLocationChanged;
-        currentVesselAnnotation = new VesselAnnotation();
-        currentPoint = new VesselPoint();
+        _currentVesselAnnotation = new VesselAnnotation();
+        _currentPoint = new VesselPoint();
     }
 
     private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
     {
-        currentUrl = Navigation.Uri;
+        _currentUrl = Navigation.Uri;
         StateHasChanged();
     }
 
@@ -227,34 +227,34 @@
 
     private class VesselSegment
     {
-        public VesselPoint StartPoint { get; set; }
-        public VesselPoint EndPoint { get; set; }
-        public string Type { get; set; }
+        public VesselPoint? StartPoint { get; set; }
+        public VesselPoint? EndPoint { get; set; }
+        public string? Type { get; set; }
         public double Thickness { get; set; } = 1.0;
         public string Text { get; set; } = "";
     }
     
     private class VesselAnnotation
     {
-        public List<VesselPoint> Points { get; } = new();
+        public List<VesselPoint?> Points { get; } = new();
         public List<VesselSegment> Segments { get; } = new();
     }
 
-    private VesselAnnotation currentVesselAnnotation;
-    private VesselPoint currentPoint;
-    private List<VesselAnnotation> savedVessels = new();
-    private bool showTextField = false;
-    private string currentVesselType = ""; // TODO: needs implementation
-    private double currentThickness = 1.0;
+    private VesselAnnotation? _currentVesselAnnotation;
+    private VesselPoint? _currentPoint;
+    private List<VesselAnnotation?> _savedVessels = new();
+    private bool _showTextField = false;
+    private string _currentVesselType = ""; // TODO: needs implementation
+    private double _currentThickness = 1.0;
     
-    private ElementReference imageContainer;
+    private ElementReference _imageContainer;
     
-    private bool showCompletionDialog = false;
-    private string completionMessage = "";
-    private string completionTitle = "";
-    private bool showThicknessDialog = false;
+    private bool _showCompletionDialog = false;
+    private string _completionMessage = "";
+    private string _completionTitle = "";
+    private bool _showThicknessDialog = false;
     
-    private VesselPoint? draggedPoint;
+    private VesselPoint? _draggedPoint;
     
     /*private VesselAnnotation _currentVesselAnnotation = new();
     private List<VesselAnnotation> savedAnnotations = new(); */
@@ -264,19 +264,19 @@
         // Reset for new annotation currentVesselAnnotation = new VesselAnnotation();
         
         // Get click position relative to container
-        var rect = await JSRuntime.InvokeAsync<BoundingClientRect>(
+        var rect = await JsRuntime.InvokeAsync<BoundingClientRect>(
             "getBoundingClientRect", 
-            imageContainer
+            _imageContainer
         );
         
-        currentPoint = new VesselPoint
+        _currentPoint = new VesselPoint
         {
             X = (int)(e.ClientX - rect.Left),
             Y = (int)(e.ClientY - rect.Top),
-            Type = currentVesselType
+            Type = _currentVesselType
         };
         
-        showTextField = true;
+        _showTextField = true;
         StateHasChanged();
         
         /*
@@ -291,93 +291,93 @@
     private void SaveAnnotation()
     {
         // Add the current point to the vessel
-        currentVesselAnnotation.Points.Add(currentPoint);
+        _currentVesselAnnotation.Points.Add(_currentPoint);
     
         // If we have at least 2 points, create segments
-        if (currentVesselAnnotation.Points.Count > 1)
+        if (_currentVesselAnnotation.Points.Count > 1)
         {
-            var lastPoint = currentVesselAnnotation.Points[^2]; // Second-to-last point
+            var lastPoint = _currentVesselAnnotation.Points[^2]; // Second-to-last point
             var segment = new VesselSegment
             {
                 StartPoint = lastPoint,
-                EndPoint = currentPoint,
-                Type = currentVesselType,
-                Thickness = currentThickness,
-                Text = currentPoint.Text
+                EndPoint = _currentPoint,
+                Type = _currentVesselType,
+                Thickness = _currentThickness,
+                Text = _currentPoint.Text
             };
-            currentVesselAnnotation.Segments.Add(segment);
+            _currentVesselAnnotation.Segments.Add(segment);
         }
         
-        showTextField = false;
+        _showTextField = false;
         StateHasChanged();
     }
 
     private void CancelAnnotation()
     {
         // Only clear if no points have been saved yet
-        if (currentVesselAnnotation.Points.Count == 0)
+        if (_currentVesselAnnotation.Points.Count == 0)
         {
-            currentVesselAnnotation = null;
+            _currentVesselAnnotation = null;
         }
-        showTextField = false;
+        _showTextField = false;
         StateHasChanged();
     }
     
     private void CompleteCurrentVessel()
     {
-        if (currentVesselAnnotation.Points.Count >= 2)
+        if (_currentVesselAnnotation.Points.Count >= 2)
         {
-            savedVessels.Add(currentVesselAnnotation);
-            currentVesselAnnotation = new VesselAnnotation();
-            completionTitle = "Success";
-            completionMessage = "Your blood vessel tree has been successfully completed";
-            showCompletionDialog = true;
+            _savedVessels.Add(_currentVesselAnnotation);
+            _currentVesselAnnotation = new VesselAnnotation();
+            _completionTitle = "Success";
+            _completionMessage = "Your blood vessel tree has been successfully completed";
+            _showCompletionDialog = true;
             StateHasChanged();
         }
         else
         {
-            completionTitle = "Fail";
-            completionMessage = "Your blood vessel tree needs at least two annotations";
-            showCompletionDialog = true;
+            _completionTitle = "Fail";
+            _completionMessage = "Your blood vessel tree needs at least two annotations";
+            _showCompletionDialog = true;
             StateHasChanged();
         }
     }
 
     private void HandleSegmentClick(VesselSegment segment)
     {
-        currentThickness = segment.Thickness;
-        showThicknessDialog = true;
+        _currentThickness = segment.Thickness;
+        _showThicknessDialog = true;
         StateHasChanged();
     }
     
     private void StartDrag(PointerEventArgs e, VesselPoint point)
     {
-        draggedPoint = point;
+        _draggedPoint = point;
     }
 
     private async Task HandleDrag(PointerEventArgs e)
     {
-        if (draggedPoint == null) return;
+        if (_draggedPoint == null) return;
     
-        var rect = await JSRuntime.InvokeAsync<BoundingClientRect>(
-            "getBoundingClientRect", imageContainer);
+        var rect = await JsRuntime.InvokeAsync<BoundingClientRect>(
+            "getBoundingClientRect", _imageContainer);
     
-        draggedPoint.X = (int)(e.ClientX - rect.Left);
-        draggedPoint.Y = (int)(e.ClientY - rect.Top);
+        _draggedPoint.X = (int)(e.ClientX - rect.Left);
+        _draggedPoint.Y = (int)(e.ClientY - rect.Top);
     
         // Update connected segments
-        UpdateConnectedSegments(draggedPoint);
+        UpdateConnectedSegments(_draggedPoint);
         StateHasChanged();
     }
 
     private void EndDrag()
     {
-        draggedPoint = null;
+        _draggedPoint = null;
     }
 
     private void UpdateConnectedSegments(VesselPoint point)
     {
-        foreach (var segment in currentVesselAnnotation.Segments)
+        foreach (var segment in _currentVesselAnnotation.Segments)
         {
             if (segment.StartPoint == point || segment.EndPoint == point)
             {
@@ -393,5 +393,5 @@
         public double Top { get; set; }
     }
 
-    [Inject] private IJSRuntime JSRuntime { get; set; } = default!;
+    [Inject] private IJSRuntime JsRuntime { get; set; } = default!;
 }

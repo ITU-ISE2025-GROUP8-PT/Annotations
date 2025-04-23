@@ -5,7 +5,7 @@ using Annotations.Core.Entities;
 
 namespace Annotations.API.VesselTrees;
 
-public static class VesselTreesEndpoint
+public static class VesselTreeEndpoints
 {
     public static void MapEndpoints(RouteGroupBuilder groupBuilder)
     {
@@ -14,10 +14,10 @@ public static class VesselTreesEndpoint
         groupBuilder.MapGet("/Download/{vesselTreeId}", GetVesselTreeHandler);
         
     }
+    
     static async Task<VesselTreeBuilderResult> NewVesselTreeHandler(
-        ICollection<VesselSegment> Segments,
+        ICollection<VesselSegment> segments,
         int imageId,
-        long?           addToSeries, // TODO: Allow upload into existing image series directly.
         ClaimsPrincipal claimsPrincipal,
         HttpContext     httpContext,
         [FromServices] IVesselTreesBuilder builder,
@@ -28,8 +28,7 @@ public static class VesselTreesEndpoint
 
         builder.ImageId = imageId;
         builder.CreatedBy = user;
-        builder.Segments = Segments;
-        
+        builder.Segments = segments;
 
         var uploaderResult = await builder.BuildAsync();
 

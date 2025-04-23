@@ -21,7 +21,7 @@
                 <MatDialogTitle>Blood vessel point annotation</MatDialogTitle>
                 <MatDialogContent>
                     <p>
-                        <MatTextField @bind-Value="_currentPoint!.Text"
+                        <MatTextField @bind-Value="_currentPoint.Text"
                                       Label="Annotation"
                                       FullWidth="true"
                                       Immediate="true"
@@ -45,7 +45,7 @@
                 <MatDialogTitle>Blood vessel segment annotation</MatDialogTitle>
                 <MatDialogContent>
                     <p>
-                        <MatTextField @bind-Value="_currentSegment!.Text"
+                        <MatTextField @bind-Value="_currentSegment.Text"
                                       Label="Annotation"
                                       FullWidth="true"
                                       Immediate="true"
@@ -53,7 +53,7 @@
                         </MatTextField>
                     </p>
                     <p>
-                        <MatTextField @bind-Value="_currentSegment!.Thickness"
+                        <MatTextField @bind-Value="_currentSegment.Thickness"
                                       Label="Blood vessel thickness"
                                       FullWidth="true"
                                       Immediate="true"
@@ -142,8 +142,8 @@
                                 {
                                     @foreach (var segment in vessel.Segments)
                                     {
-                                        <line x1="@segment.StartPoint.X" y1="@segment.StartPoint.Y"
-                                              x2="@segment.EndPoint.X" y2="@segment.EndPoint.Y"
+                                        <line x1="@segment.StartPoint!.X" y1="@segment.StartPoint.Y"
+                                              x2="@segment.EndPoint!.X" y2="@segment.EndPoint.Y"
                                               stroke="transparent"
                                               stroke-width="20"
                                               @onclick="@(() => HandleSegmentClick(segment))"
@@ -159,7 +159,7 @@
 
                                     @foreach (var point in vessel.Points)
                                     {
-                                        <circle cx="@point.X" cy="@point.Y" r="8" 
+                                        <circle cx="@point!.X" cy="@point.Y" r="8" 
                                                 fill="white"/>
                                     }
                                 }
@@ -168,8 +168,8 @@
                                 {
                                     @foreach (var segment in _currentVesselAnnotation.Segments)
                                     {
-                                        <line x1="@segment.StartPoint.X" y1="@segment.StartPoint.Y"
-                                              x2="@segment.EndPoint.X" y2="@segment.EndPoint.Y"
+                                        <line x1="@segment.StartPoint!.X" y1="@segment.StartPoint.Y"
+                                              x2="@segment.EndPoint!.X" y2="@segment.EndPoint.Y"
                                               stroke="transparent"
                                               stroke-width="20"
                                               @onclick="@(() => HandleSegmentClick(segment))"
@@ -185,7 +185,7 @@
 
                                     @foreach (var point in _currentVesselAnnotation.Points)
                                     {
-                                        <circle cx="@point.X" cy="@point.Y" r="10"
+                                        <circle cx="@point!.X" cy="@point.Y" r="10"
                                                 fill="white"
                                                 stroke="white" stroke-width="2"
                                                 @onpointerdown="@(e => StartDrag(e, point))"
@@ -246,14 +246,14 @@
         public int X { get; set; }
         public int Y { get; set; }
         public string Text { get; set; } = "";
-        public string Type { get; set; }
+        public string Type { get; set; } = "Artery";
     }
 
     private class VesselSegment
     {
         public VesselPoint? StartPoint { get; set; }
         public VesselPoint? EndPoint { get; set; }
-        public string? Type { get; set; }
+        public string Type { get; set; } = "Artery";
         public double Thickness { get; set; } = 1.0;
         public string Text { get; set; } = "";
     }
@@ -264,10 +264,10 @@
         public List<VesselSegment> Segments { get; } = new();
     }
 
-    private VesselAnnotation? _currentVesselAnnotation;
-    private VesselPoint? _currentPoint;
-    private VesselSegment? _currentSegment;
-    private List<VesselAnnotation?> _savedVessels = new();
+    private VesselAnnotation? _currentVesselAnnotation = new VesselAnnotation();
+    private VesselPoint _currentPoint = new VesselPoint();
+    private VesselSegment _currentSegment = new VesselSegment();
+    private List<VesselAnnotation> _savedVessels = new List<VesselAnnotation>();
     private bool _showTextField = false;
     private string _currentVesselType = "Artery"; // TODO: needs implementation
     private double _currentThickness;
@@ -280,14 +280,9 @@
     private bool _showSegmentDialog = false;
     
     private VesselPoint? _draggedPoint;
-    
-    /*private VesselAnnotation _currentVesselAnnotation = new();
-    private List<VesselAnnotation> savedAnnotations = new(); */
 
     private async Task HandleImageClick(MouseEventArgs e)
     {
-        // Reset for new annotation currentVesselAnnotation = new VesselAnnotation();
-        
         // Get click position relative to container
         var rect = await JsRuntime.InvokeAsync<BoundingClientRect>(
             "getBoundingClientRect", 
@@ -303,23 +298,15 @@
         
         _showTextField = true;
         StateHasChanged();
-        
-        /*
-        // gets X and Y coordinates of click
-        currentVesselAnnotation.X = (int)(e.ClientX - rect.Left);
-        currentVesselAnnotation.Y = (int)(e.ClientY - rect.Top);
-        
-        StateHasChanged();
-        */
     }
 
     private void SavePointAnnotation()
     {
         // Add the current point to the vessel
-        _currentVesselAnnotation.Points.Add(_currentPoint);
+        _currentVesselAnnotation?.Points.Add(_currentPoint);
     
         // If we have at least 2 points, create segments
-        if (_currentVesselAnnotation.Points.Count > 1)
+        if (_currentVesselAnnotation!.Points.Count > 1)
         {
             var lastPoint = _currentVesselAnnotation.Points[^2]; // Second-to-last point
             var segment = new VesselSegment
@@ -340,7 +327,7 @@
     private void CancelPointAnnotation()
     {
         // Only clear if no points have been saved yet
-        if (_currentVesselAnnotation.Points.Count == 0)
+        if (_currentVesselAnnotation!.Points.Count == 0)
         {
             _currentVesselAnnotation = null;
         }
@@ -365,7 +352,7 @@
     
     private void CompleteCurrentVessel()
     {
-        if (_currentVesselAnnotation.Points.Count >= 2)
+        if (_currentVesselAnnotation!.Points.Count >= 2)
         {
             _savedVessels.Add(_currentVesselAnnotation);
             _currentVesselAnnotation = new VesselAnnotation();
@@ -406,25 +393,12 @@
         _draggedPoint.X = (int)(e.ClientX - rect.Left);
         _draggedPoint.Y = (int)(e.ClientY - rect.Top);
     
-        // Update connected segments
-        UpdateConnectedSegments(_draggedPoint);
         StateHasChanged();
     }
 
     private void EndDrag()
     {
         _draggedPoint = null;
-    }
-
-    private void UpdateConnectedSegments(VesselPoint point)
-    {
-        foreach (var segment in _currentVesselAnnotation.Segments)
-        {
-            if (segment.StartPoint == point || segment.EndPoint == point)
-            {
-                // Force UI update for this segment
-            }
-        }
     }
 
     // JS interop struct

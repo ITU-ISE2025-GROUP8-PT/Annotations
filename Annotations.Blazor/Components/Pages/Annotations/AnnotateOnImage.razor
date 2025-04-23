@@ -16,6 +16,7 @@
                     <MatButton OnClick="@(() => showCompletionDialog = false)">OK</MatButton>
                 </MatDialogActions>
             </MatDialog>
+            
             <MatDialog @bind-IsOpen="@showTextField">
                 <MatDialogTitle>Blood vessel annotation</MatDialogTitle>
                 <MatDialogContent>
@@ -40,6 +41,7 @@
                     </div>
                 </MatDialogActions>
             </MatDialog>
+            
             <MatDialog @bind-IsOpen="showThicknessDialog">
                 <MatDialogTitle>Set blood vessel thickness</MatDialogTitle>
                 <MatDialogContent>
@@ -47,6 +49,7 @@
                                Label="Thickness" Pin="true" Markers="true" Discrete="true" Style="width: 100%;"></MatSlider>
                 </MatDialogContent>
             </MatDialog>
+            
             <div class="mat-layout-grid">
                 <div class="mat-layout-grid-inner">
                     <div class="mat-layout-grid-cell mat-layout-grid-cell-span-2">
@@ -101,13 +104,17 @@
                                 </div>
                             </div>
                         </div>
+                        
                         <!-- @ref imageContainer captures the DOM element for position calculations, when annotating --->
                         <div style="position: relative;" @ref="imageContainer">
                             <img src="img/Skærmbillede%202025-03-27%20kl.%2014.05.56.png" alt="Annotation Image"
                                  @onclick="HandleImageClick"
                                  style="width: 1000px; height: 600px; pointer-events: auto"/>
-                            
-                            <svg style="position: absolute; left: 0; top: 0; width: 100%; height: 100%; pointer-events: none">
+
+                            <svg @onpointermove="HandleDrag"
+                                 @onpointerup="EndDrag"
+                                 @onpointerleave="EndDrag"
+                                 style="position: absolute; left: 0; top: 0; width: 100%; height: 100%; pointer-events: none">
                                 
                                 @foreach (var vessel in savedVessels)
                                 {
@@ -155,7 +162,11 @@
 
                                     @foreach (var point in currentVesselAnnotation.Points)
                                     {
-                                        <circle cx="@point.X" cy="@point.Y" r="8" fill="white"/>
+                                        <circle cx="@point.X" cy="@point.Y" r="10"
+                                                fill="white"
+                                                stroke="white" stroke-width="2"
+                                                @onpointerdown="@(e => StartDrag(e, point))"
+                                                style="cursor: move; pointer-events: all" />
                                     }
                                 }
                             </svg>
@@ -243,6 +254,8 @@
     private string completionTitle = "";
     private bool showThicknessDialog = false;
     
+    private VesselPoint? draggedPoint;
+    
     /*private VesselAnnotation _currentVesselAnnotation = new();
     private List<VesselAnnotation> savedAnnotations = new(); */
 
@@ -273,12 +286,6 @@
         
         StateHasChanged();
         */
-        
-        // focuses the text field on the location of click
-        await JSRuntime.InvokeVoidAsync(
-            "eval", 
-            "document.getElementById('annotationTextField').focus()"
-        );
     }
 
     private void SaveAnnotation()
@@ -341,6 +348,42 @@
         currentThickness = segment.Thickness;
         showThicknessDialog = true;
         StateHasChanged();
+    }
+    
+    private void StartDrag(PointerEventArgs e, VesselPoint point)
+    {
+        draggedPoint = point;
+    }
+
+    private async Task HandleDrag(PointerEventArgs e)
+    {
+        if (draggedPoint == null) return;
+    
+        var rect = await JSRuntime.InvokeAsync<BoundingClientRect>(
+            "getBoundingClientRect", imageContainer);
+    
+        draggedPoint.X = (int)(e.ClientX - rect.Left);
+        draggedPoint.Y = (int)(e.ClientY - rect.Top);
+    
+        // Update connected segments
+        UpdateConnectedSegments(draggedPoint);
+        StateHasChanged();
+    }
+
+    private void EndDrag()
+    {
+        draggedPoint = null;
+    }
+
+    private void UpdateConnectedSegments(VesselPoint point)
+    {
+        foreach (var segment in currentVesselAnnotation.Segments)
+        {
+            if (segment.StartPoint == point || segment.EndPoint == point)
+            {
+                // Force UI update for this segment
+            }
+        }
     }
 
     // JS interop struct

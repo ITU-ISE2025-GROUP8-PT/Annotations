@@ -13,7 +13,7 @@ public class PersonalHomeTests : TestContext
         authContext.SetAuthorized("", AuthorizationState.Unauthorized); // fakes unauthorized state for a fake user
         
         // Act
-        var homePage = RenderComponent<Home>();
+        var homePage = RenderComponent<Home.Home>();
         
         // Assert
         homePage.Find("h1").MarkupMatches("<h1>Annotations - PerfusionTech</h1>");
@@ -29,7 +29,7 @@ public class PersonalHomeTests : TestContext
         authContext.SetAuthorized("FAKE TEST USER"); // fakes authorized state for a fake user
         
         // Act
-        var homePage = RenderComponent<Home>();
+        var homePage = RenderComponent<Home.Home>();
         
         // Assert
         homePage.Find("h2").MarkupMatches("<h2> Welcome user</h2>");

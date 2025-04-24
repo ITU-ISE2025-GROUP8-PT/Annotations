@@ -133,7 +133,7 @@
                         
                         <!-- @ref imageContainer captures the DOM element for position calculations, when annotating --->
                         <div style="position: relative;" @ref="_imageContainer">
-                            <img src="img/Skærmbillede%202025-03-27%20kl.%2014.05.56.png" alt="Annotation Image"
+                            <img src="@_imageData" alt="Annotation Image"
                                  @onclick="HandleImageClick"
                                  style="width: 1000px; height: 600px; pointer-events: auto"/>
 
@@ -250,15 +250,13 @@
     /// </summary>
     private async Task SetImageAsync()
     {
-        var downloadStream = await ImageDownloader.DownloadImageAsync(_imageId);
-        if (downloadStream == null)
+        var downloadResult = await ImageDownloader.DownloadImageAsync(_imageId);
+        if (downloadResult == null)
         {
             return;
         }
 
-        using var ms = new MemoryStream();
-        downloadStream.Stream.CopyTo(ms);
-        var base64 = System.Convert.ToBase64String(ms.ToArray());
+        var base64 = System.Convert.ToBase64String(downloadResult.Data);
 
         _imageData = $"data:image;base64,{base64}";
     }

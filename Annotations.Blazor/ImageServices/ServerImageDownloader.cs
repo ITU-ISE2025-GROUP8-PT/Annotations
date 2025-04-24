@@ -16,7 +16,7 @@ public class ServerImageDownloader : IImageDownloader
         _httpContextAccessor = httpContextAccessor;
     }
     
-    public async Task<DownloadStream> DownloadImageAsync(string imageId)
+    public async Task<DownloadResult> DownloadImageAsync(string imageId)
     {
         var httpContext = _httpContextAccessor.HttpContext ??
                           throw new InvalidOperationException("No HttpContext available from the IHttpContextAccessor!");
@@ -30,10 +30,10 @@ public class ServerImageDownloader : IImageDownloader
         using var response = await _httpClient.SendAsync(requestMessage);
         
         response.EnsureSuccessStatusCode();
-        
-        return new DownloadStream
+
+        return new DownloadResult
         {
-            Stream = await response.Content.ReadAsStreamAsync(),
+            Data = await response.Content.ReadAsByteArrayAsync(),
             ContentType = response.Content.Headers.ContentType!.ToString()
         };
     }

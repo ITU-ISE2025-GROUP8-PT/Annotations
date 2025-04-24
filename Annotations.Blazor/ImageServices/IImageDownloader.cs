@@ -1,12 +1,12 @@
 ﻿namespace Annotations.Blazor.ImageServices;
 
-public sealed class DownloadStream
+public sealed class DownloadResult
 {
-    public required Stream Stream { get; set; }
+    public required byte[] Data { get; set; }
     public required string ContentType { get; set; }
 }
 
 public interface IImageDownloader
 {
-    Task<DownloadStream> DownloadImageAsync(string imageId);
+    Task<DownloadResult> DownloadImageAsync(string imageId);
 }

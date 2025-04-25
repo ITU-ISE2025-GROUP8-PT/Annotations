@@ -64,41 +64,45 @@ else if (!_existenseOfImages) //This will show on screen in a milisecond before 
         using var response = await client.SendAsync(requestMessage);//sending the response
         if (!response.IsSuccessStatusCode)
         {
-            throw new HttpRequestException($"failed: {response.StatusCode}");
+            _existenseOfImages = false;
         }
-        try
+        else
         {
-            //string array of JSON files of the images as strings
-            string[] answer = await response.Content.ReadFromJsonAsync<string[]>() ?? throw new NoNullAllowedException();//string array of JSON files of the images as strings
-            
-            //initialize array for storing images to be shown on the webpage
-            images = new ImageModelWeb[answer.Length];
-            
-            if (answer.Length == 0)
-            {
-                _existenseOfImages = false;
-            }
-            
-            for (int i = 0; i < answer.Length; i++)
-            {
-                //JSON file becomes ImageModel object
-                var imageObject = System.Text.Json.JsonSerializer.Deserialize<ImageModel>(answer[i]);//JSON file becomes imageModel object
-                ArgumentNullException.ThrowIfNull(imageObject);
-                await Task.Yield();
-                //Byte array data for the image
 
-                var imageData = imageObject.ImageData;
+            try
+            {
+                //string array of JSON files of the images as strings
+                string[] answer = await response.Content.ReadFromJsonAsync<string[]>() ?? throw new NoNullAllowedException(); //string array of JSON files of the images as strings
 
-                //Adding Base64 data and alt text as local ImageModel type to array
-                images[i] = new ImageModelWeb (System.Convert.ToBase64String(imageData), imageObject.Description);
+                //initialize array for storing images to be shown on the webpage
+                images = new ImageModelWeb[answer.Length];
+
+                if (answer.Length == 0)
+                {
+                    _existenseOfImages = false;
+                }
+
+                for (int i = 0; i < answer.Length; i++)
+                {
+                    //JSON file becomes ImageModel object
+                    var imageObject = System.Text.Json.JsonSerializer.Deserialize<ImageModel>(answer[i]); //JSON file becomes imageModel object
+                    ArgumentNullException.ThrowIfNull(imageObject);
+                    await Task.Yield();
+                    //Byte array data for the image
+
+                    var imageData = imageObject.ImageData;
+
+                    //Adding Base64 data and alt text as local ImageModel type to array
+                    images[i] = new ImageModelWeb(System.Convert.ToBase64String(imageData), imageObject.Description);
+                }
             }
-        }
-        catch //if nothing is retrieved - prints out error
-        {
-            Console.WriteLine("Status code: " + response.StatusCode);
-            images = new ImageModelWeb[1];
-            images[0] = new ImageModelWeb("", response.StatusCode.ToString());
-            _errorExist = true;
+            catch //if nothing is retrieved - prints out error
+            {
+                Console.WriteLine("Status code: " + response.StatusCode);
+                images = new ImageModelWeb[1];
+                images[0] = new ImageModelWeb("", response.StatusCode.ToString());
+                _errorExist = true;
+            }
         }
     }
 

@@ -9,9 +9,11 @@
 <h1>Annotations - PerfusionTech</h1>
 
 
-
+<p>
 This is a template Blazor Application, including some functionality intended for you to get familiar with the Blazor framework. 
 Play around with it as needed!
+</p>
+
 
 <AuthorizeView>
     <Authorized>
@@ -38,16 +40,16 @@ Play around with it as needed!
     protected override void OnInitialized()
     {
         currentUrl = Navigation.Uri;
-        Navigation.LocationChanged += OnLocationChanged;
+        Navigation.LocationChanged += HandleLocationChanged;
     }
 
-    private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
+    private void HandleLocationChanged(object? sender, LocationChangedEventArgs e)
     {
         currentUrl = Navigation.Uri;
         StateHasChanged();
     }
 
-    public void Dispose() => Navigation.LocationChanged -= OnLocationChanged;
+    public void Dispose() => Navigation.LocationChanged -= HandleLocationChanged;
 }
 
             

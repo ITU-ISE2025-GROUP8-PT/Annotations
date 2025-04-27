@@ -3,6 +3,7 @@
     opacity: 90%;
     height: 4rem;
     display: flex;
+    align-items: center;
     justify-content: space-between;
     position: absolute;
     left: 0rem;
@@ -12,8 +13,7 @@
 
 .logo {
     height: 2rem;
-    margin: 1rem 3rem 0 1rem;
-    max-width: 15rem;
+    padding-left: 1rem;
 }
 
 /* CSS on drop-down menu is mostly adapted from https://www.w3schools.com/howto/howto_css_dropdown.asp */
@@ -26,9 +26,9 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    max-width: 20rem;
+    max-width: 15rem;
     left: 40%;
-    /*width: 4rem;*/
+    z-index: 100;
 }
 
 /* Dropdown Button */

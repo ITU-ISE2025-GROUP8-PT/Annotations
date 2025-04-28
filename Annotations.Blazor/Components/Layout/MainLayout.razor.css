@@ -70,6 +70,7 @@
   
 /* Change the background color of the dropdown button when the dropdown content is shown */
 .dropdown:hover .dropbtn {
+    min-width: 176px; /* this is to reflect min width of dropdown-content as well as the shadow (16 px)*/
     background-color: #d5d5d5;
     color: rgb(40, 40, 40);
 }

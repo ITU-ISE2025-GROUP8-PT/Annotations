@@ -3,8 +3,8 @@
 @inject IHttpClientFactory ClientFactory
 @inject IHttpContextAccessor httpContextAccessor
 @inject NavigationManager NavigationManager
-@rendermode InteractiveServer
 @attribute [Authorize(Roles = "Administrator, Manager")]
+@rendermode InteractiveServer
 
 <div style=" display: flex; flex-direction:row;">
     <span style="margin-left:13%; margin-top:0.0001%; padding-bottom:2%; font-weight: bold; width: 72%; font-size: 215%">Manage datasets</span>

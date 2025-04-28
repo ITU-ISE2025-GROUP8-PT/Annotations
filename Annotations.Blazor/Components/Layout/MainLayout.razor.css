@@ -81,6 +81,7 @@
 .page {
     position: fixed;
     display: flex;
+    min-width: 100%;
     flex-direction: column;
     align-items: center;
     top: 4rem;

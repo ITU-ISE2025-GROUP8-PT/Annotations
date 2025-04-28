@@ -3,6 +3,7 @@
 @inject IHttpClientFactory ClientFactory
 @inject IHttpContextAccessor httpContextAccessor
 @inject NavigationManager NavigationManager
+@rendermode InteractiveServer
 @attribute [Authorize(Roles = "Administrator, Manager")]
 
 <div style=" display: flex; flex-direction:row;">

@@ -1,6 +1,7 @@
 @page "/images/{imageId}"
 @inject IHttpClientFactory ClientFactory
 @inject IHttpContextAccessor httpContextAccessor
+@inject IImagesServices imageService
 @attribute [Authorize(Roles = "Administrator, Manager, AnnotationsUser")]
 
 @if (error)
@@ -27,17 +28,9 @@ else if (!imgExist)
 
     protected override async Task OnInitializedAsync()
     {
-        var httpContext = httpContextAccessor.HttpContext ?? throw new InvalidOperationException("No HttpContext available");//make connection
 
-        var accessToken = await httpContext.GetTokenAsync("access_token") ?? throw new InvalidOperationException("No access_token was saved");//authorization
+        var response = await imageService.createResponse($"/images/{imageId}");
 
-        var client = ClientFactory.CreateClient();
-        client.BaseAddress = new("https://localhost:7250");//connect to Web API
-
-        using var requestMessage = new HttpRequestMessage(HttpMethod.Get, $"/images/{imageId}");//access endpoint
-        requestMessage.Headers.Authorization = new("Bearer", accessToken);//bearer token for authorization
-
-        using var response = await client.SendAsync(requestMessage);//sending the response
         try
         {
             var jsonString = await response.Content.ReadAsStringAsync();//string of JSON file of the image as a string

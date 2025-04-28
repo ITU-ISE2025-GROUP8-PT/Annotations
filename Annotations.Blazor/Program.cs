@@ -36,6 +36,7 @@ builder.Services.AddRazorComponents()
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddHttpClient();
+builder.Services.AddScoped<IImagesServices, ImagesServices>();
 
 var app = builder.Build();
 

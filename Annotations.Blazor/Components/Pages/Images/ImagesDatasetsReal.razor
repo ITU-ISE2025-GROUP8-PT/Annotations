@@ -2,6 +2,7 @@
 @rendermode InteractiveServer
 @inject IHttpClientFactory ClientFactory
 @inject IHttpContextAccessor httpContextAccessor
+@inject IImagesServices imagesServices
 @attribute [Authorize(Roles = "Administrator, Manager")]
 
 <div style=" display: flex; flex-direction:row;">
@@ -59,14 +60,7 @@
     {
         try
         {
-            var httpContext = httpContextAccessor.HttpContext ?? throw new InvalidOperationException("No HttpContext available");//make connection
-            var accessToken = await httpContext.GetTokenAsync("access_token") ?? throw new InvalidOperationException("No access_token was saved");//authorization
-            var client = ClientFactory.CreateClient();
-            client.BaseAddress = new("https://localhost:7250");//connect to Web API
-            using var requestMessage = new HttpRequestMessage(HttpMethod.Get, $"/images/datasets/");//access endpoint
-            requestMessage.Headers.Authorization = new("Bearer", accessToken);//bearer token for authorization
-            
-            using var response = await client.SendAsync(requestMessage);//sending the response
+            var response = await imagesServices.createResponse($"/images/datasets/");//sending the response
             if (response.IsSuccessStatusCode)
             {
                 var datasetmodels = await response.Content.ReadFromJsonAsync<DatasetModel[]>();//int array of all the ids of all the existing datasets

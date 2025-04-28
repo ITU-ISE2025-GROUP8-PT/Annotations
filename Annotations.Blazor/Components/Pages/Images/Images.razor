@@ -29,7 +29,7 @@ else if (!imgExist)
     protected override async Task OnInitializedAsync()
     {
 
-        var response = await imageService.createResponse($"/images/{imageId}");
+        var response = await imageService.createGetResponse($"/images/{imageId}");
 
         try
         {

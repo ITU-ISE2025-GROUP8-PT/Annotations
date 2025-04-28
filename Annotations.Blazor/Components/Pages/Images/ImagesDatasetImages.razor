@@ -42,7 +42,7 @@ else if (!_existenseOfImages) //This will show on screen in a milisecond before 
 
     protected override async Task OnInitializedAsync()
     {
-        var response = await imagesServices.createResponse( $"/images/datasets/{dataset}");
+        var response = await imagesServices.createGetResponse( $"/images/datasets/{dataset}");
         
         if (!response.IsSuccessStatusCode)
         {

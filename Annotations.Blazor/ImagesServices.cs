@@ -14,7 +14,7 @@ public class ImagesServices : IImagesServices
         _clientFactory = clientFactory;
     }
 
-    public async Task<HttpResponseMessage> createResponse(string requestURI)
+    public async Task<HttpResponseMessage> createGetResponse(string requestURI)
     {
         var httpContext = _httpContextAccessor.HttpContext ??
                           throw new InvalidOperationException("No HttpContext available"); //make connection

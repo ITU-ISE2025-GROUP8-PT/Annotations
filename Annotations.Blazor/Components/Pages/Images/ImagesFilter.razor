@@ -43,7 +43,7 @@ else
     protected override async Task OnInitializedAsync()
     {
         
-        var response = await imagesServices.createResponse($"/images/filter/{category}");//sending the response
+        var response = await imagesServices.createGetResponse($"/images/filter/{category}");//sending the response
         try
         {
             string[] answer = await response.Content.ReadFromJsonAsync<string[]>() ?? throw new NoNullAllowedException(); //string array of JSON files of the images as strings

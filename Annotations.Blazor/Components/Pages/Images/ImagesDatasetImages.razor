@@ -1,7 +1,5 @@
 @rendermode InteractiveServer
 @page "/images/datasets/{dataset}/"
-@using System.Data
-@using global::Annotations.Core.Models
 @inject IHttpClientFactory ClientFactory
 @inject IHttpContextAccessor httpContextAccessor
 @attribute [Authorize(Roles = "Administrator, Manager")]

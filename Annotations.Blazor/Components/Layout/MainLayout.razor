@@ -3,13 +3,31 @@
 <div class="header">
     <div>
         <a href="/">
-            <img id="logo" src="/img/perfusiontech_logo.png" alt="Perfusiontech home" />
+            <img class="logo" src="/img/perfusiontech_logo.png" alt="Perfusiontech home" />
         </a>
     </div>
     <div class="top-row-element">
         <AvatarMenu />
     </div>
+
 </div>
+
+
+<AuthorizeView>
+    <Authorized>
+    <!-- Drop down menu code adapted from  https://www.w3schools.com/howto/howto_css_dropdown.asp -->
+        <div class="dropdown">
+            <button class="dropbtn">Menu</button>
+            <div class="dropdown-content">
+                <a href="#">Home</a>
+                <a href="/images/datasets">Datasets overview</a>
+                <a href="/images/annotations">Annotate on images</a>
+            </div>
+        </div>
+    </Authorized>
+</AuthorizeView>
+
+
 
 <div class="page">
     <div class="main">
@@ -17,6 +35,7 @@
             @Body
         </article>
     </div>
+    
 </div>
 
 <div id="blazor-error-ui">

@@ -1,8 +1,11 @@
 @rendermode InteractiveServer
 @page "/images/annotations"
+@using Home
 @implements IDisposable
 @inject NavigationManager Navigation
 @attribute [Authorize(Roles = "Administrator, Manager, AnnotationsUser")]
+
+
 
 <PageTitle>Annotations</PageTitle>
 <AuthorizeView>

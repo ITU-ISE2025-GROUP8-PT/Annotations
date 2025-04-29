@@ -1,0 +1,65 @@
+﻿.MatOverwriteButton {
+    color: white !important;
+    background: #101e2d !important;
+}
+
+.MatOverwriteWhiteBG {
+    background: white !important;
+}
+
+.MatOverwriteGrid {
+    display: flex !important;
+    align-items: center !important; 
+    gap: 20px !important;
+}
+
+.MatOverwriteProfilePic {
+    width: 80px !important;
+    height: 80px !important;
+    border-radius: 50% !important;
+    object-fit: cover !important;
+}
+
+.MatOverwriteMarginTop50 {
+    margin-top: 50px !important;
+}
+
+.MatOverwriteIdentification {
+    display: flex !important;
+    justify-content: flex-start !important;
+    gap: 8px !important;
+}
+
+.MatOverwritePadding16 {
+    padding: 16px !important;
+}
+
+.MatOverwriteDecisions {
+    display: flex !important;
+    justify-content: flex-end !important;
+    gap: 8px !important;
+}
+
+.MatOverwriteWorkImage {
+    width: 1000px !important;
+    height: 600px !important;
+    pointer-events: auto !important;
+}
+
+.MatOverwriteRelative {
+    position: relative !important;
+}
+
+.MatOverwriteSVG {
+    position: absolute !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    pointer-events: none !important;
+}
+
+.MatOverwriteCursor {
+    cursor: move !important;
+    pointer-events: all !important;
+}

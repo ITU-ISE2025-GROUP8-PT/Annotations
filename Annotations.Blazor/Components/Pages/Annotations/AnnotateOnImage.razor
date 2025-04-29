@@ -26,7 +26,7 @@
                                       FullWidth="true"
                                       Immediate="true"
                                       Id="annotationTextField"
-                                      Style="background: white">
+                                      class="MatOverwriteWhiteBG">
                         </MatTextField>
                     </p>
                     <p>
@@ -35,8 +35,8 @@
                 </MatDialogContent>
                 <MatDialogActions>
                     <div>
-                        <MatButton OnClick="SavePointAnnotation" Style="color: white; background: #101e2d">Save</MatButton>
-                        <MatButton OnClick="CancelPointAnnotation" Style="color: white; background: #101e2d">Cancel</MatButton>
+                        <MatButton class="MatOverwriteButton" OnClick="SavePointAnnotation">Save</MatButton>
+                        <MatButton class="MatOverwriteButton" OnClick="CancelPointAnnotation">Cancel</MatButton>
                     </div>
                 </MatDialogActions>
             </MatDialog>
@@ -49,7 +49,7 @@
                                       Label="Annotation"
                                       FullWidth="true"
                                       Immediate="true"
-                                      Style="background: white">
+                                      class="MatOverwriteWhiteBG">
                         </MatTextField>
                     </p>
                     <p>
@@ -57,7 +57,7 @@
                                       Label="Blood vessel thickness"
                                       FullWidth="true"
                                       Immediate="true"
-                                      Style="background: white">
+                                      class="MatOverwriteWhiteBG">
                         </MatTextField>
                     </p>
                     <p>
@@ -66,8 +66,8 @@
                 </MatDialogContent>
                 <MatDialogActions>
                     <div>
-                        <MatButton OnClick="SaveSegmentAnnotation" Style="color: white; background: #101e2d">Save</MatButton>
-                        <MatButton OnClick="CancelSegmentAnnotation" Style="color: white; background: #101e2d">Cancel</MatButton>
+                        <MatButton class="MatOverwriteButton" OnClick="SaveSegmentAnnotation">Save</MatButton>
+                        <MatButton class="MatOverwriteButton" OnClick="CancelSegmentAnnotation">Cancel</MatButton>
                     </div>
                 </MatDialogActions>
             </MatDialog>
@@ -75,15 +75,15 @@
             <div class="mat-layout-grid">
                 <div class="mat-layout-grid-inner">
                     <div class="mat-layout-grid-cell mat-layout-grid-cell-span-2">
-                        <div style="display: flex; align-items: center; gap: 20px;">
-                            <img src="img/billede1.png" alt="Profile Picture" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover;">
+                        <div class="MatOverwriteGrid">
+                            <img src="img/billede1.png" alt="Profile Picture" class="MatOverwriteProfilePic">
                             <div>
-                                <b style="margin: 0;">Jane Doe</b>
+                                <b>Jane Doe</b>
                                 <br/>
-                                <small style="margin: 0;">Surgeon</small>
+                                <small>Surgeon</small>
                             </div>
                         </div>
-                        <div style="margin-top: 50px">
+                        <div class="MatOverwriteMarginTop50">
                             <MatCheckbox @bind-Value="@_arteriesMarked">Arteries marked</MatCheckbox>
                         </div>
                         <div>
@@ -99,44 +99,44 @@
                     <div class="mat-layout-grid-cell mat-layout-grid-cell-span-10">
                         <div class="mat-layout-grid-inner">
                             <div class="mat-layout-grid-cell mat-layout-grid-cell-span-3">
-                                <div style="display: flex; justify-content: flex-start; gap: 8px;">
+                                <div class="MatOverwriteIdentification">
                                     <MatTabGroup>
                                         <MatTab Label="Vessels">
-                                            <div style="padding: 16px;">
+                                            <div class="MatOverwritePadding16">
                                                 <b>Blood Vessel Identification</b>
                                             </div>
                                         </MatTab>
                                         <MatTab Label="Flow">
-                                            <div style="padding: 16px;">
+                                            <div class="MatOverwritePadding16">
                                                 <b>Blood Flow Identification</b>
                                             </div>
                                         </MatTab>
                                         <MatTab Label="Organs">
-                                            <div style="padding: 16px;">
+                                            <div class="MatOverwritePadding16">
                                                 <b>Organ Identification</b>
                                             </div>
                                         </MatTab>
                                     </MatTabGroup>
                                 </div>
                             </div>
-                            <div class="mat-layout-grid-cell mat-layout-grid-cell-span-9 mat-layout-grid-align-right" style="display: flex; margin-left: auto; gap: 8px;">
-                                <div style="display: flex; justify-content: flex-end; gap: 8px;">
+                            <div class="mat-layout-grid-cell mat-layout-grid-cell-span-9 mat-layout-grid-align-right">
+                                <div class="MatOverwriteDecisions">
                                     <MatButton>Skip</MatButton>
-                                    <MatButton OnClick="CompleteCurrentVessel" Style=" color: white; background: #101e2d">Complete</MatButton>
+                                    <MatButton OnClick="CompleteCurrentVessel" class="MatOverwriteButton">Complete</MatButton>
                                 </div>
                             </div>
                         </div>
                         
                         <!-- @ref imageContainer captures the DOM element for position calculations, when annotating --->
-                        <div style="position: relative;" @ref="_imageContainer">
+                        <div class="MatOverwriteRelative" @ref="_imageContainer">
                             <img src="img/Skærmbillede%202025-03-27%20kl.%2014.05.56.png" alt="Annotation Image"
                                  @onclick="HandleImageClick"
-                                 style="width: 1000px; height: 600px; pointer-events: auto"/>
+                                 class="MatOverwriteWorkImage"/>
 
                             <svg @onpointermove="HandleDrag"
                                  @onpointerup="EndDrag"
                                  @onpointerleave="EndDrag"
-                                 style="position: absolute; left: 0; top: 0; width: 100%; height: 100%; pointer-events: none">
+                                 class="MatOverwriteSVG">
                                 
                                 @foreach (var vessel in _savedVessels)
                                 {
@@ -189,7 +189,7 @@
                                                 fill="white"
                                                 stroke="white" stroke-width="2"
                                                 @onpointerdown="@(e => StartDrag(e, point))"
-                                                style="cursor: move; pointer-events: all" />
+                                                class="MatOverwriteCursor"/>
                                     }
                                 }
                             </svg>
@@ -327,7 +327,7 @@
     private void CancelPointAnnotation()
     {
         // Only clear if no points have been saved yet
-        if (_currentVesselAnnotation!.Points.Count == 0)
+        if (_currentVesselAnnotation != null && _currentVesselAnnotation!.Points.Count == 0)
         {
             _currentVesselAnnotation = null;
         }
@@ -349,6 +349,14 @@
     
     private void CompleteCurrentVessel()
     {
+        if (_currentVesselAnnotation == null)
+        {
+            _completionTitle = "Fail";
+            _completionMessage = "Your blood vessel tree needs at least two annotations";
+            _showCompletionDialog = true;
+            StateHasChanged();
+            return;
+        }
         if (_currentVesselAnnotation!.Points.Count >= 2)
         {
             _savedVessels.Add(_currentVesselAnnotation);

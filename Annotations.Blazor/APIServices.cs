@@ -2,17 +2,17 @@ using Microsoft.AspNetCore.Authentication;
 
 namespace Annotations.Blazor;
 
-public interface IImagesServices
+public interface IAPIServices
 {
     Task<HttpResponseMessage> createGetResponse(string requestURI);
 }
-public class ImagesServices : IImagesServices
+public class APIServices : IAPIServices
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IHttpClientFactory _clientFactory;
 
     
-    public ImagesServices(IHttpContextAccessor httpContextAccessor, IHttpClientFactory clientFactory)
+    public APIServices(IHttpContextAccessor httpContextAccessor, IHttpClientFactory clientFactory)
     {
         _httpContextAccessor = httpContextAccessor;
         _clientFactory = clientFactory;

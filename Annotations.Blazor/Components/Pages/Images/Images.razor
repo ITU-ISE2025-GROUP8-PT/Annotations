@@ -1,7 +1,7 @@
 @page "/images/{imageId}"
 @inject IHttpClientFactory ClientFactory
 @inject IHttpContextAccessor httpContextAccessor
-@inject IImagesServices imageService
+@inject IAPIServices IapiService
 @attribute [Authorize(Roles = "Administrator, Manager, AnnotationsUser")]
 
 @if (error)
@@ -29,7 +29,7 @@ else if (!imgExist)
     protected override async Task OnInitializedAsync()
     {
 
-        var response = await imageService.createGetResponse($"/images/{imageId}");
+        var response = await IapiService.createGetResponse($"/images/{imageId}");
 
         try
         {

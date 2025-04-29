@@ -2,7 +2,7 @@
 @rendermode InteractiveServer
 @inject IHttpClientFactory ClientFactory
 @inject IHttpContextAccessor httpContextAccessor
-@inject IImagesServices imagesServices
+@inject IAPIServices IapiServices
 @attribute [Authorize(Roles = "Administrator, Manager")]
 
 <div style=" display: flex; flex-direction:row;">
@@ -60,7 +60,7 @@
     {
         try
         {
-            var response = await imagesServices.createGetResponse($"/images/datasets/");//sending the response
+            var response = await IapiServices.createGetResponse($"/images/datasets/");//sending the response
             if (response.IsSuccessStatusCode)
             {
                 var datasetmodels = await response.Content.ReadFromJsonAsync<DatasetModel[]>();//int array of all the ids of all the existing datasets

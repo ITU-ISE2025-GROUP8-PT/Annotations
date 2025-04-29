@@ -3,6 +3,7 @@
 @rendermode InteractiveServer
 @page "/home/{userid}"
 @attribute [Authorize(Roles = "Administrator, Manager, AnnotationsUser")]
+@namespace Home
 
 <style>
     .mat-layout-grid-cell{
@@ -26,7 +27,7 @@
     <div class="mat-layout-grid-inner">
 
         <!-- First Grid Layer -->
-        <div class="mat-layout-grid-cell "  >
+        <div class="mat-layout-grid-cell " >
             <div> This is your personal page. <br/>
 
                 Here you can view your finished tasks or continue to work on you unfinished tasks. <br/>
@@ -98,16 +99,16 @@
     protected override void OnInitialized()
     {
         currentUrl = Navigation.Uri;
-        Navigation.LocationChanged += OnLocationChanged;
+        Navigation.LocationChanged += HandleLocationChanged;
     }
 
-    private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
+    private void HandleLocationChanged(object? sender, LocationChangedEventArgs e)
     {
         currentUrl = Navigation.Uri;
         StateHasChanged();
     }
 
-    public void Dispose() => Navigation.LocationChanged -= OnLocationChanged;
+    public void Dispose() => Navigation.LocationChanged -= HandleLocationChanged;
 }
 
 

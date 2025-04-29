@@ -2,13 +2,20 @@
 @implements IDisposable
 @inject NavigationManager Navigation
 @rendermode InteractiveServer
-
+@namespace Home 
 
 <PageTitle>Home</PageTitle>
 
 <h1>Annotations - PerfusionTech</h1>
 
 <AuthorizeView>
+    <Authorized>
+        <form action="authentication/logout" method="post">
+            <AntiforgeryToken />
+            <input type="hidden" name="ReturnUrl" value="@currentUrl" />
+            <MatButton class="loginbutton" type="submit">Sign out</MatButton>
+        </form>
+    </Authorized>
     <NotAuthorized>
         You have not signed in yet.
         <p> Log in or make a new account to get access</p>
@@ -18,6 +25,7 @@
     </Authorized>
 
 </AuthorizeView>
+    
 
 @code {
     private string? currentUrl;
@@ -25,16 +33,16 @@
     protected override void OnInitialized()
     {
         currentUrl = Navigation.Uri;
-        Navigation.LocationChanged += OnLocationChanged;
+        Navigation.LocationChanged += HandleLocationChanged;
     }
 
-    private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
+    private void HandleLocationChanged(object? sender, LocationChangedEventArgs e)
     {
         currentUrl = Navigation.Uri;
         StateHasChanged();
     }
 
-    public void Dispose() => Navigation.LocationChanged -= OnLocationChanged;
+    public void Dispose() => Navigation.LocationChanged -= HandleLocationChanged;
 }
 
             

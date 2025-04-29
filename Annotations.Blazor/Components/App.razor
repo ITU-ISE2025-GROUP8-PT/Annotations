@@ -2,20 +2,31 @@
 <html lang="en">
 
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <base href="/" />
-    <link rel="stylesheet" href="bootstrap/bootstrap.min.css" />
-    <link rel="stylesheet" href="app.css" />
-    <link rel="stylesheet" href="Annotations.Blazor.styles.css" />
-    <link href="_content/MatBlazor/dist/matBlazor.css" rel="stylesheet" />
+    <!-- Character encoding and page display -->
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+    <!-- Url base location -->
+    <base href="/"/>
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="bootstrap/bootstrap.min.css"/>
+    <link rel="stylesheet" href="app.css"/>
+    <link rel="stylesheet" href="Annotations.Blazor.styles.css"/>
+
+    <!-- MatBlazor library references -->
+    <link href="_content/MatBlazor/dist/matBlazor.css" rel="stylesheet"/>
     <script src="_content/MatBlazor/dist/matBlazor.js"></script>
-    <link rel="icon" type="image/png" href="favicon.png" />
-    <HeadOutlet />
+
+    <!-- Favicon  -->
+    <link rel="icon" type="image/png" href="favicon.png"/>
+
+    <!-- Blazor Head content  -->
+    <HeadOutlet/>
 </head>
 
 <body>
-    <Routes/>
+    <Routes />
     <script src="_framework/blazor.web.js"></script>
     <!-- This is called in AnnotateOnImage.razor, when aiming to get a rectangle bound to a click position --->
     <script>

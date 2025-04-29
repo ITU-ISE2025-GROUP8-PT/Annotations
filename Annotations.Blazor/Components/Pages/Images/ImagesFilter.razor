@@ -1,8 +1,7 @@
 @page "/images/filter/{category}"
-@using System.Data
-@using global::Annotations.Core.Models
 @inject IHttpClientFactory ClientFactory
 @inject IHttpContextAccessor httpContextAccessor
+@inject IAPIServices IapiServices
 @attribute [Authorize(Roles = "Administrator, Manager")]
 <!-- Look at the roles, is it only for certain types? -->
 
@@ -43,17 +42,8 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        var httpContext = httpContextAccessor.HttpContext ?? throw new InvalidOperationException("No HttpContext available");//make connection
-
-        var accessToken = await httpContext.GetTokenAsync("access_token") ?? throw new InvalidOperationException("No access_token was saved");//authorization
-
-        var client = ClientFactory.CreateClient();
-        client.BaseAddress = new("https://localhost:7250");//connect to Web API
-
-        using var requestMessage = new HttpRequestMessage(HttpMethod.Get, $"/images/filter/{category}");//access endpoint
-        requestMessage.Headers.Authorization = new("Bearer", accessToken);//bearer token for authorization
-
-        using var response = await client.SendAsync(requestMessage);//sending the response
+        
+        var response = await IapiServices.createGetResponse($"/images/filter/{category}");//sending the response
         try
         {
             string[] answer = await response.Content.ReadFromJsonAsync<string[]>() ?? throw new NoNullAllowedException(); //string array of JSON files of the images as strings

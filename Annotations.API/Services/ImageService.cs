@@ -19,7 +19,6 @@ public interface IImageService
 {
     ValidationResponse ValidateImage(IFormFile file);
     BlobContainerClient createContainer();
-    Task<string> convertToJSONString(BlobClient blobClient);
     Task UploadingImage(IFormFile image, int counter, string category);
     void UploadImageError(ValidationResponse response);
     Task<HashSet<string>> Filter(string category);

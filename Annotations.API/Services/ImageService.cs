@@ -19,6 +19,7 @@ public interface IImageService
     BlobContainerClient createContainer();
     Task<string> convertToJSONString(BlobClient blobClient);
     Task UploadingImage(IFormFile image, int counter, string category);
+    void UploadImageError(ValidationResponse response);
 
 
 }
@@ -148,6 +149,12 @@ public class ImageService: IImageService
                 await UploadAsJSON(counter, jsonString);
 
             }
+    }
+
+    public void UploadImageError(ValidationResponse response)
+    {
+        Console.WriteLine("rejecting image");
+        Console.WriteLine(response.Message);
     }
     
     

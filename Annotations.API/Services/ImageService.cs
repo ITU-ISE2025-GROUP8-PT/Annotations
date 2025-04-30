@@ -24,6 +24,7 @@ public interface IImageService
     Task<HashSet<string>> Filter(string category);
     Task<DatasetModel> GetDataset(string dataset);
     Task<GetImageResult> GetImage(string imageId, CancellationTokenSource cts, BlobContainerClient containerClient);
+    Task<DatasetModel[]> GetAllDatasets();
 
 
 
@@ -233,6 +234,24 @@ public class ImageService: IImageService
             return new GetImageResult(true, await convertToJSONString(blobClient));
         }
         return new GetImageResult(false, null);
+    }
+
+    public async Task<DatasetModel[]> GetAllDatasets()
+    {
+        //Datasets from DBContext are transformed to DatasetModels
+        var datasets = await _DbContext.Datasets
+            .Select(u => new DatasetModel()
+            {
+                Id = u.Id,
+                ImageIds = u.ImageIds,
+                Category = u.Category,
+                AnnotatedBy= u.AnnotatedBy,
+                ReviewedBy = u.ReviewedBy
+            })
+            .ToListAsync();
+                
+        //DatasetModel list is converted to Array for sending to Blazor front-end
+        return datasets.ToArray();
     }
     
 }

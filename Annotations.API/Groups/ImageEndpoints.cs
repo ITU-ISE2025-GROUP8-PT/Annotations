@@ -130,22 +130,8 @@ public static class ImageEndpoints
     {
         var cts = new CancellationTokenSource(5000);
 
-        //Datasets from DBContext are transformed to DatasetModels
-        var datasets = await context.Datasets
-            .Select(u => new DatasetModel()
-            {
-                Id = u.Id,
-                ImageIds = u.ImageIds,
-                Category = u.Category,
-                AnnotatedBy= u.AnnotatedBy,
-                ReviewedBy = u.ReviewedBy
-            })
-            .ToListAsync();
-                
-        //DatasetModel list is converted to Array for sending to Blazor front-end
-        DatasetModel[] datasetsarray = datasets.ToArray();
-
-        return datasetsarray;
+        
+        return await _imageService.GetAllDatasets();
 
     }
     

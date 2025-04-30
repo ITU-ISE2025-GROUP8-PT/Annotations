@@ -166,13 +166,10 @@ public static class ImageEndpoints
                 foreach (int ids in datasetModel.ImageIds)
                 {
                     Console.WriteLine(ids);
-                    BlobClient blobClient = containerClient.GetBlobClient(ids + ".json");
-                    if (!blobClient.Exists(cts.Token).ToString()
-                            .Contains("404")) //checks if the blobClient is empty/couldn't find the image of that format
+                    var getImageResult = await _imageService.GetImage(ids.ToString(),cts, containerClient);
+                    if (getImageResult.Success)
                     {
-                        string jsonString = await _imageService.convertToJSONString(blobClient);
-
-                        collection.Add(jsonString);
+                        collection.Add(getImageResult.image);
                     }
                     else
                     {

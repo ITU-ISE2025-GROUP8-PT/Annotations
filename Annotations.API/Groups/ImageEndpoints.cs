@@ -161,22 +161,7 @@ public static class ImageEndpoints
          //TODO: almost identical code as "/filter/{category}" - remove the code duplication
             var cts = new CancellationTokenSource(5000);
 
-            var datasets = context.Datasets
-                .Select(u => new DatasetModel()
-                {
-                    Id = u.Id,
-                    ImageIds = u.ImageIds,
-                    Category = u.Category,
-                    AnnotatedBy= u.AnnotatedBy,
-                    ReviewedBy = u.ReviewedBy
-                }).Where(DatasetModel => DatasetModel.Id == Int32.Parse(dataset));
-                //there is only one dataset with a certain Id, so no point of taking more
-            var datasetModel = await datasets.FirstOrDefaultAsync();
-
-            if (datasetModel == null)
-            {
-                throw new Exception("No dataset found");
-            };
+            var datasetModel = await _imageService.GetDataset(dataset);
             
             HashSet<string> collection = new HashSet<string>();
             var containerClient = _imageService.createContainer();

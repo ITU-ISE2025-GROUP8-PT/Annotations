@@ -20,6 +20,7 @@ public interface IImageService
     Task UploadingImage(IFormFile image, int counter, string category);
     void UploadImageError(ValidationResponse response);
     Task<HashSet<string>> Filter(string category);
+    Task<DatasetModel> GetDataset(string dataset);
 
 
 }
@@ -193,6 +194,28 @@ public class ImageService: IImageService
         }
         return collection;
 
+    }
+
+    public async Task<DatasetModel> GetDataset(string dataset)
+    {
+        var datasets = _DbContext.Datasets
+            .Select(u => new DatasetModel()
+            {
+                Id = u.Id,
+                ImageIds = u.ImageIds,
+                Category = u.Category,
+                AnnotatedBy= u.AnnotatedBy,
+                ReviewedBy = u.ReviewedBy
+            }).Where(DatasetModel => DatasetModel.Id == Int32.Parse(dataset));
+        //there is only one dataset with a certain Id, so no point of taking more
+        var datasetModel = await datasets.FirstOrDefaultAsync();
+
+        if (datasetModel == null)
+        {
+            throw new Exception("No dataset found");
+        }else{}
+
+        return datasetModel;
     }
     
 }

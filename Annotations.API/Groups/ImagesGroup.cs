@@ -129,8 +129,6 @@ public static class ImagesGroup
             var cts = new CancellationTokenSource(5000);
 
             var containerClient = _imageService.createContainer(clientFactory);
-
-
             BlobClient blobClient = containerClient.GetBlobClient(imageId + ".json");
             if (!blobClient.Exists(cts.Token).ToString().Contains("404"))
             {
@@ -162,10 +160,8 @@ public static class ImagesGroup
                     foreach (BlobItem blobItem in blobPage.Values)//every image found
                     {
                         //goes through all images and check for the category
-                        var BlobClient = containerClient.GetBlobClient(blobItem.Name);
-                        using var memoryStream = new MemoryStream();
-                        await BlobClient.DownloadToAsync(memoryStream);
-                        var jsonString = System.Text.Encoding.UTF8.GetString(memoryStream.ToArray());//JSON file as string
+                        var blobClient = containerClient.GetBlobClient(blobItem.Name);
+                        string jsonString = await _imageService.convertToJSONString(blobClient);
                         var imageObject = System.Text.Json.JsonSerializer.Deserialize<ImageModel>(jsonString);//deserialize so it becomes imageModel
                         if (imageObject == null)
                         {
@@ -251,9 +247,8 @@ public static class ImagesGroup
                     if (!blobClient.Exists(cts.Token).ToString()
                             .Contains("404")) //checks if the blobClient is empty/couldn't find the image of that format
                     {
-                        using var memoryStream = new MemoryStream();
-                        await blobClient.DownloadToAsync(memoryStream);
-                        var jsonString = System.Text.Encoding.UTF8.GetString(memoryStream.ToArray());
+                        string jsonString = await _imageService.convertToJSONString(blobClient);
+
                         collection.Add(jsonString);
                     }
                     else

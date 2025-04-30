@@ -12,6 +12,7 @@ public interface IImageService
 {
     ValidationResponse ValidateImage(IFormFile file);
     BlobContainerClient createContainer(IAzureClientFactory<BlobServiceClient> clientFactory);
+    Task<string> convertToJSONString(BlobClient blobClient);
 
 }
 
@@ -53,6 +54,13 @@ public class ImageService: IImageService
     {
         var blobServiceClient = clientFactory.CreateClient("Default");
         return blobServiceClient.GetBlobContainerClient("images");
+    }
+
+    public async Task<string> convertToJSONString(BlobClient blobClient)
+    {
+        using var memoryStream = new MemoryStream();
+        await blobClient.DownloadToAsync(memoryStream);
+        return System.Text.Encoding.UTF8.GetString(memoryStream.ToArray());//JSON file as string
     }
     
 }

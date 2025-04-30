@@ -62,17 +62,14 @@ public static class ImageEndpoints
             Console.WriteLine(response.Message);
             return Results.StatusCode(422);
             //TODO: how should the end user see this?
-        }
-        else
-        {
-            
-            await _imageService.UploadingImage(image,_counter, category);
-            _counter++;
-            return Results.StatusCode(200);
-        }
+        } 
+        await _imageService.UploadingImage(image,_counter, category);
+        _counter++;
+        return Results.StatusCode(200);
     }
 
-    public static async Task<IResult> DeleteImageHandler(string imageId, [FromServices] IAzureClientFactory<BlobServiceClient> clientFactory, [FromServices] IImageService _imageService)
+    public static async Task<IResult> DeleteImageHandler(string imageId, [FromServices] IAzureClientFactory<BlobServiceClient> clientFactory, 
+        [FromServices] IImageService _imageService)
     {
         var cts = new CancellationTokenSource(5000);
 
@@ -92,13 +89,13 @@ public static class ImageEndpoints
         return Results.StatusCode(404);
     }
     
-    public static async Task<IResult> RetrieveImageHandler([FromRoute] string imageId, [FromServices] IAzureClientFactory<BlobServiceClient> clientFactory, [FromServices] IImageService _imageService)
+    public static async Task<IResult> RetrieveImageHandler([FromRoute] string imageId, [FromServices] IAzureClientFactory<BlobServiceClient> clientFactory, 
+        [FromServices] IImageService _imageService)
     {
         //insert password restrictions here 🐿️
         var cts = new CancellationTokenSource(5000);
 
         //enters images
-
         var containerClient = _imageService.createContainer();
         BlobClient blobClient = containerClient.GetBlobClient(imageId + ".json");
         if (!blobClient.Exists(cts.Token).ToString()
@@ -112,12 +109,14 @@ public static class ImageEndpoints
 
                 
 
-        //will only reach here if it cannot find an image with the id of the correct file type, or else the request will terminate inside the for-loop
+        //will only reach here if it cannot find an image with the id of the correct file type,
+        //or else the request will terminate inside the for-loop
         Console.WriteLine("Cannot retrieve image because it doesn't exist");
         return Results.StatusCode(404);
     }
     
-    public static async Task<string[]> FilterImagesHandler(string category, [FromServices] IAzureClientFactory<BlobServiceClient> clientFactory, [FromServices] IImageService _imageService)
+    public static async Task<string[]> FilterImagesHandler(string category, [FromServices] IAzureClientFactory<BlobServiceClient> clientFactory, 
+        [FromServices] IImageService _imageService)
     {
         var cts = new CancellationTokenSource(5000);
 
@@ -179,7 +178,8 @@ public static class ImageEndpoints
 
     }
     
-    public static async Task<string[]> RetrieveImagesFromDatasetHandler(string dataset, AnnotationsDbContext context, [FromServices] IAzureClientFactory<BlobServiceClient> clientFactory, [FromServices] IImageService _imageService)
+    public static async Task<string[]> RetrieveImagesFromDatasetHandler(string dataset, AnnotationsDbContext context, 
+        [FromServices] IAzureClientFactory<BlobServiceClient> clientFactory, [FromServices] IImageService _imageService)
     {
          //TODO: almost identical code as "/filter/{category}" - remove the code duplication
             var cts = new CancellationTokenSource(5000);

@@ -8,9 +8,7 @@ using Microsoft.Extensions.Azure;
 namespace Annotations.API.Services;
 
 public record ValidationResponse(bool Success, string Message);
-
-
-
+public record ImageData(ImageModel Image, string JSONString);
 
 public interface IImageService
 
@@ -20,6 +18,7 @@ public interface IImageService
     Task<string> convertToJSONString(BlobClient blobClient);
     Task UploadingImage(IFormFile image, int counter, string category);
     void UploadImageError(ValidationResponse response);
+    Task<ImageData> GetImageForFiltering(BlobContainerClient containerClient, BlobItem blobItem);
 
 
 }
@@ -155,6 +154,20 @@ public class ImageService: IImageService
     {
         Console.WriteLine("rejecting image");
         Console.WriteLine(response.Message);
+    }
+
+    
+    public async Task<ImageData> GetImageForFiltering(BlobContainerClient containerClient, BlobItem blobItem)
+    {
+        var blobClient = containerClient.GetBlobClient(blobItem.Name);
+        string jsonString = await convertToJSONString(blobClient);
+        var imageObject = System.Text.Json.JsonSerializer.Deserialize<ImageModel>(jsonString);//deserialize so it becomes imageModel
+        if (imageObject == null)
+        {
+            throw new Exception("img object is null");
+        }
+
+        return new(imageObject, jsonString);
     }
     
     

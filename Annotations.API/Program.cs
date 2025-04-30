@@ -85,8 +85,8 @@ builder.Services.AddScoped<IImageService, ImageService>();
 var app = builder.Build();
 
 
-UsersGroup.MapEndpoints(app.MapGroup("/users").RequireAuthorization());
-ImagesGroup.MapEndpoints(app.MapGroup("/images").RequireAuthorization());//TODO    DONT DO THIS. REMOVE 
+UserEndpoints.MapEndpoints(app.MapGroup("/users").RequireAuthorization());
+ImageEndpoints.MapEndpoints(app.MapGroup("/images").RequireAuthorization());//TODO    DONT DO THIS. REMOVE 
 
 app.MapGet("/error", () => "Dette er en 400-599 eller værre");
 
@@ -148,7 +148,7 @@ void InitializeTempDatabase()
     //this is only for testing/showcasing
     
     /*
-    Due to the hard-coding of database elements below, we override code from ImagesGroup
+    Due to the hard-coding of database elements below, we override code from ImageEndpoints
     image-upload-functionality, that adds an image to the dataset.
     */  
 context.Add(new Dataset//different images compared to the other 5 datasets

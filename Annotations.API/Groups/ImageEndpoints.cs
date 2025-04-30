@@ -14,7 +14,7 @@ using SQLitePCL;
 
 namespace Annotations.API.Groups;
 
-public static class ImagesGroup
+public static class ImageEndpoints
 {
     private static int _counter = 0;//change this - it gets reset every time the program resets
     

@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Annotations.API.Groups;
 
-public static class UsersGroup
+public static class UserEndpoints
 {
     public static void MapEndpoints(RouteGroupBuilder pathBuilder)
     {

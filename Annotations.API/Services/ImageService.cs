@@ -1,4 +1,6 @@
+using Azure.Storage.Blobs;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Azure;
 
 namespace Annotations.API.Services;
 
@@ -9,6 +11,8 @@ public interface IImageService
 
 {
     ValidationResponse ValidateImage(IFormFile file);
+    BlobContainerClient createContainer(IAzureClientFactory<BlobServiceClient> clientFactory);
+
 }
 
 public class ImageService: IImageService
@@ -43,6 +47,12 @@ public class ImageService: IImageService
         //if the code reaches this point, then the file type is none of the permitted file types, so an error is thrown
         return new ValidationResponse(false, "File is not a valid image.");
         
+    }
+
+    public BlobContainerClient createContainer(IAzureClientFactory<BlobServiceClient> clientFactory)
+    {
+        var blobServiceClient = clientFactory.CreateClient("Default");
+        return blobServiceClient.GetBlobContainerClient("images");
     }
     
 }

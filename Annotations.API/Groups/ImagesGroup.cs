@@ -38,8 +38,8 @@ public static class ImagesGroup
                 }
                 else
                 {
-                    var blobServiceClient = clientFactory.CreateClient("Default");
-                    BlobContainerClient containerClient = blobServiceClient.GetBlobContainerClient("images");
+                    var containerClient = _imageService.createContainer(clientFactory);
+
 
                     //fileExtension will always be a proper fileExtension because of the ValidateImage method
 
@@ -98,15 +98,14 @@ public static class ImagesGroup
             }).DisableAntiforgery();
         //ellers ved billedfil brug da
         pathBuilder.MapGet("/{imageId}",
-            async ([FromRoute] string imageId, [FromServices] IAzureClientFactory<BlobServiceClient> clientFactory) =>
+            async ([FromRoute] string imageId, [FromServices] IAzureClientFactory<BlobServiceClient> clientFactory, [FromServices] IImageService _imageService) =>
             {
                 //insert password restrictions here 🐿️
                 var cts = new CancellationTokenSource(5000);
 
-                var blobServiceClient = clientFactory.CreateClient("Default");
-                BlobContainerClient containerClient = blobServiceClient.GetBlobContainerClient("images");//enters images
+                //enters images
 
-               
+                var containerClient = _imageService.createContainer(clientFactory);
                 BlobClient blobClient = containerClient.GetBlobClient(imageId + ".json");
                 if (!blobClient.Exists(cts.Token).ToString()
                         .Contains("404")) //checks if the blobClient is empty/couldn't find the image of that format
@@ -125,12 +124,12 @@ public static class ImagesGroup
 
             }).DisableAntiforgery();
         
-        pathBuilder.MapDelete("/{imageId}", async (string imageId, [FromServices] IAzureClientFactory<BlobServiceClient> clientFactory) =>
+        pathBuilder.MapDelete("/{imageId}", async (string imageId, [FromServices] IAzureClientFactory<BlobServiceClient> clientFactory, [FromServices] IImageService _imageService) =>
         {
             var cts = new CancellationTokenSource(5000);
 
-            var blobServiceClient = clientFactory.CreateClient("Default");
-            BlobContainerClient containerClient = blobServiceClient.GetBlobContainerClient("images");
+            var containerClient = _imageService.createContainer(clientFactory);
+
 
             BlobClient blobClient = containerClient.GetBlobClient(imageId + ".json");
             if (!blobClient.Exists(cts.Token).ToString().Contains("404"))
@@ -149,12 +148,12 @@ public static class ImagesGroup
         }).DisableAntiforgery();
 
         pathBuilder.MapGet("/filter/{category}",//returns all images of a certain category
-            async (string category, [FromServices] IAzureClientFactory<BlobServiceClient> clientFactory) =>
+            async (string category, [FromServices] IAzureClientFactory<BlobServiceClient> clientFactory, [FromServices] IImageService _imageService) =>
             {
                 var cts = new CancellationTokenSource(5000);
 
-                var blobServiceClient = clientFactory.CreateClient("Default");
-                BlobContainerClient containerClient = blobServiceClient.GetBlobContainerClient("images");
+                var containerClient = _imageService.createContainer(clientFactory);
+
                 var listOfFiles = containerClient.GetBlobsAsync().AsPages();//all data inside of blobContainer
               
                 HashSet<string> collection = new HashSet<string>();
@@ -194,7 +193,7 @@ public static class ImagesGroup
 
             }).DisableAntiforgery();
         
-        pathBuilder.MapGet("/datasets", async (AnnotationsDbContext context) =>//returns all existing datasets
+        pathBuilder.MapGet("/datasets", async (AnnotationsDbContext context, [FromServices] IImageService _imageService) =>//returns all existing datasets
             {
                 var cts = new CancellationTokenSource(5000);
 
@@ -217,7 +216,7 @@ public static class ImagesGroup
 
             }).DisableAntiforgery();
         
-        pathBuilder.MapGet("/datasets/{dataset}", async (string dataset, AnnotationsDbContext context, [FromServices] IAzureClientFactory<BlobServiceClient> clientFactory) =>
+        pathBuilder.MapGet("/datasets/{dataset}", async (string dataset, AnnotationsDbContext context, [FromServices] IAzureClientFactory<BlobServiceClient> clientFactory, [FromServices] IImageService _imageService) =>
         {//access images of specific dataset
             //TODO: almost identical code as "/filter/{category}" - remove the code duplication
             var cts = new CancellationTokenSource(5000);
@@ -240,8 +239,8 @@ public static class ImagesGroup
             };
             
             HashSet<string> collection = new HashSet<string>();
-            var blobServiceClient = clientFactory.CreateClient("Default");
-            BlobContainerClient containerClient = blobServiceClient.GetBlobContainerClient("images");
+            var containerClient = _imageService.createContainer(clientFactory);
+
             //foreach (DatasetModel datasetModel in datasets)//guaranteed to only be one dataset in "datasets", so this is not linear time. 
             //{//there is a better way of doing this
             

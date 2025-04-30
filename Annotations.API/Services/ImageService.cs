@@ -24,9 +24,9 @@ public class ImageService: IImageService
     /// Helping method that validates an image based on type, size, and also checks if it even contains anything
     /// Images can be JPEG, PNG and JPG, and everything else gets rejected
     /// </summary>
-    /// <param name="file"></param>
+    /// <param name="file">The file to be validated</param>
     /// <returns>ValidationResponse - a record that contains a boolean of whether the image is validated, and a message that describes either what went wrong, or that it was successful</returns>
-    public ValidationResponse ValidateImage(IFormFile file)//temporary location
+    public ValidationResponse ValidateImage(IFormFile file)
     {
         
         if (file.Length > 50 * 1024 * 1024) {//50MB
@@ -49,13 +49,23 @@ public class ImageService: IImageService
         return new ValidationResponse(false, "File is not a valid image.");
         
     }
-
+    /// <summary>
+    /// Creates a BlobContainerClient
+    /// </summary>
+    /// <param name="clientFactory">BlobServiceClient from our AzureClientFactory</param>
+    /// <returns>BlobContainerClient</returns>
     public BlobContainerClient createContainer(IAzureClientFactory<BlobServiceClient> clientFactory)
     {
         var blobServiceClient = clientFactory.CreateClient("Default");
         return blobServiceClient.GetBlobContainerClient("images");
     }
 
+    /// <summary>
+    /// Downloads a BlobClient to a memory stream.
+    /// Afterward it gets converted to a JSON file in the form of a string
+    /// </summary>
+    /// <param name="blobClient">BlobClient</param>
+    /// <returns>JSON file in the form of a string</returns>
     public async Task<string> convertToJSONString(BlobClient blobClient)
     {
         using var memoryStream = new MemoryStream();

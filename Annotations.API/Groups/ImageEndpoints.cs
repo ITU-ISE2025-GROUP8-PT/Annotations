@@ -88,24 +88,24 @@ public static class ImageEndpoints
         return Results.StatusCode(404);
     }
     
-    public static async Task<IResult> RetrieveImageHandler([FromRoute] string imageId, [FromServices] IAzureClientFactory<BlobServiceClient> clientFactory, 
+    public static async Task<string> RetrieveImageHandler([FromRoute] string imageId, [FromServices] IAzureClientFactory<BlobServiceClient> clientFactory, 
         [FromServices] IImageService _imageService)
     {
         //insert password restrictions here 🐿️
         var cts = new CancellationTokenSource(5000);
+        var containerClient = _imageService.createContainer();
 
-        var getImageResult = await _imageService.GetImage(imageId, cts);
+        var getImageResult = await _imageService.GetImage(imageId, cts,containerClient);
 
         if (getImageResult.Success)
         {
-            return Results.File(getImageResult.image,
-                "application/json"); 
+            return getImageResult.image; 
         }
         
         //will only reach here if it cannot find an image with the id of the correct file type,
         //or else the request will terminate inside the for-loop
         Console.WriteLine("Cannot retrieve image because it doesn't exist");
-        return Results.StatusCode(404);
+        return null;
     }
     
     public static async Task<string[]> FilterImagesHandler(string category, [FromServices] IAzureClientFactory<BlobServiceClient> clientFactory, 

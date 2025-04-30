@@ -1,4 +1,7 @@
+using Annotations.Core.Entities;
+using Annotations.Core.Models;
 using Azure.Storage.Blobs;
+using Azure.Storage.Blobs.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Azure;
 
@@ -7,19 +10,30 @@ namespace Annotations.API.Services;
 public record ValidationResponse(bool Success, string Message);
 
 
+
+
 public interface IImageService
 
 {
     ValidationResponse ValidateImage(IFormFile file);
-    BlobContainerClient createContainer(IAzureClientFactory<BlobServiceClient> clientFactory);
+    BlobContainerClient createContainer();
     Task<string> convertToJSONString(BlobClient blobClient);
+    Task UploadingImage(IFormFile image, int counter, string category);
+
 
 }
 
 public class ImageService: IImageService
 {
     private static string[] _arrayOfFileExtension = {"png", "jpg", "jpeg"};
-    
+    private readonly IAzureClientFactory<BlobServiceClient> _clientFactory;
+    private readonly AnnotationsDbContext _DbContext;
+
+    public ImageService(IAzureClientFactory<BlobServiceClient> clientFactory , AnnotationsDbContext context)
+    {
+        _clientFactory = clientFactory;
+        _DbContext = context;
+    }
     /// <summary>
     /// Helping method that validates an image based on type, size, and also checks if it even contains anything
     /// Images can be JPEG, PNG and JPG, and everything else gets rejected
@@ -54,9 +68,9 @@ public class ImageService: IImageService
     /// </summary>
     /// <param name="clientFactory">BlobServiceClient from our AzureClientFactory</param>
     /// <returns>BlobContainerClient</returns>
-    public BlobContainerClient createContainer(IAzureClientFactory<BlobServiceClient> clientFactory)
+    public BlobContainerClient createContainer()
     {
-        var blobServiceClient = clientFactory.CreateClient("Default");
+        var blobServiceClient = _clientFactory.CreateClient("Default");
         return blobServiceClient.GetBlobContainerClient("images");
     }
 
@@ -71,6 +85,59 @@ public class ImageService: IImageService
         using var memoryStream = new MemoryStream();
         await blobClient.DownloadToAsync(memoryStream);
         return System.Text.Encoding.UTF8.GetString(memoryStream.ToArray());//JSON file as string
+    }
+
+    public async Task UploadingImage(IFormFile image, int counter, string category)
+    {
+        var containerClient = createContainer();
+            //fileExtension will always be a proper fileExtension because of the ValidateImage method
+            using (MemoryStream ms = new MemoryStream())
+            {
+                await image.OpenReadStream().CopyToAsync(ms);
+                var thisImage =
+                    new ImageModel() //TODO: dont do this - the title, description and datasetsId are hardcoded
+                    {
+                        Id = counter,
+                        Title = "idk",
+                        Description = "description",
+                        ImageData = ms.ToArray(),
+                        Category = category,
+                        DatasetsIds = new List<int>() { 1, 2 },
+                    };
+                /*
+                Below functionality of cross-adding the image to the assigned datasets
+                is overriden by the hard-code creation of datasets in Api, Program.cs
+                The idea for future reference is that when uploading an image, the user
+                inputs the names (ids) of datasets, and we can use below code (without
+                hard-coded ids) to cross-add the images to the relevant datasets.
+                */
+                var neededDataset = _DbContext.Datasets.Select(Dataset => Dataset)
+                    .Where(Dataset =>
+                        Dataset.Id == 1 || Dataset.Id == 2); //TODO dont do this - this is hardcoded for testing
+
+                foreach (Dataset dataset in neededDataset)
+
+                {
+                    dataset.ImageIds.Add(thisImage.Id); //adds images to the datasets
+                    await _DbContext.SaveChangesAsync();
+                }
+
+                string jsonString = System.Text.Json.JsonSerializer.Serialize(thisImage); //objects becomes JSON string
+                var byteContent = System.Text.Encoding.UTF8.GetBytes(jsonString); //JSON string becomes byte array
+
+
+                BlobClient thisImageBlobClient = containerClient.GetBlobClient($"{counter}.json");
+
+                var blobHeaders = new BlobHttpHeaders
+                {
+                    ContentType = "application/json"
+                };
+
+                // Trigger the upload function to push the data to blob
+                await thisImageBlobClient.UploadAsync(new MemoryStream(byteContent),
+                    blobHeaders); //uploaded as byte array
+                //Should it be uploaded as a string instead? So far all endpoints retrieve the JSON files as strings?
+            }
     }
     
 }

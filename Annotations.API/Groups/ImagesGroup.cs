@@ -1,3 +1,4 @@
+using Annotations.API.Services;
 using Annotations.Core.Models;
 using Microsoft.AspNetCore.Http.Extensions;
 using Annotations.Core.Entities;
@@ -10,16 +11,16 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.Extensions.Azure;
 using SQLitePCL;
 
+
 namespace Annotations.API.Groups;
 
 public static class ImagesGroup
 {
     private static int _counter = 0;//change this - it gets reset every time the program resets
-    private record ValidationResponse(bool Success, string Message);
+    private record ValidationRespons(bool Success, string Message);
     
     private static string[] _arrayOfFileExtension = {"png", "jpg", "jpeg"};
-
-
+    
 
     /// <summary>
     /// Helping method that validates an image based on type, size, and also checks if it even contains anything
@@ -27,39 +28,17 @@ public static class ImagesGroup
     /// </summary>
     /// <param name="file"></param>
     /// <returns>ValidationResponse - a record that contains a boolean of whether the image is validated, and a message that describes either what went wrong, or that it was successful</returns>
-    private static ValidationResponse ValidateImage(IFormFile file)//temporary location
-    {
-        
-        if (file.Length > 50 * 1024 * 1024) {//50MB
-            return new ValidationResponse(false, "File is too large.");
-        }
-        if (file.Length == 0) 
-        { 
-            return new ValidationResponse(false, "File doesn't exist.");
-        }
-        foreach (string fileExtension in _arrayOfFileExtension)
-        {
-            if (file.ContentType.Contains(fileExtension))
-            {
-                //if the image is the correct type, it will be uploaded, since it fulfills the other criterias
-                //upload image to db
-                return new ValidationResponse(true ,"Uploaded image successfully.");
-            }
-        }
-        //if the code reaches this point, then the file type is none of the permitted file types, so an error is thrown
-        return new ValidationResponse(false, "File is not a valid image.");
-        
-    }
+    
     public static void MapEndpoints(RouteGroupBuilder pathBuilder)
     {
         pathBuilder.RequireAuthorization();
         
         //This is the upload endpoint where the image first gets validated, and then gets uploaded into your local Azurite BlobStorage as a JSON file
         pathBuilder.MapPost("/upload",
-            async (IFormFile image, string category, AnnotationsDbContext context, [FromServices] IAzureClientFactory<BlobServiceClient> clientFactory) =>
+            async (IFormFile image, string category, AnnotationsDbContext context, [FromServices] IAzureClientFactory<BlobServiceClient> clientFactory, [FromServices] IImageService _imageService) =>
             {//TODO: more paramters for the other fields in images?
 
-                ValidationResponse response = ValidateImage(image);
+                ValidationResponse response = _imageService.ValidateImage(image);
                 if (!response.Success)
                 {
                     Console.WriteLine("rejecting image");

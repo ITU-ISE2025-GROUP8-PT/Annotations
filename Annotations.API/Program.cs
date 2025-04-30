@@ -1,6 +1,7 @@
 using System.Net.Http.Headers;
 using Annotations.API;
 using Annotations.API.Groups;
+using Annotations.API.Services;
 using Annotations.Core.Entities;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -79,6 +80,8 @@ builder.Services.AddAzureClients(clientBuilder =>
     clientBuilder.AddQueueServiceClient(builder.Configuration["AzureStorageConnection"]!);
     clientBuilder.AddTableServiceClient(builder.Configuration["AzureStorageConnection"]!);
 });
+
+builder.Services.AddScoped<IImageService, ImageService>();
 var app = builder.Build();
 
 

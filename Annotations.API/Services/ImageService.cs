@@ -86,10 +86,49 @@ public class ImageService: IImageService
         await blobClient.DownloadToAsync(memoryStream);
         return System.Text.Encoding.UTF8.GetString(memoryStream.ToArray());//JSON file as string
     }
+    
+    /// <summary>
+    ///Below functionality of cross-adding the image to the assigned datasets
+    ///is overriden by the hard-code creation of datasets in Api, Program.cs
+    ///
+    /// The idea for future reference is that when uploading an image, the user
+    ///inputs the names (ids) of datasets, and we can use below code (without
+    ///hard-coded ids) to cross-add the images to the relevant datasets.
+    /// </summary>
+    /// <param name="thisImage"></param>
+    private async Task AddImagesToDatasets(ImageModel thisImage)
+    {
+        var neededDataset = _DbContext.Datasets.Select(Dataset => Dataset)
+            .Where(Dataset =>
+                Dataset.Id == 1 || Dataset.Id == 2); //TODO dont do this - this is hardcoded for testing
 
-    public async Task UploadingImage(IFormFile image, int counter, string category)
+        foreach (Dataset dataset in neededDataset)
+
+        {
+            dataset.ImageIds.Add(thisImage.Id); //adds images to the datasets
+            await _DbContext.SaveChangesAsync();
+        }
+    }
+
+    private async Task ConvertAndUploadAsJSON(ImageModel thisImage, int counter)
     {
         var containerClient = createContainer();
+        string jsonString = System.Text.Json.JsonSerializer.Serialize(thisImage); //objects becomes JSON string
+        var byteContent = System.Text.Encoding.UTF8.GetBytes(jsonString); //JSON string becomes byte array
+        BlobClient thisImageBlobClient = containerClient.GetBlobClient($"{counter}.json");
+
+        var blobHeaders = new BlobHttpHeaders
+        {
+            ContentType = "application/json"
+        };
+
+        // Trigger the upload function to push the data to blob
+        await thisImageBlobClient.UploadAsync(new MemoryStream(byteContent),
+            blobHeaders); //uploaded as byte array
+        //Should it be uploaded as a string instead? So far all endpoints retrieve the JSON files as strings?
+    }
+    public async Task UploadingImage(IFormFile image, int counter, string category)
+    {
             //fileExtension will always be a proper fileExtension because of the ValidateImage method
             using (MemoryStream ms = new MemoryStream())
             {
@@ -104,40 +143,13 @@ public class ImageService: IImageService
                         Category = category,
                         DatasetsIds = new List<int>() { 1, 2 },
                     };
-                /*
-                Below functionality of cross-adding the image to the assigned datasets
-                is overriden by the hard-code creation of datasets in Api, Program.cs
-                The idea for future reference is that when uploading an image, the user
-                inputs the names (ids) of datasets, and we can use below code (without
-                hard-coded ids) to cross-add the images to the relevant datasets.
-                */
-                var neededDataset = _DbContext.Datasets.Select(Dataset => Dataset)
-                    .Where(Dataset =>
-                        Dataset.Id == 1 || Dataset.Id == 2); //TODO dont do this - this is hardcoded for testing
+               
+                await AddImagesToDatasets(thisImage);
+                
+                await ConvertAndUploadAsJSON(thisImage, counter);
 
-                foreach (Dataset dataset in neededDataset)
-
-                {
-                    dataset.ImageIds.Add(thisImage.Id); //adds images to the datasets
-                    await _DbContext.SaveChangesAsync();
-                }
-
-                string jsonString = System.Text.Json.JsonSerializer.Serialize(thisImage); //objects becomes JSON string
-                var byteContent = System.Text.Encoding.UTF8.GetBytes(jsonString); //JSON string becomes byte array
-
-
-                BlobClient thisImageBlobClient = containerClient.GetBlobClient($"{counter}.json");
-
-                var blobHeaders = new BlobHttpHeaders
-                {
-                    ContentType = "application/json"
-                };
-
-                // Trigger the upload function to push the data to blob
-                await thisImageBlobClient.UploadAsync(new MemoryStream(byteContent),
-                    blobHeaders); //uploaded as byte array
-                //Should it be uploaded as a string instead? So far all endpoints retrieve the JSON files as strings?
             }
     }
+    
     
 }

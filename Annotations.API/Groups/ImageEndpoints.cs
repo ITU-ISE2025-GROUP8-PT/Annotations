@@ -105,7 +105,7 @@ public static class ImageEndpoints
         //will only reach here if it cannot find an image with the id of the correct file type,
         //or else the request will terminate inside the for-loop
         Console.WriteLine("Cannot retrieve image because it doesn't exist");
-        return null;
+        return "Cannot retrieve image because it doesn't exist";
     }
     
     public static async Task<string[]> FilterImagesHandler(string category, [FromServices] IAzureClientFactory<BlobServiceClient> clientFactory, 

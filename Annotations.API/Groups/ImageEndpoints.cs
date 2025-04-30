@@ -58,8 +58,7 @@ public static class ImageEndpoints
         ValidationResponse response = _imageService.ValidateImage(image);
         if (!response.Success)
         {
-            Console.WriteLine("rejecting image");
-            Console.WriteLine(response.Message);
+            _imageService.UploadImageError(response);
             return Results.StatusCode(422);
             //TODO: how should the end user see this?
         }

@@ -236,7 +236,7 @@ public class ImageService: IImageService
             
             return new GetImageResult(true, await convertToJSONString(blobClient));
         }
-        return new GetImageResult(false, null);
+        return new GetImageResult(false, "");
     }
 
     public async Task<DatasetModel[]> GetAllDatasets()

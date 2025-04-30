@@ -17,18 +17,8 @@ namespace Annotations.API.Groups;
 public static class ImagesGroup
 {
     private static int _counter = 0;//change this - it gets reset every time the program resets
-    private record ValidationRespons(bool Success, string Message);
     
-    private static string[] _arrayOfFileExtension = {"png", "jpg", "jpeg"};
-    
-
-    /// <summary>
-    /// Helping method that validates an image based on type, size, and also checks if it even contains anything
-    /// Images can be JPEG, PNG and JPG, and everything else gets rejected
-    /// </summary>
-    /// <param name="file"></param>
-    /// <returns>ValidationResponse - a record that contains a boolean of whether the image is validated, and a message that describes either what went wrong, or that it was successful</returns>
-    
+ 
     public static void MapEndpoints(RouteGroupBuilder pathBuilder)
     {
         pathBuilder.RequireAuthorization();

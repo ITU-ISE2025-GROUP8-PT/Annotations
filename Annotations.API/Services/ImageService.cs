@@ -1,5 +1,6 @@
 using Annotations.Core.Entities;
 using Annotations.Core.Models;
+using Azure;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using Microsoft.EntityFrameworkCore;
@@ -18,7 +19,7 @@ public interface IImageService
     Task<string> convertToJSONString(BlobClient blobClient);
     Task UploadingImage(IFormFile image, int counter, string category);
     void UploadImageError(ValidationResponse response);
-    Task<ImageData> GetImageForFiltering(BlobContainerClient containerClient, BlobItem blobItem);
+    Task<HashSet<string>> Filter(string category);
 
 
 }
@@ -169,6 +170,29 @@ public class ImageService: IImageService
 
         return new(imageObject, jsonString);
     }
-    
+
+    public async Task<HashSet<string>> Filter(string category)
+    {
+        var containerClient = createContainer();
+
+        var listOfFiles = containerClient.GetBlobsAsync().AsPages();//all data inside of blobContainer
+              
+        HashSet<string> collection = new HashSet<string>();
+        await foreach (Page<BlobItem> blobPage in listOfFiles)
+        {
+            foreach (BlobItem blobItem in blobPage.Values)//every image found
+            {
+                //goes through all images and check for the category
+                var imageData = await GetImageForFiltering(containerClient, blobItem);
+                if (imageData.Image.Category == category)
+                {
+                    collection.Add(imageData.JSONString);
+                }
+            }
+
+        }
+        return collection;
+
+    }
     
 }

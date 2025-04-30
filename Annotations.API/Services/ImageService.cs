@@ -11,6 +11,8 @@ namespace Annotations.API.Services;
 public record ValidationResponse(bool Success, string Message);
 public record ImageData(ImageModel Image, string JSONString);
 
+public record GetImageResult(bool Success, byte[] image);
+
 public interface IImageService
 
 {
@@ -21,6 +23,8 @@ public interface IImageService
     void UploadImageError(ValidationResponse response);
     Task<HashSet<string>> Filter(string category);
     Task<DatasetModel> GetDataset(string dataset);
+    Task<GetImageResult> GetImage(string imageId, CancellationTokenSource cts);
+
 
 
 }
@@ -213,9 +217,24 @@ public class ImageService: IImageService
         if (datasetModel == null)
         {
             throw new Exception("No dataset found");
-        }else{}
+        }
 
         return datasetModel;
+    }
+
+    public async Task<GetImageResult> GetImage(string imageId, CancellationTokenSource cts)
+    {
+        //enters images
+        var containerClient = createContainer();
+        BlobClient blobClient = containerClient.GetBlobClient(imageId + ".json");
+        if (!blobClient.Exists(cts.Token).ToString()
+                .Contains("404")) //checks if the blobClient is empty/couldn't find the image of that format
+        {
+            using var memoryStream = new MemoryStream();
+            await blobClient.DownloadToAsync(memoryStream);
+            return new GetImageResult(true, memoryStream.ToArray());
+        }
+        return new GetImageResult(false, null);
     }
     
 }

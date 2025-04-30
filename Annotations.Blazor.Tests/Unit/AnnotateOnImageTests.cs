@@ -33,6 +33,6 @@ public class AnnotateOnImageTests : TestContext
         var annotatePage = RenderComponent<AnnotateOnImage>();
         
         // Assert
-        annotatePage.Find("img").MarkupMatches("<img src=\"img/billede1.png\" alt=\"Profile Picture\" style=\"width: 80px; height: 80px; border-radius: 50%; object-fit: cover;\">");
+        annotatePage.Find("img").MarkupMatches("<img src=\"img/billede1.png\" alt=\"Profile Picture\" class=\"MatOverwriteProfilePic\">");
     }
 }

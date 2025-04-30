@@ -94,20 +94,14 @@ public static class ImageEndpoints
         //insert password restrictions here 🐿️
         var cts = new CancellationTokenSource(5000);
 
-        //enters images
-        var containerClient = _imageService.createContainer();
-        BlobClient blobClient = containerClient.GetBlobClient(imageId + ".json");
-        if (!blobClient.Exists(cts.Token).ToString()
-                .Contains("404")) //checks if the blobClient is empty/couldn't find the image of that format
+        var getImageResult = await _imageService.GetImage(imageId, cts);
+
+        if (getImageResult.Success)
         {
-            using var memoryStream = new MemoryStream();
-            await blobClient.DownloadToAsync(memoryStream);
-            return Results.File(memoryStream.ToArray(),
-                "application/json"); //because it is a return statement the for-loop will not continue after finding the image
+            return Results.File(getImageResult.image,
+                "application/json"); 
         }
-
-                
-
+        
         //will only reach here if it cannot find an image with the id of the correct file type,
         //or else the request will terminate inside the for-loop
         Console.WriteLine("Cannot retrieve image because it doesn't exist");

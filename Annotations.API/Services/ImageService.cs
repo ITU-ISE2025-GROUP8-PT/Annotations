@@ -110,10 +110,9 @@ public class ImageService: IImageService
         }
     }
 
-    private async Task ConvertAndUploadAsJSON(ImageModel thisImage, int counter)
+    private async Task UploadAsJSON(int counter, string jsonString)
     {
         var containerClient = createContainer();
-        string jsonString = System.Text.Json.JsonSerializer.Serialize(thisImage); //objects becomes JSON string
         var byteContent = System.Text.Encoding.UTF8.GetBytes(jsonString); //JSON string becomes byte array
         BlobClient thisImageBlobClient = containerClient.GetBlobClient($"{counter}.json");
 
@@ -145,8 +144,8 @@ public class ImageService: IImageService
                     };
                
                 await AddImagesToDatasets(thisImage);
-                
-                await ConvertAndUploadAsJSON(thisImage, counter);
+                string jsonString = System.Text.Json.JsonSerializer.Serialize(thisImage); //objects becomes JSON string
+                await UploadAsJSON(counter, jsonString);
 
             }
     }

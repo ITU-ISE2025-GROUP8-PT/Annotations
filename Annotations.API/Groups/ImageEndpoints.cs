@@ -119,24 +119,7 @@ public static class ImageEndpoints
     {
         var cts = new CancellationTokenSource(5000);
 
-        var containerClient = _imageService.createContainer();
-
-        var listOfFiles = containerClient.GetBlobsAsync().AsPages();//all data inside of blobContainer
-              
-        HashSet<string> collection = new HashSet<string>();
-        await foreach (Page<BlobItem> blobPage in listOfFiles)
-        {
-            foreach (BlobItem blobItem in blobPage.Values)//every image found
-            {
-                //goes through all images and check for the category
-                var imageData = await _imageService.GetImageForFiltering(containerClient, blobItem);
-                if (imageData.Image.Category == category)
-                {
-                    collection.Add(imageData.JSONString);
-                }
-            }
-
-        }
+        HashSet<string> collection = await _imageService.Filter(category);
 
         if (collection.Count() == 0)
         {

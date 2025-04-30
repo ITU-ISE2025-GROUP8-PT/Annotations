@@ -129,15 +129,10 @@ public static class ImageEndpoints
             foreach (BlobItem blobItem in blobPage.Values)//every image found
             {
                 //goes through all images and check for the category
-                var blobClient = containerClient.GetBlobClient(blobItem.Name);
-                string jsonString = await _imageService.convertToJSONString(blobClient);
-                var imageObject = System.Text.Json.JsonSerializer.Deserialize<ImageModel>(jsonString);//deserialize so it becomes imageModel
-                if (imageObject == null)
+                var imageData = await _imageService.GetImageForFiltering(containerClient, blobItem);
+                if (imageData.Image.Category == category)
                 {
-                    throw new Exception("image object is null");}
-                if (imageObject.Category == category)
-                {
-                    collection.Add(jsonString);
+                    collection.Add(imageData.JSONString);
                 }
             }
 

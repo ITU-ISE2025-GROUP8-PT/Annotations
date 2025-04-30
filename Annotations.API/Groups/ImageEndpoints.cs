@@ -72,17 +72,11 @@ public static class ImageEndpoints
     {
         var cts = new CancellationTokenSource(5000);
 
-        var containerClient = _imageService.createContainer();
-        BlobClient blobClient = containerClient.GetBlobClient(imageId + ".json");
-        if (!blobClient.Exists(cts.Token).ToString().Contains("404"))
+        bool deleting = await _imageService.DeleteImage(imageId, cts);
+        if (deleting)
         {
-            /*A snapshot is a read-only version of a blob that's taken at a point in time.
-            As of right now, we do not make snapshots of blobs, but it is still possible to manually create.*/
-            await blobClient.DeleteAsync(snapshotsOption: DeleteSnapshotsOption.IncludeSnapshots);
-            Console.WriteLine("image deleted successfully");
             return Results.StatusCode(204);
         }
-
             
         Console.WriteLine("Cannot delete image because it doesn't exist");
         return Results.StatusCode(404);

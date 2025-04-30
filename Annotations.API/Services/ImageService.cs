@@ -13,6 +13,7 @@ public record ImageData(ImageModel Image, string JSONString);
 
 public record GetImageResult(bool Success, string image);
 
+
 public interface IImageService
 
 {
@@ -25,6 +26,8 @@ public interface IImageService
     Task<DatasetModel> GetDataset(string dataset);
     Task<GetImageResult> GetImage(string imageId, CancellationTokenSource cts, BlobContainerClient containerClient);
     Task<DatasetModel[]> GetAllDatasets();
+    Task<bool> DeleteImage(string imageId, CancellationTokenSource cts);
+
 
 
 
@@ -252,6 +255,22 @@ public class ImageService: IImageService
                 
         //DatasetModel list is converted to Array for sending to Blazor front-end
         return datasets.ToArray();
+    }
+
+    public async Task<bool> DeleteImage(string imageId, CancellationTokenSource cts)
+    {
+        var containerClient = createContainer();
+        BlobClient blobClient = containerClient.GetBlobClient(imageId + ".json");
+        if (!blobClient.Exists(cts.Token).ToString().Contains("404"))
+        {
+            /*A snapshot is a read-only version of a blob that's taken at a point in time.
+            As of right now, we do not make snapshots of blobs, but it is still possible to manually create.*/
+            await blobClient.DeleteAsync(snapshotsOption: DeleteSnapshotsOption.IncludeSnapshots);
+            Console.WriteLine("image deleted successfully");
+            return true;
+        }
+
+        return false;
     }
     
 }

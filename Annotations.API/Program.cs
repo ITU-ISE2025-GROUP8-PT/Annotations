@@ -83,7 +83,11 @@ builder.Services.AddAzureClients(clientBuilder =>
 
 builder.Services.AddScoped<IImageService, ImageService>();
 var app = builder.Build();
-
+using (var scope = app.Services.CreateScope())
+{
+    using var context = scope.ServiceProvider.GetRequiredService<AnnotationsDbContext>();
+    context.Database.Migrate();
+}
 
 UserEndpoints.MapEndpoints(app.MapGroup("/users").RequireAuthorization());
 ImageEndpoints.MapEndpoints(app.MapGroup("/images").RequireAuthorization());//TODO    DONT DO THIS. REMOVE 

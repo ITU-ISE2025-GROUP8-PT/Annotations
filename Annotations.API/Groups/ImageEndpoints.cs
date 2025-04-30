@@ -141,7 +141,7 @@ public static class ImageEndpoints
             var containerClient = _imageService.createContainer();
 
             //foreach (DatasetModel datasetModel in datasets)//guaranteed to only be one dataset in "datasets", so this is not linear time. 
-            //{//there is a better way of doing this
+            //there is a better way of doing this
             
                 foreach (int ids in datasetModel.ImageIds)
                 {
@@ -157,7 +157,7 @@ public static class ImageEndpoints
                         break;
                     }
                 }
-            //}
+            
             return collection.ToArray();//returns array of all images as JSON strings
             
     }

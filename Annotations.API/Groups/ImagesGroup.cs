@@ -76,6 +76,7 @@ public static class ImagesGroup
                         string jsonString = System.Text.Json.JsonSerializer.Serialize(thisImage);//objects becomes JSON string
                         var byteContent = System.Text.Encoding.UTF8.GetBytes(jsonString);//JSON string becomes byte array
 
+                        
                         BlobClient thisImageBlobClient = containerClient.GetBlobClient($"{_counter}.json");
                         _counter++;
 

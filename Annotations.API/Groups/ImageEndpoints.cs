@@ -1,15 +1,8 @@
 using Annotations.API.Services;
 using Annotations.Core.Models;
-using Microsoft.AspNetCore.Http.Extensions;
-using Annotations.Core.Entities;
-using Azure;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Azure.Storage.Blobs;
-using Azure.Storage.Blobs.Models;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.Extensions.Azure;
-using SQLitePCL;
 
 
 namespace Annotations.API.Groups;

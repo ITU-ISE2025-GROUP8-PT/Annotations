@@ -18,12 +18,11 @@ public interface IImageService
 
 {
     ValidationResponse ValidateImage(IFormFile file);
-    BlobContainerClient createContainer();
     Task UploadingImage(IFormFile image, int counter, string category);
     void UploadImageError(ValidationResponse response);
     Task<HashSet<string>> Filter(string category);
     Task<DatasetModel> GetDataset(string dataset);
-    Task<GetImageResult> GetImage(string imageId, BlobContainerClient containerClient);
+    Task<GetImageResult> GetImage(string imageId);
     Task<DatasetModel[]> GetAllDatasets();
     Task<bool> DeleteImage(string imageId);
 
@@ -37,11 +36,14 @@ public class ImageService: IImageService
     private static string[] _arrayOfFileExtension = {"png", "jpg", "jpeg"};
     private readonly IAzureClientFactory<BlobServiceClient> _clientFactory;
     private readonly AnnotationsDbContext _DbContext;
+    private readonly BlobContainerClient _containerClient;
 
     public ImageService(IAzureClientFactory<BlobServiceClient> clientFactory , AnnotationsDbContext context)
     {
         _clientFactory = clientFactory;
         _DbContext = context;
+        var blobServiceClient = _clientFactory.CreateClient("Default");
+        _containerClient = blobServiceClient.GetBlobContainerClient("images");
     }
     /// <summary>
     /// Helping method that validates an image based on type, size, and also checks if it even contains anything
@@ -71,16 +73,6 @@ public class ImageService: IImageService
         //if the code reaches this point, then the file type is none of the permitted file types, so an error is thrown
         return new ValidationResponse(false, "File is not a valid image.");
         
-    }
-    /// <summary>
-    /// Creates a BlobContainerClient
-    /// </summary>
-    /// <param name="clientFactory">BlobServiceClient from our AzureClientFactory</param>
-    /// <returns>BlobContainerClient</returns>
-    public BlobContainerClient createContainer()
-    {
-        var blobServiceClient = _clientFactory.CreateClient("Default");
-        return blobServiceClient.GetBlobContainerClient("images");
     }
 
     /// <summary>
@@ -121,9 +113,9 @@ public class ImageService: IImageService
 
     private async Task UploadAsJSON(int counter, string jsonString)
     {
-        var containerClient = createContainer();
+        
         var byteContent = System.Text.Encoding.UTF8.GetBytes(jsonString); //JSON string becomes byte array
-        BlobClient thisImageBlobClient = containerClient.GetBlobClient($"{counter}.json");
+        BlobClient thisImageBlobClient = _containerClient.GetBlobClient($"{counter}.json");
 
         var blobHeaders = new BlobHttpHeaders
         {
@@ -181,9 +173,7 @@ public class ImageService: IImageService
 
     public async Task<HashSet<string>> Filter(string category)
     {
-        var containerClient = createContainer();
-
-        var listOfFiles = containerClient.GetBlobsAsync().AsPages();//all data inside of blobContainer
+        var listOfFiles = _containerClient.GetBlobsAsync().AsPages();//all data inside of blobContainer
               
         HashSet<string> collection = new HashSet<string>();
         await foreach (Page<BlobItem> blobPage in listOfFiles)
@@ -191,7 +181,7 @@ public class ImageService: IImageService
             foreach (BlobItem blobItem in blobPage.Values)//every image found
             {
                 //goes through all images and check for the category
-                var imageData = await GetImageForFiltering(containerClient, blobItem);
+                var imageData = await GetImageForFiltering(_containerClient, blobItem);
                 if (imageData.Image.Category == category)
                 {
                     collection.Add(imageData.JSONString);
@@ -225,11 +215,11 @@ public class ImageService: IImageService
         return datasetModel;
     }
 
-    public async Task<GetImageResult> GetImage(string imageId,BlobContainerClient containerClient)
+    public async Task<GetImageResult> GetImage(string imageId)
     {
         var cts = new CancellationTokenSource(5000);
         //enters images
-        BlobClient blobClient = containerClient.GetBlobClient(imageId + ".json");
+        BlobClient blobClient = _containerClient.GetBlobClient(imageId + ".json");
         if (!blobClient.Exists(cts.Token).ToString()
                 .Contains("404")) //checks if the blobClient is empty/couldn't find the image of that format
         {
@@ -260,8 +250,8 @@ public class ImageService: IImageService
     public async Task<bool> DeleteImage(string imageId)
     {
         var cts = new CancellationTokenSource(5000);
-        var containerClient = createContainer();
-        BlobClient blobClient = containerClient.GetBlobClient(imageId + ".json");
+        
+        BlobClient blobClient = _containerClient.GetBlobClient(imageId + ".json");
         if (!blobClient.Exists(cts.Token).ToString().Contains("404"))
         {
             /*A snapshot is a read-only version of a blob that's taken at a point in time.

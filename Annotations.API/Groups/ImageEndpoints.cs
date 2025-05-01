@@ -86,9 +86,7 @@ public static class ImageEndpoints
     {
         //insert password restrictions here 🐿️
         
-        var containerClient = _imageService.createContainer();
-
-        var getImageResult = await _imageService.GetImage(imageId, containerClient);
+        var getImageResult = await _imageService.GetImage(imageId);
 
         if (getImageResult.Success)
         {
@@ -132,7 +130,6 @@ public static class ImageEndpoints
             var datasetModel = await _imageService.GetDataset(dataset);
             
             HashSet<string> collection = new HashSet<string>();
-            var containerClient = _imageService.createContainer();
 
             //foreach (DatasetModel datasetModel in datasets)//guaranteed to only be one dataset in "datasets", so this is not linear time. 
             //there is a better way of doing this
@@ -140,7 +137,7 @@ public static class ImageEndpoints
                 foreach (int ids in datasetModel.ImageIds)
                 {
                     Console.WriteLine(ids);
-                    var getImageResult = await _imageService.GetImage(ids.ToString(), containerClient);
+                    var getImageResult = await _imageService.GetImage(ids.ToString());
                     if (getImageResult.Success)
                     {
                         collection.Add(getImageResult.image);

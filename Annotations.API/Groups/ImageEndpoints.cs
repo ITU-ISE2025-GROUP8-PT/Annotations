@@ -70,9 +70,8 @@ public static class ImageEndpoints
     public static async Task<IResult> DeleteImageHandler(string imageId, [FromServices] IAzureClientFactory<BlobServiceClient> clientFactory, 
         [FromServices] IImageService _imageService)
     {
-        var cts = new CancellationTokenSource(5000);
 
-        bool deleting = await _imageService.DeleteImage(imageId, cts);
+        bool deleting = await _imageService.DeleteImage(imageId);
         if (deleting)
         {
             return Results.StatusCode(204);
@@ -86,10 +85,10 @@ public static class ImageEndpoints
         [FromServices] IImageService _imageService)
     {
         //insert password restrictions here 🐿️
-        var cts = new CancellationTokenSource(5000);
+        
         var containerClient = _imageService.createContainer();
 
-        var getImageResult = await _imageService.GetImage(imageId, cts,containerClient);
+        var getImageResult = await _imageService.GetImage(imageId, containerClient);
 
         if (getImageResult.Success)
         {
@@ -105,7 +104,6 @@ public static class ImageEndpoints
     public static async Task<string[]> FilterImagesHandler(string category, [FromServices] IAzureClientFactory<BlobServiceClient> clientFactory, 
         [FromServices] IImageService _imageService)
     {
-        var cts = new CancellationTokenSource(5000);
 
         HashSet<string> collection = await _imageService.Filter(category);
 
@@ -122,9 +120,6 @@ public static class ImageEndpoints
     
     public static async Task<DatasetModel[]> RetrieveDatasetHandler(AnnotationsDbContext context, [FromServices] IImageService _imageService)
     {
-        var cts = new CancellationTokenSource(5000);
-
-        
         return await _imageService.GetAllDatasets();
 
     }
@@ -133,7 +128,6 @@ public static class ImageEndpoints
         [FromServices] IAzureClientFactory<BlobServiceClient> clientFactory, [FromServices] IImageService _imageService)
     {
          //TODO: almost identical code as "/filter/{category}" - remove the code duplication
-            var cts = new CancellationTokenSource(5000);
 
             var datasetModel = await _imageService.GetDataset(dataset);
             
@@ -146,7 +140,7 @@ public static class ImageEndpoints
                 foreach (int ids in datasetModel.ImageIds)
                 {
                     Console.WriteLine(ids);
-                    var getImageResult = await _imageService.GetImage(ids.ToString(),cts, containerClient);
+                    var getImageResult = await _imageService.GetImage(ids.ToString(), containerClient);
                     if (getImageResult.Success)
                     {
                         collection.Add(getImageResult.image);

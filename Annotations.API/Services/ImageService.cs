@@ -23,9 +23,9 @@ public interface IImageService
     void UploadImageError(ValidationResponse response);
     Task<HashSet<string>> Filter(string category);
     Task<DatasetModel> GetDataset(string dataset);
-    Task<GetImageResult> GetImage(string imageId, CancellationTokenSource cts, BlobContainerClient containerClient);
+    Task<GetImageResult> GetImage(string imageId, BlobContainerClient containerClient);
     Task<DatasetModel[]> GetAllDatasets();
-    Task<bool> DeleteImage(string imageId, CancellationTokenSource cts);
+    Task<bool> DeleteImage(string imageId);
 
 
 
@@ -225,8 +225,9 @@ public class ImageService: IImageService
         return datasetModel;
     }
 
-    public async Task<GetImageResult> GetImage(string imageId, CancellationTokenSource cts,BlobContainerClient containerClient)
+    public async Task<GetImageResult> GetImage(string imageId,BlobContainerClient containerClient)
     {
+        var cts = new CancellationTokenSource(5000);
         //enters images
         BlobClient blobClient = containerClient.GetBlobClient(imageId + ".json");
         if (!blobClient.Exists(cts.Token).ToString()
@@ -256,8 +257,9 @@ public class ImageService: IImageService
         return datasets.ToArray();
     }
 
-    public async Task<bool> DeleteImage(string imageId, CancellationTokenSource cts)
+    public async Task<bool> DeleteImage(string imageId)
     {
+        var cts = new CancellationTokenSource(5000);
         var containerClient = createContainer();
         BlobClient blobClient = containerClient.GetBlobClient(imageId + ".json");
         if (!blobClient.Exists(cts.Token).ToString().Contains("404"))

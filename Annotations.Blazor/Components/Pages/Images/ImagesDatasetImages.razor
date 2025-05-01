@@ -1,7 +1,5 @@
 @rendermode InteractiveServer
 @page "/images/datasets/{dataset}/"
-@inject IHttpClientFactory ClientFactory
-@inject IHttpContextAccessor httpContextAccessor
 @inject IAPIServices IapiServices
 @attribute [Authorize(Roles = "Administrator, Manager")]
 
@@ -11,13 +9,13 @@
 {
     <Error/>
 }
-else if (!_existenseOfImages) //This will show on screen in a milisecond before imgs load. Should it be "Loading..."?
+else if (Images.Length == 0) //This will show on screen in a milisecond before imgs load. Should it be "Loading..."?
 {
-    <p><em>This Dataset is empty.</em></p>
+    <p><em>Please wait a few seconds. If no images load, this dataset is empty.</em></p>
 } else
 {
     <div style=" display: flex; flex-direction:row;"><!--To make both lines on the same row -->
-        <span style="padding:2%; font-weight: bold; width: 90%; font-size: 215%">Dataset @dataset</span>
+        <span style="padding:2%; font-weight: bold; width: 90%; font-size: 215%">Dataset @Dataset</span>
         <button class="filterButton">Filter by...</button>
     </div>
 
@@ -35,21 +33,13 @@ else if (!_existenseOfImages) //This will show on screen in a milisecond before 
 
 @code{
     //TODO: code duplication from Image.Filter.razor
-    [Parameter] public string dataset { get; set; } = "";//get access to parameter from URL/get request
-    public ImageModelWeb[] images = Array.Empty<ImageModelWeb>(); //all imgs from API turned into local datatype class (see further down)
-    private bool _errorExist = false;
-    private bool _existenseOfImages = true;
-
+    [Parameter] public string Dataset { get; set; } = "";//get access to parameter from URL/get request
+    public ImageModelWeb[] Images = Array.Empty<ImageModelWeb>(); //all imgs from API turned into local datatype class (see further down)
+    private bool _errorExist;
+    
     protected override async Task OnInitializedAsync()
     {
-        var response = await IapiServices.createGetResponse( $"/images/datasets/{dataset}");
-        
-        if (!response.IsSuccessStatusCode)
-        {
-            _existenseOfImages = false;
-        }
-        else
-        {
+        var response = await IapiServices.createGetResponse( $"/images/datasets/{Dataset}");
 
             try
             {
@@ -57,12 +47,7 @@ else if (!_existenseOfImages) //This will show on screen in a milisecond before 
                 string[] answer = await response.Content.ReadFromJsonAsync<string[]>() ?? throw new NoNullAllowedException(); //string array of JSON files of the images as strings
 
                 //initialize array for storing images to be shown on the webpage
-                images = new ImageModelWeb[answer.Length];
-
-                if (answer.Length == 0)
-                {
-                    _existenseOfImages = false;
-                }
+                Images = new ImageModelWeb[answer.Length];
 
                 for (int i = 0; i < answer.Length; i++)
                 {
@@ -75,17 +60,17 @@ else if (!_existenseOfImages) //This will show on screen in a milisecond before 
                     var imageData = imageObject.ImageData;
 
                     //Adding Base64 data and alt text as local ImageModel type to array
-                    images[i] = new ImageModelWeb(System.Convert.ToBase64String(imageData), imageObject.Description);
+                    Images[i] = new ImageModelWeb(Convert.ToBase64String(imageData), imageObject.Description);
                 }
             }
             catch //if nothing is retrieved - prints out error
             {
                 Console.WriteLine("Status code: " + response.StatusCode);
-                images = new ImageModelWeb[1];
-                images[0] = new ImageModelWeb("", response.StatusCode.ToString());
+                Images = new ImageModelWeb[1];
+                Images[0] = new ImageModelWeb("", response.StatusCode.ToString());
                 _errorExist = true;
             }
-        }
+        
     }
 
     //local datatype class for images
@@ -94,9 +79,9 @@ else if (!_existenseOfImages) //This will show on screen in a milisecond before 
         public string Base64Data {get; set;}
         public string AltText {get; set;}
         
-        public ImageModelWeb (string Base64DataInput, string AltTextInput) {
-            Base64Data = Base64DataInput;
-            AltText = AltTextInput;
+        public ImageModelWeb (string base64DataInput, string altTextInput) {
+            Base64Data = base64DataInput;
+            AltText = altTextInput;
         }
     }
 
@@ -105,7 +90,7 @@ else if (!_existenseOfImages) //This will show on screen in a milisecond before 
     private async ValueTask<ItemsProviderResult<ImageModelWeb>> LoadImages(ItemsProviderRequest request)
     {
         await Task.Yield();
-         return new ItemsProviderResult<ImageModelWeb>(images, images.Length);
+         return new ItemsProviderResult<ImageModelWeb>(Images, Images.Length);
     } 
 
     /* Converts the image base64 string into an url the website can render

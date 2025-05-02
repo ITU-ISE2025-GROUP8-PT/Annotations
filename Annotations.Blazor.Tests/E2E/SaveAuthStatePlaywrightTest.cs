@@ -12,7 +12,11 @@ public class SaveAuthStatePlaywrightTest
         string[] loginCred = await File.ReadAllLinesAsync("../../../../playwright/.auth/testUser.txt");
         using var playwright = await Playwright.CreateAsync();
         await using var browser = await playwright.Chromium.LaunchAsync();
-        var context = await browser.NewContextAsync();
+        var contextOptions = new BrowserNewContextOptions
+        {
+            IgnoreHTTPSErrors = true
+        };
+        var context = await browser.NewContextAsync(contextOptions); 
         var page = await context.NewPageAsync();
 
         await page.GotoAsync("https://localhost:7238/authentication/login");
@@ -36,7 +40,11 @@ public class SaveAuthStatePlaywrightTest
         string[] loginCred = await File.ReadAllLinesAsync("../../../../playwright/.auth/testUserAnnotationsUser.txt");
         using var playwright = await Playwright.CreateAsync();
         await using var browser = await playwright.Chromium.LaunchAsync();
-        var context = await browser.NewContextAsync();
+        var contextOptions = new BrowserNewContextOptions
+        {
+            IgnoreHTTPSErrors = true
+        };
+        var context = await browser.NewContextAsync(contextOptions); 
         var page = await context.NewPageAsync();
 
         await page.GotoAsync("https://localhost:7238/authentication/login");

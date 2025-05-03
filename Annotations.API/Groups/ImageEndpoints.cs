@@ -10,8 +10,9 @@ namespace Annotations.API.Groups;
 public static class ImageEndpoints
 {
     private static int _counter = 0;//change this - it gets reset every time the program resets
-    
  
+    
+    
     public static void MapEndpoints(RouteGroupBuilder pathBuilder)
     {
         pathBuilder.RequireAuthorization().DisableAntiforgery();
@@ -42,9 +43,9 @@ public static class ImageEndpoints
     }
 
     
+    
     //This is the upload endpoint where the image first gets validated,
     //and then gets uploaded into your local Azurite BlobStorage as a JSON file
-
     public static async Task<IResult> UploadImageHandler(IFormFile image, string category, AnnotationsDbContext context, 
          [FromServices] IImageService _imageService)
     {
@@ -60,6 +61,8 @@ public static class ImageEndpoints
         return Results.StatusCode(200);
     }
 
+    
+    
     public static async Task<IResult> DeleteImageHandler(string imageId, [FromServices] IAzureClientFactory<BlobServiceClient> clientFactory, 
         [FromServices] IImageService _imageService)
     {
@@ -73,6 +76,8 @@ public static class ImageEndpoints
         Console.WriteLine("Cannot delete image because it doesn't exist");
         return Results.StatusCode(404);
     }
+    
+    
     
     public static async Task<string> RetrieveImageHandler([FromRoute] string imageId, [FromServices] IAzureClientFactory<BlobServiceClient> clientFactory, 
         [FromServices] IImageService _imageService)
@@ -92,6 +97,8 @@ public static class ImageEndpoints
         return "Cannot retrieve image because it doesn't exist";
     }
     
+    
+    
     public static async Task<string[]> FilterImagesHandler(string category, [FromServices] IAzureClientFactory<BlobServiceClient> clientFactory, 
         [FromServices] IImageService _imageService)
     {
@@ -109,11 +116,15 @@ public static class ImageEndpoints
 
     }
     
+    
+    
     public static async Task<DatasetModel[]> RetrieveDatasetHandler(AnnotationsDbContext context, [FromServices] IImageService _imageService)
     {
         return await _imageService.GetAllDatasets();
 
     }
+    
+    
     
     public static async Task<string[]> RetrieveImagesFromDatasetHandler(string dataset, AnnotationsDbContext context, 
         [FromServices] IAzureClientFactory<BlobServiceClient> clientFactory, [FromServices] IImageService _imageService)

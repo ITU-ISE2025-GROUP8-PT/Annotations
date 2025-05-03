@@ -15,7 +15,6 @@ public record GetImageResult(bool Success, string image);
 
 
 public interface IImageService
-
 {
     ValidationResponse ValidateImage(IFormFile file);
     Task UploadingImage(IFormFile image, int counter, string category);
@@ -25,11 +24,9 @@ public interface IImageService
     Task<GetImageResult> GetImage(string imageId);
     Task<DatasetModel[]> GetAllDatasets();
     Task<bool> DeleteImage(string imageId);
-
-
-
-
 }
+
+
 
 public class ImageService: IImageService
 {
@@ -38,6 +35,8 @@ public class ImageService: IImageService
     private readonly AnnotationsDbContext _DbContext;
     private readonly BlobContainerClient _containerClient;
 
+    
+    
     public ImageService(IAzureClientFactory<BlobServiceClient> clientFactory , AnnotationsDbContext context)
     {
         _clientFactory = clientFactory;
@@ -45,6 +44,9 @@ public class ImageService: IImageService
         var blobServiceClient = _clientFactory.CreateClient("Default");
         _containerClient = blobServiceClient.GetBlobContainerClient("images");
     }
+    
+    
+    
     /// <summary>
     /// Helping method that validates an image based on type, size, and also checks if it even contains anything
     /// Images can be JPEG, PNG and JPG, and everything else gets rejected
@@ -75,6 +77,8 @@ public class ImageService: IImageService
         
     }
 
+    
+    
     /// <summary>
     /// Downloads a BlobClient to a memory stream.
     /// Afterward it gets converted to a JSON file in the form of a string
@@ -87,6 +91,8 @@ public class ImageService: IImageService
         await blobClient.DownloadToAsync(memoryStream);
         return System.Text.Encoding.UTF8.GetString(memoryStream.ToArray());//JSON file as string
     }
+    
+    
     
     /// <summary>
     ///Below functionality of cross-adding the image to the assigned datasets
@@ -110,6 +116,8 @@ public class ImageService: IImageService
             await _DbContext.SaveChangesAsync();
         }
     }
+    
+    
 
     private async Task UploadAsJSON(int counter, string jsonString)
     {
@@ -127,6 +135,9 @@ public class ImageService: IImageService
             blobHeaders); //uploaded as byte array
         //Should it be uploaded as a string instead? So far all endpoints retrieve the JSON files as strings?
     }
+    
+    
+    
     public async Task UploadingImage(IFormFile image, int counter, string category)
     {
             //fileExtension will always be a proper fileExtension because of the ValidateImage method
@@ -151,12 +162,15 @@ public class ImageService: IImageService
             }
     }
 
+    
+    
     public void UploadImageError(ValidationResponse response)
     {
         Console.WriteLine("rejecting image");
         Console.WriteLine(response.Message);
     }
 
+    
     
     public async Task<ImageData> GetImageForFiltering(BlobContainerClient containerClient, BlobItem blobItem)
     {
@@ -171,6 +185,8 @@ public class ImageService: IImageService
         return new(imageObject, jsonString);
     }
 
+    
+    
     public async Task<HashSet<string>> Filter(string category)
     {
         var listOfFiles = _containerClient.GetBlobsAsync().AsPages();//all data inside of blobContainer
@@ -192,6 +208,8 @@ public class ImageService: IImageService
         return collection;
 
     }
+    
+    
 
     public async Task<DatasetModel> GetDataset(string dataset)
     {
@@ -215,6 +233,8 @@ public class ImageService: IImageService
         return datasetModel;
     }
 
+    
+    
     public async Task<GetImageResult> GetImage(string imageId)
     {
         var cts = new CancellationTokenSource(5000);
@@ -228,6 +248,8 @@ public class ImageService: IImageService
         }
         return new GetImageResult(false, "");
     }
+    
+    
 
     public async Task<DatasetModel[]> GetAllDatasets()
     {
@@ -246,6 +268,8 @@ public class ImageService: IImageService
         //DatasetModel list is converted to Array for sending to Blazor front-end
         return datasets.ToArray();
     }
+    
+    
 
     public async Task<bool> DeleteImage(string imageId)
     {

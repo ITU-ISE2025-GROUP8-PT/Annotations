@@ -13,7 +13,12 @@ public class AnnotationsDbContext : IdentityDbContext<User>
     /// <summary>
     /// Database set of users. Currently unused.
     /// </summary>
-    public DbSet<User> Users { get; set; }
+    override public DbSet<User> Users { get; set; }
+    //Override has been added to circumvent IdentityUser warning
+    //for hiding inherited member (IdentityUserContext)
+    
+    public DbSet<Admin> Admins { get; set; }
+    public DbSet<MedicalProfessional> MedicalProfessionals { get; set; }
 
     /// <summary>
     /// Database set of images for research use.
@@ -35,6 +40,8 @@ public class AnnotationsDbContext : IdentityDbContext<User>
     public AnnotationsDbContext(DbContextOptions<AnnotationsDbContext> options) : base(options)
     {
         Users = Set<User>();
+        Admins = Set<Admin>();
+        MedicalProfessionals = Set<MedicalProfessional>();
         Images = Set<Image>();
         Datasets = Set<Dataset>();
         Annotation = Set<Annotation>();
@@ -46,6 +53,7 @@ public class AnnotationsDbContext : IdentityDbContext<User>
     protected override void OnModelCreating(ModelBuilder builder)
 	{
 		base.OnModelCreating(builder);
+
 		
 		//Foreign key setup between AnnotationType and UserId
 		builder.Entity<Annotation>()

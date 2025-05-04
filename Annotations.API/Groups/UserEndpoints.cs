@@ -14,7 +14,7 @@ public static class UserEndpoints
                 var admins = await context.Admins
                     .Select(u => new AdminUserModel
                     {
-                        Id = u.UserId,
+                        Id = int.Parse(u.UserId),
                         FirstName = u.FirstName,
                         LastName = u.LastName,
                         Email = u.Email
@@ -27,7 +27,7 @@ public static class UserEndpoints
                 var medicalProfessionals = await context.MedicalProfessionals
                     .Select(u => new MedicalProfessionalUserModel
                     {
-                        Id = u.UserId,
+                        Id = int.Parse(u.UserId),
                         FirstName = u.FirstName,
                         LastName = u.LastName,
                         Email = u.Email,

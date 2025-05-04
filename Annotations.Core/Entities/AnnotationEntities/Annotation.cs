@@ -11,7 +11,7 @@ public class Annotation
 
     [ForeignKey("User")]
     [Required]
-    public required int UserId { get; set; } //Id of the user, that made the Annotation
+    public required string UserId { get; set; } //Id of the user, that made the Annotation
     
     [ForeignKey("Image")]
     [Required]

@@ -7,7 +7,7 @@ namespace Annotations.Core.Entities;
 public class User : IdentityUser
 {
     [Key]
-    public required int UserId {get; set; }
+    public required string UserId {get; set; }
     [Required]
     [StringLength(50)]
     public required string FirstName { get; set; }

@@ -4,7 +4,7 @@ using Annotations.Core.VesselObjects;
 
 namespace Annotations.API.Groups;
 
-public static class AnnotationsGroup
+public static class AnnotationsEndpoints
 {
 
     public static void MapEndpoints(RouteGroupBuilder pathBuilder)

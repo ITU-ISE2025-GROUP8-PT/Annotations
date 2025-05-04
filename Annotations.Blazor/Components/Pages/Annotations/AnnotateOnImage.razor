@@ -76,9 +76,14 @@
                             </div>
                         </div>
                         <div class="MatOverwriteMarginTop50">
+                            <p>Choose a type here</p>
                             <MatRadioGroup @bind-Value="@_currentVesselAnnotation.Type">
-                                <MatRadioButton TValue="string">Arteries</MatRadioButton>
-                                <MatRadioButton TValue="string">Veins</MatRadioButton>
+                                <div>
+                                    <MatRadioButton TValue="string">Arteries</MatRadioButton>
+                                </div>
+                                <div>
+                                    <MatRadioButton TValue="string">Veins</MatRadioButton>
+                                </div>
                             </MatRadioGroup>
                         </div>
                         

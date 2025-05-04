@@ -20,4 +20,9 @@
     </PackageReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Entities\AnnotationEntities\" />
+    <Folder Include="Models\AnnotationsModels\" />
+  </ItemGroup>
+
 </Project>

@@ -59,7 +59,7 @@ public class AnnotationsDbContext : IdentityDbContext<User>
 		builder.Entity<Annotation>()
 			.HasOne<User>()
 			.WithMany()
-			.HasForeignKey("UserId");
+			.HasForeignKey(u => u.UserId);
 
 		//Foreign key setup between AnnotationType and ImageId
 		builder.Entity<Annotation>()

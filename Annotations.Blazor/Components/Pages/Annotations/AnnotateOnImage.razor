@@ -76,12 +76,20 @@
                             </div>
                         </div>
                         <div class="MatOverwriteMarginTop50">
+                            <MatRadioGroup @bind-Value="@_currentVesselAnnotation.Type">
+                                <MatRadioButton TValue="string">Arteries</MatRadioButton>
+                                <MatRadioButton TValue="string">Veins</MatRadioButton>
+                            </MatRadioGroup>
+                        </div>
+                        
+                        <!--    
                             <MatCheckbox @bind-Value="@_arteriesMarked">Arteries marked</MatCheckbox>
                         </div>
                         <div>
                             <MatCheckbox @bind-Value="@_veinsMarked">Veins marked</MatCheckbox>
                         </div>
-                    </div>
+                        --->
+                        </div>
                     <div class="mat-layout-grid-cell mat-layout-grid-cell-span-10">
                         <div class="mat-layout-grid-inner">
                             <div class="mat-layout-grid-cell mat-layout-grid-cell-span-3">
@@ -322,24 +330,15 @@
             return;
         }
         
-        if (_arteriesMarked && !_veinsMarked)
-        {
-            _currentVesselAnnotation.Type = "Artery";
-
-        } 
-        else if (!_arteriesMarked && _veinsMarked)
-        {
-            _currentVesselAnnotation.Type = "Vein";
-
-        }        
-        else
+        if (_currentVesselAnnotation.Type == "")
         {
             _completionTitle = "Fail";
-            _completionMessage = "Please choose a type. you can only choose one";
+            _completionMessage = "Please choose a type.";
             _showCompletionDialog = true;
             StateHasChanged();
             return;
-        }
+        } 
+
 
         _savedVessels.Add(_currentVesselAnnotation!);
         _currentVesselAnnotation = new VesselAnnotation();

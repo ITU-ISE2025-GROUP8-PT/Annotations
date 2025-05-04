@@ -29,7 +29,8 @@
                     }
                 </MatDialogContent>
                 <MatDialogActions>
-                    <MatButton OnClick="@(() => _showCompletionDialog = false)">OK</MatButton>
+
+                    <MatButton OnClick="@(() => { _showCompletionDialog = false; StateHasChanged();})">OK</MatButton>
                 </MatDialogActions>
             </MatDialog>
 
@@ -114,6 +115,17 @@
                                 <div class="MatOverwriteDecisions">
                                     <MatButton>Skip</MatButton>
                                     <MatButton OnClick="CompleteCurrentVessel" class="MatOverwriteButton">Complete</MatButton>
+                                </div>
+                                <div>
+                                    <h4>VirtualScroll with items</h4>
+                                    <MatVirtualScroll Items="_savedVessels" ItemType="VesselAnnotation" ItemHeight="50" Style="height: 500px">
+                                        <ItemTemplate>
+                                            <div>
+                                                @context.Description
+                                            </div>
+                                        </ItemTemplate>
+                                    </MatVirtualScroll>
+
                                 </div>
                             </div>
                         </div>
@@ -352,13 +364,12 @@
         _completionTitle = "Success";
         _completionMessage = "Your blood vessel tree has been successfully completed";
         _showCompletionDialog = true;
+        
 
-     
 
-
-        StateHasChanged();
 
         PrecomputeAnnotations();
+        StateHasChanged();
     }
 
     private async Task HandleImageClick(MouseEventArgs e)

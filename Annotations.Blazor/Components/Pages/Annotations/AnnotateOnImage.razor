@@ -86,14 +86,6 @@
                                 </div>
                             </MatRadioGroup>
                         </div>
-                        
-                        <!--    
-                            <MatCheckbox @bind-Value="@_arteriesMarked">Arteries marked</MatCheckbox>
-                        </div>
-                        <div>
-                            <MatCheckbox @bind-Value="@_veinsMarked">Veins marked</MatCheckbox>
-                        </div>
-                        --->
                         </div>
                     <div class="mat-layout-grid-cell mat-layout-grid-cell-span-10">
                         <div class="mat-layout-grid-inner">
@@ -157,6 +149,7 @@
                                             fill="white" stroke="white"
                                             stroke-width="2"
                                             @onpointerdown="@(e => StartDrag(e, point))"
+                                            @onclick="@(() => HandlePointClick(point))"
                                             class="MatOverwriteCursor"/>
                                 }
 
@@ -183,6 +176,7 @@
                                         <circle cx="@point!.X" cy="@point.Y" r="10"
                                                 fill="white" stroke="white"
                                                 stroke-width="2"
+                                                @onclick="@(() => HandlePointClick(point))"
                                                 @onpointerdown="@(e => StartDrag(e, point))"
                                                 class="MatOverwriteCursor"/>
                                     }
@@ -258,6 +252,14 @@
         StateHasChanged();
     }
 
+    
+    private void HandlePointClick(VesselPoint point)
+    {
+        _currentPoint = point;
+        
+        
+    }
+    
     public void Dispose() => Navigation.LocationChanged -= OnLocationChanged;
 
     private void PrecomputeAnnotations()
@@ -279,7 +281,7 @@
         }
     }
 
-    private void SavePointAnnotation()
+    private void SavePointAnnotation(VesselPoint lastPoint)
     {
         if (_currentVesselAnnotation != null)
         {
@@ -287,7 +289,6 @@
 
             if (_currentVesselAnnotation.Points.Count > 1)
             {
-                var lastPoint = _currentVesselAnnotation.Points[^2];
                 var segment = new VesselSegment
                 {
                     StartPoint = lastPoint,
@@ -365,6 +366,7 @@
         var rect = await JsRuntime.InvokeAsync<BoundingClientRect>(
             "getBoundingClientRect", _imageContainer);
 
+        var lastPoint = _currentPoint; 
         _currentPoint = new VesselPoint
         {
             X = (int)(e.ClientX - rect.Left),
@@ -372,7 +374,7 @@
             Type = _currentVesselType
         };
 
-        SavePointAnnotation();
+        SavePointAnnotation(lastPoint);
 
         StateHasChanged();
     }
@@ -429,4 +431,5 @@
     }
 
     [Inject] private IJSRuntime JsRuntime { get; set; } = default!;
+
 }

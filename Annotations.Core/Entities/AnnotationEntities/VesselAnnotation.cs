@@ -14,4 +14,7 @@ public class VesselAnnotation
     
     [Required]
     public required string Description { get; set; }
+    
+    [Required]
+    public required string Type { get; set; }
 }

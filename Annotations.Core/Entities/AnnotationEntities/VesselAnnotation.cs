@@ -11,4 +11,7 @@ public class VesselAnnotation
     
     [Required]
     public required List<VesselSegment> Segments { get; set; }
+    
+    [Required]
+    public required string Description { get; set; }
 }

@@ -14,8 +14,6 @@ public class AnnotationsDbContext : IdentityDbContext<User>
     /// Database set of users. Currently unused.
     /// </summary>
     public DbSet<User> Users { get; set; }
-    public DbSet<Admin> Admins { get; set; }
-    public DbSet<MedicalProfessional> MedicalProfessionals { get; set; }
 
     /// <summary>
     /// Database set of images for research use.
@@ -53,7 +51,7 @@ public class AnnotationsDbContext : IdentityDbContext<User>
 		builder.Entity<Annotation>()
 			.HasOne<User>()
 			.WithMany()
-			.HasForeignKey("MpId");
+			.HasForeignKey("UserId");
 
 		//Foreign key setup between AnnotationType and ImageId
 		builder.Entity<Annotation>()

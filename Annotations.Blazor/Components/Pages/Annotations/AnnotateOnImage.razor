@@ -13,17 +13,10 @@
         <MatThemeProvider Theme="@_theme">
             <MatDialog @bind-IsOpen="@_showCompletionDialog">
                 <MatDialogTitle>@_completionTitle</MatDialogTitle>
-                <MatDialogContent>@_completionMessage</MatDialogContent>
-                <MatDialogActions>
-                    <MatButton OnClick="@(() => _showCompletionDialog = false)">OK</MatButton>
-                </MatDialogActions>
-            </MatDialog>
-
-            <MatDialog @bind-IsOpen="@_showTextField">
-                <MatDialogTitle>Blood vessel point annotation</MatDialogTitle>
                 <MatDialogContent>
+                    @_completionMessage
                     <p>
-                        <MatTextField @bind-Value="_currentPoint.Text"
+                        <MatTextField @bind-Value="_currentVesselAnnotation.Description"
                                       Label="Annotation"
                                       FullWidth="true"
                                       Immediate="true"
@@ -31,15 +24,9 @@
                                       class="MatOverwriteWhiteBG">
                         </MatTextField>
                     </p>
-                    <p>
-                        <MatSelectItem @bind-Value="@_currentPoint.Type" Label="Type" Items="@_types"></MatSelectItem>
-                    </p>
                 </MatDialogContent>
                 <MatDialogActions>
-                    <div>
-                        <MatButton class="MatOverwriteButton" OnClick="SavePointAnnotation">Save</MatButton>
-                        <MatButton class="MatOverwriteButton" OnClick="CancelPointAnnotation">Cancel</MatButton>
-                    </div>
+                    <MatButton OnClick="@(() => _showCompletionDialog = false)">OK</MatButton>
                 </MatDialogActions>
             </MatDialog>
 
@@ -363,7 +350,8 @@
             Type = _currentVesselType
         };
 
-        _showTextField = true;
+        SavePointAnnotation();
+
         StateHasChanged();
     }
 
@@ -414,6 +402,7 @@
     {
         public List<VesselPoint?> Points { get; } = new();
         public List<VesselSegment> Segments { get; } = new();
+        public string Description { get; set; } = "";
     }
 
     [Inject] private IJSRuntime JsRuntime { get; set; } = default!;

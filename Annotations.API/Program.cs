@@ -3,6 +3,7 @@ using Annotations.API;
 using Annotations.API.Groups;
 using Annotations.API.Services;
 using Annotations.Core.Entities;
+using Annotations.Core.VesselObjects;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Data.Sqlite;
@@ -123,14 +124,14 @@ void InitializeTempDatabase()
 
     context.Add(new Admin
     {
-        UserId = 0,
+        UserId = "0",
         FirstName = "Admin",
         LastName = "Adminsen",
         Email = "admin@adminsen.com"
     }); 
     context.Add(new MedicalProfessional
     {
-        UserId = 1,
+        UserId = "1",
         FirstName = "Medical",
         LastName = "Professional",
         Email = "med@prof.com",

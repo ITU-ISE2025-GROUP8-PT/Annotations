@@ -59,7 +59,7 @@ public static class ImageEndpoints
     /// <param name="context"> The SQLite database conetx</param>
     /// <param name="_imageService"> The injected service class</param>
     /// <returns></returns>
-    public static async Task<IResult> UploadImageHandler(IFormFile image, string category, AnnotationsDbContext context, 
+    private static async Task<IResult> UploadImageHandler(IFormFile image, string category, AnnotationsDbContext context, 
          [FromServices] IImageService _imageService)
     {
         ValidationResponse response = _imageService.ValidateImage(image);
@@ -82,7 +82,7 @@ public static class ImageEndpoints
     /// <param name="imageId"></param>
     /// <param name="_imageService">the injected service class with methods</param>
     /// <returns> the statuscode of deleting the image</returns>
-    public static async Task<IResult> DeleteImageHandler(string imageId, [FromServices] IImageService _imageService)
+    private static async Task<IResult> DeleteImageHandler(string imageId, [FromServices] IImageService _imageService)
     {
         bool deleting = await _imageService.DeleteImage(imageId);
         if (deleting)
@@ -102,7 +102,7 @@ public static class ImageEndpoints
     /// <param name="imageId"></param>
     /// <param name="_imageService">the injected service class with methods</param>
     /// <returns> Either JSON string (if image exist) otherwise an errormessage</returns>
-    public static async Task<string> RetrieveImageHandler([FromRoute] string imageId, 
+    private static async Task<string> RetrieveImageHandler([FromRoute] string imageId, 
         [FromServices] IImageService _imageService)
     {
         //insert password restrictions here 🐿️
@@ -125,7 +125,7 @@ public static class ImageEndpoints
     /// <param name="category"></param>
     /// <param name="_imageService">the injected service class with methods</param>
     /// <returns> an array of images as JSON string with the wanted category</returns>
-    public static async Task<string[]> FilterImagesHandler(string category, 
+    private static async Task<string[]> FilterImagesHandler(string category, 
         [FromServices] IImageService _imageService)
     {
 
@@ -149,7 +149,7 @@ public static class ImageEndpoints
     /// <param name="context">the DbContext where the datasets are</param>
     /// <param name="_imageService">the injected service class with methods</param>
     /// <returns>An array of all existing datasetModels</returns>
-    public static async Task<DatasetModel[]> RetrieveAllDatasetHandler(AnnotationsDbContext context, 
+    private static async Task<DatasetModel[]> RetrieveAllDatasetHandler(AnnotationsDbContext context, 
         [FromServices] IImageService _imageService)
     {
         return await _imageService.GetAllDatasets();
@@ -165,7 +165,7 @@ public static class ImageEndpoints
     /// <param name="context">DbContext where the dataset is located</param>
     /// <param name="_imageService">the injected service class with methods</param>
     /// <returns>A string array of the needed images as a JSON string</returns>
-    public static async Task<string[]> RetrieveImagesFromDatasetHandler(string datasetId, AnnotationsDbContext context, 
+    private static async Task<string[]> RetrieveImagesFromDatasetHandler(string datasetId, AnnotationsDbContext context, 
         [FromServices] IImageService _imageService)
     {
          //TODO: almost identical code as "/filter/{category}" - remove the code duplication

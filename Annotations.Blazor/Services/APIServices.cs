@@ -61,6 +61,7 @@ public class APIServices : IAPIServices
 
         using (var requestMessage = new HttpRequestMessage(HttpMethod.Post, requestURI))
         {
+            requestMessage.Headers.Authorization = new("Bearer", accessToken);
             requestMessage.Content = new StringContent(JsonSerializer.Serialize(Annotation),
                 Encoding.UTF8, "application/json");
             var result = await client.SendAsync(requestMessage);

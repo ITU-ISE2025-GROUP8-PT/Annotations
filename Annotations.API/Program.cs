@@ -83,6 +83,7 @@ builder.Services.AddAzureClients(clientBuilder =>
 });
 
 builder.Services.AddScoped<IImageService, ImageService>();
+builder.Services.AddScoped<IAnnotationService, AnnotationService>();
 var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {

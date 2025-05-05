@@ -111,7 +111,7 @@ public class ImageService: IImageService
     {
         using var memoryStream = new MemoryStream();
         await blobClient.DownloadToAsync(memoryStream);
-        return System.Text.Encoding.UTF8.GetString(memoryStream.ToArray());//JSON file as string
+        return System.Text.Encoding.UTF8.GetString(memoryStream.ToArray());
     }
     
     
@@ -298,8 +298,9 @@ public class ImageService: IImageService
     public async Task<GetImageResult> GetImage(string imageId)
     {
         var cts = new CancellationTokenSource(5000);
-        //enters images
+        
         BlobClient blobClient = _containerClient.GetBlobClient(imageId + ".json");
+        
         //checks if the blobClient is empty/couldn't find the image of that format
         if (!blobClient.Exists(cts.Token).ToString().Contains("404")) 
         {

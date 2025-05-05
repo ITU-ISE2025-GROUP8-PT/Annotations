@@ -1,3 +1,4 @@
+using Annotations.API.Services;
 using Annotations.Core.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -19,37 +20,16 @@ public static class UserEndpoints
 
         
     }
+
     public static async Task<List<AdminUserModel>> RetrieveAdmins(
-        AnnotationsDbContext context)
+        AnnotationsDbContext context, [FromServices] IUserService _userService)
     {
-        var admins = await context.Admins
-            .Select(u => new AdminUserModel
-            {
-                Id = u.UserId,
-                FirstName = u.FirstName,
-                LastName = u.LastName,
-                Email = u.Email
-            })
-            .ToListAsync();
-        return admins;
+        return await _userService.GetAdmins();
     }
 
     public static async Task<List<MedicalProfessionalUserModel>> RetrieveMedicalProfessionals(
-        AnnotationsDbContext context)
+        AnnotationsDbContext context, [FromServices] IUserService _userService)
     {
-        var medicalProfessionals = await context.MedicalProfessionals
-            .Select(u => new MedicalProfessionalUserModel
-            {
-                Id = u.UserId,
-                FirstName = u.FirstName,
-                LastName = u.LastName,
-                Email = u.Email,
-                Affiliation = u.Affiliation,
-                JobTitle = u.JobTitle,
-                TotalAssignmentsFinished = u.TotalAssignmentsFinished,
-                ProfilePictureID = u.ProfilePictureId
-            })
-            .ToListAsync();
-        return medicalProfessionals;
+        return await _userService.GetMedicalProfessionals();
     }
 }

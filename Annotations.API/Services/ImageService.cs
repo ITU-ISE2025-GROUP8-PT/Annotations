@@ -8,9 +8,26 @@ using Microsoft.Extensions.Azure;
 
 namespace Annotations.API.Services;
 
+/// <summary>
+/// the response given after validating image
+/// </summary>
+/// <param name="Success">a boolean returning true if the image is validated</param>
+/// <param name="Message">message containing a success or the specific error message</param>
 public record ValidationResponse(bool Success, string Message);
+
+/// <summary>
+/// returns the needed data for the image
+/// </summary>
+/// <param name="Image">The image model</param>
+/// <param name="JSONString">JSONString representing the JSONfile</param>
 public record ImageData(ImageModel Image, string JSONString);
 
+/// <summary>
+/// the result of retrieving an image from the blobstorage
+/// </summary>
+/// <param name="Success">whether image was succesfully retrieved or not</param>
+/// <param name="image"> the image in question as a JSON string.
+/// If image could not be retrieved, an empty string is returned</param>
 public record GetImageResult(bool Success, string image);
 
 
@@ -56,7 +73,8 @@ public class ImageService: IImageService
     /// Images can be JPEG, PNG and JPG, and everything else gets rejected
     /// </summary>
     /// <param name="file">The file to be validated</param>
-    /// <returns>ValidationResponse - a record that contains a boolean of whether the image is validated, and a message that describes either what went wrong, or that it was successful</returns>
+    /// <returns>ValidationResponse - a record that contains a boolean of whether the image is validated,
+    /// and a message that describes either what went wrong, or that it was successful</returns>
     public ValidationResponse ValidateImage(IFormFile file)
     {
         

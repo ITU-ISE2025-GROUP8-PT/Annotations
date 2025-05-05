@@ -11,7 +11,7 @@
 <AuthorizeView>
     <Authorized>
         <MatThemeProvider Theme="@_theme">
-            <!--DialogBox for when completing a annotation, containing a text field for notes -->
+            @* DialogBox for when completing a annotation, containing a text field for notes *@
             <MatDialog @bind-IsOpen="@_showCompletionDialog">
                 <MatDialogTitle>@_completionTitle</MatDialogTitle>
                 <MatDialogContent>
@@ -38,7 +38,7 @@
                 </MatDialogActions>
             </MatDialog>
             
-            <!--DialogBox that shown when clicking a segment. Thickness can be defined here -->
+            @* DialogBox that shown when clicking a segment. Thickness can be defined here *@
             <MatDialog @bind-IsOpen="_showSegmentDialog">
                 <MatDialogTitle>Blood vessel segment annotation</MatDialogTitle>
                 <MatDialogContent>
@@ -63,7 +63,7 @@
             <div class="mat-layout-grid">
                 <div class="mat-layout-grid-inner">
                     <div class="mat-layout-grid-cell mat-layout-grid-cell-span-2">
-                        <!--Shows userdata in the left corner (currently hardcoded)-->
+                        @* Shows userdata in the left corner (currently hardcoded) *@
                         <div class="MatOverwriteGrid">
                             <img src="img/billede1.png" alt="Profile Picture" class="MatOverwriteProfilePic">
                             <div>
@@ -72,7 +72,7 @@
                                 <small>Surgeon</small>
                             </div>
                         </div>
-                        <!--RadioButtons for selecting Annotation types. Radiobuttons ensure that only one button can be on at once -->
+                        @* RadioButtons for selecting Annotation types. Radiobuttons ensure that only one button can be on at once *@
                         <div class="MatOverwriteMarginTop50">
                             <p>Choose a type here</p>
                             <MatRadioGroup @bind-Value="@_currentVesselAnnotation!.Type">
@@ -86,10 +86,9 @@
                         </div>
                     </div>
                     <div class="mat-layout-grid-cell mat-layout-grid-cell-span-8">
-                        <div>
-                            class="mat-layout-grid-inner">
+                        <div class="mat-layout-grid-inner">
                             <div class="mat-layout-grid-cell mat-layout-grid-cell-span-3">
-                                <!-- Tab groups. Placeholders for features not yet implemented. The tabs currently does nothing -->
+                                @* Tab groups. Placeholders for features not yet implemented. The tabs currently does nothing *@
                                 <div class="MatOverwriteIdentification">
                                     <MatTabGroup>
                                         <MatTab Label="Vessels">
@@ -110,11 +109,11 @@
                                     </MatTabGroup>
                                 </div>
                             </div>
-                            <!-- 
+                            @*  
                                 The complete and skip buttons. 
                                 Skip is just a placeholder. 
                                 Complete saves the drawn annotation, and adds it to the visual "list" of trees shown to the right on the page.  
-                            -->
+                            *@
                             <div class="mat-layout-grid-cell mat-layout-grid-cell-span-9 mat-layout-grid-align-right">
                                 <div class="MatOverwriteDecisions">
                                     <MatButton>Skip</MatButton>
@@ -122,21 +121,21 @@
                                 </div>
                             </div>
                         </div>
-                        <!-- 
+                        @*  
                             Draws the image getting annotated (image currently hardcoded) 
                             and logic for drawing the annotation trees
-                        -->
+                        *@
                         <div class="MatOverwriteRelative" @ref="_imageContainer">
                             <img src="img/Skærmbillede%202025-03-27%20kl.%2014.05.56.png" alt="Annotation Image"
                                  @onclick="HandleImageClick" class="MatOverwriteWorkImage"/>
                             
-                            <!-- For dragging around points  -->
+                            @* For dragging around points *@
                             <svg @onpointermove="HandleDrag"
                                  @onpointerup="EndDrag"
                                  @onpointerleave="EndDrag"
                                  class="MatOverwriteSVG">
 
-                                <!-- Logic for drawing all segments that are supposed to be toggled -->
+                                @* Logic for drawing all segments that are supposed to be toggled *@
                                 @foreach (var segment in _drawableSegments)
                                 {
                                     if (segment.isVisible)
@@ -155,7 +154,7 @@
                                               pointer-events="none"/>
                                     }
                                 }
-                                <!-- Logic for drawing all points that are supposed to be toggled -->
+                                @* Logic for drawing all points that are supposed to be toggled *@
                                 @foreach (var point in _drawablePoints)
                                 {
                                     if (point.isVisible)
@@ -168,8 +167,8 @@
                                                 class="MatOverwriteCursor"/>
                                     }
                                 }
-                                <!-- Draws the annotation tree currently being drawn 
-                                (draws all points and segments within the tree) -->
+                                @* Draws the annotation tree currently being drawn 
+                                (draws all points and segments within the tree) *@
                                 @if (_currentVesselAnnotation != null)
                                 {
                                     @foreach (var segment in _currentVesselAnnotation.Segments)
@@ -202,10 +201,10 @@
                         </div>
                     </div>
                     <div class="mat-layout-grid-cell mat-layout-grid-cell-span-2">
-                        <!-- 
-                        Creates a Expansion panel of all completed annotation trees 
-                        Expansion panel is used because they can show the points and segments within a tree easily 
-                        -->
+                        @*
+                            Creates a Expansion panel of all completed annotation trees 
+                            Expansion panel is used because they can show the points and segments within a tree easily 
+                        *@
                         <MatAccordion Multi="true">
                             @for (var i = 0; i < _savedVessels.Count; i++)
                             {
@@ -222,8 +221,8 @@
                                             var point = _savedVessels[i1].Points[j1];
                                             <p>
                                                 point @j
-                                                <!-- Visibility button that can be clicked to toggle/ untoggle points 
-                                                     MatIconButton is chosen because its easy to change/ use icons with -->
+                                                @* Visibility button that can be clicked to toggle/ untoggle points 
+                                                   MatIconButton is chosen because its easy to change/ use icons with *@
                                                 <MatIconButton Icon="visibility_off" ToggleIcon="visibility" @bind-Toggled="@point!.isVisible">
                                                 </MatIconButton>
                                             </p>
@@ -235,7 +234,7 @@
                                             var segment = _savedVessels[i1].Segments[j1];
                                             <p>
                                                 segment @j
-                                                <!-- Visibility button that can be clicked to toggle/ untoggle segments -->
+                                                @* Visibility button that can be clicked to toggle/ untoggle segments *@
                                                 <MatIconButton Icon="visibility_off" ToggleIcon="visibility" @bind-Toggled="@segment!.isVisible">
                                                 </MatIconButton>
                                             </p>

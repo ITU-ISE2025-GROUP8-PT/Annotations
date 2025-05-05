@@ -77,10 +77,10 @@
                             <p>Choose a type here</p>
                             <MatRadioGroup @bind-Value="@_currentVesselAnnotation!.Type">
                                 <div>
-                                    <MatRadioButton TValue="string">Arteries</MatRadioButton>
+                                    <MatRadioButton Value="@("Arteries")" TValue="string">Arteries</MatRadioButton>
                                 </div>
                                 <div>
-                                    <MatRadioButton TValue="string">Veins</MatRadioButton>
+                                    <MatRadioButton Value="@("Veins")" TValue="string">Veins</MatRadioButton>
                                 </div>
                             </MatRadioGroup>
                         </div>

@@ -126,12 +126,12 @@ public static class ImageEndpoints
     
     
     
-    public static async Task<string[]> RetrieveImagesFromDatasetHandler(string dataset, AnnotationsDbContext context, 
+    public static async Task<string[]> RetrieveImagesFromDatasetHandler(string id, AnnotationsDbContext context, 
         [FromServices] IAzureClientFactory<BlobServiceClient> clientFactory, [FromServices] IImageService _imageService)
     {
          //TODO: almost identical code as "/filter/{category}" - remove the code duplication
 
-            var datasetModel = await _imageService.GetDataset(dataset);
+            var datasetModel = await _imageService.GetDataset(id);
             
             HashSet<string> collection = new HashSet<string>();
 

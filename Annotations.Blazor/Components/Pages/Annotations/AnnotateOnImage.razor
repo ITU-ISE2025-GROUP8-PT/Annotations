@@ -205,7 +205,7 @@
                                             var point = _savedVessels[i1].Points[j1];
                                             <p> point @j </p>
                                             
-                                            <MatIconButton Icon="visibility" OnClick="() => point!.isVisible = false">
+                                            <MatIconButton Icon="visibility_off" ToggleIcon="visibility" @bind-Toggled = "@point!.isVisible">
                                             </MatIconButton>
                                         }
                                     </MatExpansionPanelDetails>

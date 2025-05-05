@@ -86,10 +86,11 @@
 
 <h3> See your complete overview here</h3>
 <h4 class="mat-subtitle1">Progress</h4>
-<MatProgressCircle Indeterminate="false" Progress=".75"/>
+<MatProgressCircle Indeterminate="false" Progress=percent/>
 
 @code {
     private string? currentUrl;
+    string percent="75%"
 
     MatTheme theme = new MatTheme()
     {

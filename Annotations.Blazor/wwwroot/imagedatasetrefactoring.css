@@ -1,0 +1,18 @@
+.OverWriteDisplay{
+    display: flex;
+    flex-direction: row;
+}
+
+.OverWritePlacement{
+    margin-left: 13%;
+    margin-top: 0.0001%;
+    padding-bottom: 2%;
+    font-weight: bold;
+    width: 72%;
+    font-size : 215%;
+
+}
+
+.OverWriteWidth{
+    width: 15%;
+}

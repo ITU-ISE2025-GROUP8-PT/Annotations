@@ -1,5 +1,5 @@
 @rendermode InteractiveServer
-@page "/images/datasets/{dataset}/"
+@page "/images/datasets/{datasetId}/"
 @inject IAPIServices IapiServices
 @attribute [Authorize(Roles = "Administrator, Manager")]
 
@@ -15,7 +15,7 @@ else if (Images.Length == 0) //This will show on screen in a milisecond before i
 } else
 {
     <div style=" display: flex; flex-direction:row;"><!--To make both lines on the same row -->
-        <span style="padding:2%; font-weight: bold; width: 90%; font-size: 215%">Dataset @Dataset</span>
+        <span style="padding:2%; font-weight: bold; width: 90%; font-size: 215%">Dataset @datasetId</span>
         <button class="filterButton">Filter by...</button>
     </div>
 
@@ -33,13 +33,13 @@ else if (Images.Length == 0) //This will show on screen in a milisecond before i
 
 @code{
     //TODO: code duplication from Image.Filter.razor
-    [Parameter] public string Dataset { get; set; } = "";//get access to parameter from URL/get request
+    [Parameter] public string datasetId { get; set; } = "";//get access to parameter from URL/get request
     public ImageModelWeb[] Images = Array.Empty<ImageModelWeb>(); //all imgs from API turned into local datatype class (see further down)
     private bool _errorExist;
     
     protected override async Task OnInitializedAsync()
     {
-        var response = await IapiServices.createGetResponse( $"/images/datasets/{Dataset}");
+        var response = await IapiServices.createGetResponse( $"/images/datasets/{datasetId}");
 
             try
             {

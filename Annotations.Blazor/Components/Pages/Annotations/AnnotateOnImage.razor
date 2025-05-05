@@ -130,20 +130,22 @@
 
                                 @foreach (var segment in _drawableSegments)
                                 {
-                                    <line x1="@segment.StartPoint!.X" y1="@segment.StartPoint.Y"
-                                          x2="@segment.EndPoint!.X" y2="@segment.EndPoint.Y"
-                                          stroke="transparent"
-                                          stroke-width="20"
-                                          @onclick="@(() => HandleSegmentClick(segment))"
-                                          pointer-events="visibleStroke"/>
+                                    if (segment.isVisible)
+                                    {
+                                        <line x1="@segment.StartPoint!.X" y1="@segment.StartPoint.Y"
+                                              x2="@segment.EndPoint!.X" y2="@segment.EndPoint.Y"
+                                              stroke="transparent"
+                                              stroke-width="20"
+                                              @onclick="@(() => HandleSegmentClick(segment))"
+                                              pointer-events="visibleStroke"/>
 
-                                    <line x1="@segment.StartPoint.X" y1="@segment.StartPoint.Y"
-                                          x2="@segment.EndPoint.X" y2="@segment.EndPoint.Y"
-                                          stroke="white"
-                                          stroke-width="2"
-                                          pointer-events="none"/>
+                                        <line x1="@segment.StartPoint.X" y1="@segment.StartPoint.Y"
+                                              x2="@segment.EndPoint.X" y2="@segment.EndPoint.Y"
+                                              stroke="white"
+                                              stroke-width="2"
+                                              pointer-events="none"/>
+                                    }
                                 }
-
                                 @foreach (var point in _drawablePoints)
                                 {
                                     if (point.isVisible)
@@ -195,18 +197,34 @@
                                 var i1 = i;
                                 <MatExpansionPanel>
                                     <MatExpansionPanelSummary>
-
                                         <MatExpansionPanelHeader> Tree @i1 </MatExpansionPanelHeader>
                                     </MatExpansionPanelSummary>
                                     <MatExpansionPanelDetails>
+                                        <h6>Vessel Points</h6>
                                         @for (var j = 0; j < _savedVessels[i1].Points.Count; j++)
                                         {
                                             var j1 = j;
                                             var point = _savedVessels[i1].Points[j1];
-                                            <p> point @j </p>
-                                            
-                                            <MatIconButton Icon="visibility_off" ToggleIcon="visibility" @bind-Toggled = "@point!.isVisible">
-                                            </MatIconButton>
+                                            <p>
+                                                 point @j
+                                                <MatIconButton Icon="visibility_off" ToggleIcon="visibility" @bind-Toggled="@point!.isVisible">
+                                                </MatIconButton>
+                                            </p>
+
+
+                                        }
+                                        <h6>Vessel Segments</h6>
+                                        @for (var j = 0; j < _savedVessels[i1].Segments.Count; j++)
+                                        {
+                                            var j1 = j;
+                                            var segment = _savedVessels[i1].Segments[j1];
+                                            <p>
+                                                 segment @j
+                                                <MatIconButton Icon="visibility_off" ToggleIcon="visibility" @bind-Toggled="@segment!.isVisible">
+                                                </MatIconButton>
+                                            </p>
+
+
                                         }
                                     </MatExpansionPanelDetails>
                                 </MatExpansionPanel>
@@ -326,6 +344,7 @@
                     Thickness = _currentThickness,
                     Text = _currentPoint.Text
                 };
+                segment.isVisible = true;
                 _currentVesselAnnotation.Segments.Add(segment);
             }
         }
@@ -445,6 +464,7 @@
 
     private class VesselSegment
     {
+        public bool isVisible;
         public VesselPoint? StartPoint { get; set; }
         public VesselPoint? EndPoint { get; set; }
         public string Text { get; set; } = "";
@@ -461,10 +481,5 @@
     }
 
     [Inject] private IJSRuntime JsRuntime { get; set; } = default!;
-
-    private void toggleVisibillity(MouseEventArgs obj)
-    {
-        throw new NotImplementedException();
-    }
-
+    
 }

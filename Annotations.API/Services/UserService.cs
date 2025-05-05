@@ -12,11 +12,24 @@ public interface IUserService
 public class UserService : IUserService
 {
     private AnnotationsDbContext _context;
+    
+    
+    
+    /// <summary>
+    /// Constructor of the service class
+    /// </summary>
+    /// <param name="context">DbContext where the users are located</param>
     public UserService(AnnotationsDbContext context)
     {
         _context = context;
     }
 
+    
+    
+    /// <summary>
+    /// Retrieves all admins
+    /// </summary>
+    /// <returns>A list of all AdminUserModels</returns>
     public async Task<List<AdminUserModel>> GetAdmins()
     {
         var admins = await _context.Admins
@@ -31,6 +44,12 @@ public class UserService : IUserService
         return admins;
     }
 
+    
+    
+    /// <summary>
+    /// Retrieves all medical professionals
+    /// </summary>
+    /// <returns>A list of all MedicalProfessionalUserModel </returns>
     public async Task<List<MedicalProfessionalUserModel>> GetMedicalProfessionals()
     {
         var medicalProfessionals = await _context.MedicalProfessionals

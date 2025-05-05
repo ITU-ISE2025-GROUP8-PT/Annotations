@@ -39,7 +39,7 @@ public class ImageService: IImageService
     /// <summary>
     /// Constructor of the ImageService
     /// </summary>
-    /// <param name="clientFactory">used to initializes the blobserviceclient</param>
+    /// <param name="clientFactory">the client for the BlobService</param>
     /// <param name="context">the SQLite database</param>
     public ImageService(IAzureClientFactory<BlobServiceClient> clientFactory , AnnotationsDbContext context)
     {
@@ -124,7 +124,7 @@ public class ImageService: IImageService
     
     
     /// <summary>
-    /// converts a json string to a JSON file, which is then uplaoded to the Blobstorage
+    /// converts a json string to a byte arrau and then uploads to the Blobstorage as a JSON file
     /// </summary>
     /// <param name="id">The ID of the image, the jsonString represents</param>
     /// <param name="jsonString">The string of the JSONfile representing an image</param>
@@ -209,7 +209,7 @@ public class ImageService: IImageService
     
     
     /// <summary>
-    /// goes through all images and filter for the specific category
+    /// goes through all images and filters for the specific category
     /// </summary>
     /// <param name="category">The specific category we are filtering for</param>
     /// <returns>a hashset consisting of all image that has the given category</returns>

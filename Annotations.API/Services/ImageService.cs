@@ -36,7 +36,11 @@ public class ImageService: IImageService
     private readonly BlobContainerClient _containerClient;
 
     
-    
+    /// <summary>
+    /// Constructor of the ImageService
+    /// </summary>
+    /// <param name="clientFactory">used to initializes the blobserviceclient</param>
+    /// <param name="context">the SQLite database</param>
     public ImageService(IAzureClientFactory<BlobServiceClient> clientFactory , AnnotationsDbContext context)
     {
         _clientFactory = clientFactory;
@@ -118,12 +122,16 @@ public class ImageService: IImageService
     }
     
     
-
-    private async Task UploadAsJSON(int counter, string jsonString)
+    
+    /// <summary>
+    /// converts a json string to a JSON file, which is then uplaoded to the Blobstorage
+    /// </summary>
+    /// <param name="id">The ID of the image, the jsonString represents</param>
+    /// <param name="jsonString">The string of the JSONfile representing an image</param>
+    private async Task UploadAsJSON(int id, string jsonString)
     {
-        
         var byteContent = System.Text.Encoding.UTF8.GetBytes(jsonString); //JSON string becomes byte array
-        BlobClient thisImageBlobClient = _containerClient.GetBlobClient($"{counter}.json");
+        BlobClient thisImageBlobClient = _containerClient.GetBlobClient($"{id}.json");
 
         var blobHeaders = new BlobHttpHeaders
         {
@@ -138,17 +146,23 @@ public class ImageService: IImageService
     
     
     
-    public async Task UploadingImage(IFormFile image, int counter, string category)
+    /// <summary>
+    /// Uploads a JSONfile containing the image to the blobstorage with the given id
+    /// </summary>
+    /// <param name="image"></param>
+    /// <param name="id"></param>
+    /// <param name="category">The category to which the image will belong</param>
+    public async Task UploadingImage(IFormFile image, int id, string category)
     {
             //fileExtension will always be a proper fileExtension because of the ValidateImage method
             using (MemoryStream ms = new MemoryStream())
             {
                 await image.OpenReadStream().CopyToAsync(ms);
                 var thisImage =
-                    new ImageModel() //TODO: dont do this - the title, description and datasetsId are hardcoded
+                    new ImageModel() //TODO: the title, description and datasetsId should not be hardcoded
                     {
-                        Id = counter,
-                        Title = "idk",
+                        Id = id,
+                        Title = "title",
                         Description = "description",
                         ImageData = ms.ToArray(),
                         Category = category,
@@ -156,9 +170,9 @@ public class ImageService: IImageService
                     };
                
                 await AddImagesToDatasets(thisImage);
+                
                 string jsonString = System.Text.Json.JsonSerializer.Serialize(thisImage); //objects becomes JSON string
-                await UploadAsJSON(counter, jsonString);
-
+                await UploadAsJSON(id, jsonString);
             }
     }
 
@@ -172,6 +186,13 @@ public class ImageService: IImageService
 
     
     
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="containerClient"></param>
+    /// <param name="blobItem"></param>
+    /// <returns></returns>
+    /// <exception cref="Exception"></exception>
     public async Task<ImageData> GetImageForFiltering(BlobContainerClient containerClient, BlobItem blobItem)
     {
         var blobClient = containerClient.GetBlobClient(blobItem.Name);

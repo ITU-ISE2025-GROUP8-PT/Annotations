@@ -18,7 +18,7 @@
                     @if (_completionTitle == "Success")
                     {
                         <p>
-                            <MatTextField @bind-Value="_currentVesselAnnotation.Description"
+                            <MatTextField @bind-Value="_currentVesselAnnotation!.Description"
                                           Label="Annotation"
                                           FullWidth="true"
                                           Immediate="true"
@@ -67,7 +67,7 @@
                         </div>
                         <div class="MatOverwriteMarginTop50">
                             <p>Choose a type here</p>
-                            <MatRadioGroup @bind-Value="@_currentVesselAnnotation.Type">
+                            <MatRadioGroup @bind-Value="@_currentVesselAnnotation!.Type">
                                 <div>
                                     <MatRadioButton TValue="string">Arteries</MatRadioButton>
                                 </div>
@@ -231,14 +231,11 @@
 
 @code {
     private string? _currentUrl;
-    private bool _arteriesMarked;
-    private bool _veinsMarked;
 
     private bool _showCompletionDialog;
     private string _completionMessage = "";
     private string _completionTitle = "";
 
-    private bool _showTextField;
     private bool _showSegmentDialog;
 
     private VesselPoint? _draggedPoint;
@@ -251,7 +248,6 @@
     private List<VesselSegment> _drawableSegments = new();
     private List<VesselPoint> _drawablePoints = new();
 
-    private string _currentVesselType = "";
     private double _currentThickness = 0.0;
 
     private ElementReference _imageContainer;
@@ -331,16 +327,10 @@
         }
 
         _currentPoint.isVisible = true;
-        _showTextField = false;
         StateHasChanged();
         PrecomputeAnnotations();
     }
-
-    private void CancelPointAnnotation()
-    {
-        _showTextField = false;
-        StateHasChanged();
-    }
+    
 
     private void SaveSegmentAnnotation()
     {
@@ -366,7 +356,7 @@
             return;
         }
         
-        if (_currentVesselAnnotation.Type == "")
+        if (_currentVesselAnnotation!.Type == "")
         {
             _completionTitle = "Fail";
             _completionMessage = "Please choose a type.";

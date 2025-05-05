@@ -187,11 +187,11 @@ public class ImageService: IImageService
     
     
     /// <summary>
-    /// 
+    /// retrieves an image, used for the filter method
     /// </summary>
     /// <param name="containerClient"></param>
-    /// <param name="blobItem"></param>
-    /// <returns></returns>
+    /// <param name="blobItem">a collection of data of an arbitrary size, here an image</param>
+    /// <returns>ImageData</returns>
     /// <exception cref="Exception"></exception>
     public async Task<ImageData> GetImageForFiltering(BlobContainerClient containerClient, BlobItem blobItem)
     {
@@ -208,6 +208,11 @@ public class ImageService: IImageService
 
     
     
+    /// <summary>
+    /// goes through all images and filter for the specific category
+    /// </summary>
+    /// <param name="category">The specific category we are filtering for</param>
+    /// <returns>a hashset consisting of all image that has the given category</returns>
     public async Task<HashSet<string>> Filter(string category)
     {
         var listOfFiles = _containerClient.GetBlobsAsync().AsPages();//all data inside of blobContainer

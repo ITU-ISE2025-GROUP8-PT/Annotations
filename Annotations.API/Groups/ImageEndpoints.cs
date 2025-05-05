@@ -33,7 +33,7 @@ public static class ImageEndpoints
 
         pathBuilder.MapGet("/datasets", RetrieveAllDatasetHandler);
 
-        pathBuilder.MapGet("/datasets/{dataset}", RetrieveImagesFromDatasetHandler);
+        pathBuilder.MapGet("/datasets/{datasetid}", RetrieveImagesFromDatasetHandler);
         
         pathBuilder.MapGet("/exception",
             () =>
@@ -161,16 +161,16 @@ public static class ImageEndpoints
     /// <summary>
     /// Retrieves all the images inside a specific dataset
     /// </summary>
-    /// <param name="id">ID of the desired dataset</param>
+    /// <param name="datasetId">ID of the desired dataset</param>
     /// <param name="context">DbContext where the dataset is located</param>
     /// <param name="_imageService">the injected service class with methods</param>
     /// <returns>A string array of the needed images as a JSON string</returns>
-    public static async Task<string[]> RetrieveImagesFromDatasetHandler(string id, AnnotationsDbContext context, 
+    public static async Task<string[]> RetrieveImagesFromDatasetHandler(string datasetId, AnnotationsDbContext context, 
         [FromServices] IImageService _imageService)
     {
          //TODO: almost identical code as "/filter/{category}" - remove the code duplication
 
-            var datasetModel = await _imageService.GetDataset(id);
+            var datasetModel = await _imageService.GetDataset(datasetId);
             
             HashSet<string> collection = new HashSet<string>();
 

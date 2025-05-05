@@ -37,7 +37,7 @@ public interface IImageService
     Task UploadingImage(IFormFile image, int counter, string category);
     void UploadImageError(ValidationResponse response);
     Task<HashSet<string>> Filter(string category);
-    Task<DatasetModel> GetDataset(string dataset);
+    Task<DatasetModel> GetDataset(string datasetId);
     Task<GetImageResult> GetImage(string imageId);
     Task<DatasetModel[]> GetAllDatasets();
     Task<bool> DeleteImage(string imageId);
@@ -263,10 +263,10 @@ public class ImageService: IImageService
     /// <summary>
     /// Gets a Dataset object from the DbContext using a id 
     /// </summary>
-    /// <param name="dataset"></param>
+    /// <param name="datasetId"></param>
     /// <returns>The Dataset Model of the wanted dataset</returns>
     /// <exception cref="Exception"></exception>
-    public async Task<DatasetModel> GetDataset(string id)
+    public async Task<DatasetModel> GetDataset(string datasetId)
     {
         var datasets = _DbContext.Datasets
             .Select(u => new DatasetModel()
@@ -276,7 +276,7 @@ public class ImageService: IImageService
                 Category = u.Category,
                 AnnotatedBy= u.AnnotatedBy,
                 ReviewedBy = u.ReviewedBy
-            }).Where(DatasetModel => DatasetModel.Id == Int32.Parse(id));
+            }).Where(DatasetModel => DatasetModel.Id == Int32.Parse(datasetId));
         //there is only one dataset with a certain Id, so no point of taking more
         var datasetModel = await datasets.FirstOrDefaultAsync();
 

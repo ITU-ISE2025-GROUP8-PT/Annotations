@@ -16,7 +16,6 @@ public static class UserEndpoints
     public static void MapEndpoints(RouteGroupBuilder pathBuilder)
     {
         pathBuilder.RequireAuthorization().DisableAntiforgery();
-        pathBuilder.MapGet("/", () => "Hello Kitty!");
         pathBuilder.MapGet("/admins", RetrieveAdmins);
         pathBuilder.MapGet("/medicalprofessionals", RetrieveMedicalProfessionals);
         pathBuilder.MapGet("/exception", () =>
@@ -32,7 +31,7 @@ public static class UserEndpoints
     /// Retrieves all registered admins 
     /// </summary>
     /// <param name="context">The DbContext where the admins are located</param>
-    /// <param name="_userService">The the injected service class with methods</param>
+    /// <param name="_userService">The injected service class with methods</param>
     /// <returns>A list of the AdminUserModels</returns>
     public static async Task<List<AdminUserModel>> RetrieveAdmins(
         AnnotationsDbContext context, [FromServices] IUserService _userService)

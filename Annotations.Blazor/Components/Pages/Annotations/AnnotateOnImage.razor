@@ -38,23 +38,12 @@
                 <MatDialogTitle>Blood vessel segment annotation</MatDialogTitle>
                 <MatDialogContent>
                     <p>
-                        <MatTextField @bind-Value="_currentSegment.Text"
-                                      Label="Annotation"
-                                      FullWidth="true"
-                                      Immediate="true"
-                                      class="MatOverwriteWhiteBG">
-                        </MatTextField>
-                    </p>
-                    <p>
                         <MatTextField @bind-Value="_currentSegment.Thickness"
                                       Label="Blood vessel thickness"
                                       FullWidth="true"
                                       Immediate="true"
                                       class="MatOverwriteWhiteBG">
                         </MatTextField>
-                    </p>
-                    <p>
-                        <MatSelectItem @bind-Value="@_currentSegment.Type" Label="Type" Items="@_types"></MatSelectItem>
                     </p>
                 </MatDialogContent>
                 <MatDialogActions>
@@ -267,12 +256,6 @@
 
     private ElementReference _imageContainer;
 
-    private string[] _types =
-    [
-        "Artery",
-        "Vein",
-        "Flow direction"
-    ];
 
     MatTheme _theme = new MatTheme()
     {
@@ -340,9 +323,7 @@
                 {
                     StartPoint = lastPoint,
                     EndPoint = _currentPoint,
-                    Type = _currentVesselType,
                     Thickness = _currentThickness,
-                    Text = _currentPoint.Text
                 };
                 segment.isVisible = true;
                 _currentVesselAnnotation.Segments.Add(segment);
@@ -419,7 +400,6 @@
         {
             X = (int)(e.ClientX - rect.Left),
             Y = (int)(e.ClientY - rect.Top),
-            Type = _currentVesselType
         };
 
         SavePointAnnotation(lastPoint);
@@ -458,8 +438,6 @@
         public bool isVisible;
         public int X { get; set; }
         public int Y { get; set; }
-        public string Text { get; set; } = "";
-        public string Type { get; set; } = "";
     }
 
     private class VesselSegment
@@ -467,9 +445,7 @@
         public bool isVisible;
         public VesselPoint? StartPoint { get; set; }
         public VesselPoint? EndPoint { get; set; }
-        public string Text { get; set; } = "";
         public double Thickness { get; set; } = 1.0;
-        public string Type { get; set; } = "";
     }
 
     private class VesselAnnotation

@@ -146,12 +146,15 @@
 
                                 @foreach (var point in _drawablePoints)
                                 {
-                                    <circle cx="@point.X" cy="@point.Y" r="10"
-                                            fill="white" stroke="white"
-                                            stroke-width="2"
-                                            @onpointerdown="@(e => StartDrag(e, point))"
-                                            @onclick="@(() => HandlePointClick(point))"
-                                            class="MatOverwriteCursor"/>
+                                    if (point.isVisible)
+                                    {
+                                        <circle cx="@point.X" cy="@point.Y" r="10"
+                                                fill="white" stroke="white"
+                                                stroke-width="2"
+                                                @onpointerdown="@(e => StartDrag(e, point))"
+                                                @onclick="@(() => HandlePointClick(point))"
+                                                class="MatOverwriteCursor"/>
+                                    }
                                 }
 
                                 @if (_currentVesselAnnotation != null)
@@ -192,13 +195,18 @@
                                 var i1 = i;
                                 <MatExpansionPanel>
                                     <MatExpansionPanelSummary>
+
                                         <MatExpansionPanelHeader> Tree @i1 </MatExpansionPanelHeader>
                                     </MatExpansionPanelSummary>
                                     <MatExpansionPanelDetails>
                                         @for (var j = 0; j < _savedVessels[i1].Points.Count; j++)
                                         {
                                             var j1 = j;
+                                            var point = _savedVessels[i1].Points[j1];
                                             <p> point @j </p>
+                                            
+                                            <MatIconButton Icon="visibility" OnClick="() => point!.isVisible = false">
+                                            </MatIconButton>
                                         }
                                     </MatExpansionPanelDetails>
                                 </MatExpansionPanel>
@@ -322,6 +330,7 @@
             }
         }
 
+        _currentPoint.isVisible = true;
         _showTextField = false;
         StateHasChanged();
         PrecomputeAnnotations();
@@ -427,6 +436,7 @@
 
     private class VesselPoint
     {
+        public bool isVisible;
         public int X { get; set; }
         public int Y { get; set; }
         public string Text { get; set; } = "";
@@ -451,5 +461,10 @@
     }
 
     [Inject] private IJSRuntime JsRuntime { get; set; } = default!;
+
+    private void toggleVisibillity(MouseEventArgs obj)
+    {
+        throw new NotImplementedException();
+    }
 
 }

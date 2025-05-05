@@ -88,7 +88,7 @@
                             </MatRadioGroup>
                         </div>
                         </div>
-                    <div class="mat-layout-grid-cell mat-layout-grid-cell-span-10">
+                    <div class="mat-layout-grid-cell mat-layout-grid-cell-span-8">
                         <div class="mat-layout-grid-inner">
                             <div class="mat-layout-grid-cell mat-layout-grid-cell-span-3">
                                 <div class="MatOverwriteIdentification">
@@ -115,17 +115,6 @@
                                 <div class="MatOverwriteDecisions">
                                     <MatButton>Skip</MatButton>
                                     <MatButton OnClick="CompleteCurrentVessel" class="MatOverwriteButton">Complete</MatButton>
-                                </div>
-                                <div>
-                                    <h4>VirtualScroll with items</h4>
-                                    <MatVirtualScroll Items="_savedVessels" ItemType="VesselAnnotation" ItemHeight="50" Style="height: 500px">
-                                        <ItemTemplate>
-                                            <div>
-                                                @context.Description
-                                            </div>
-                                        </ItemTemplate>
-                                    </MatVirtualScroll>
-
                                 </div>
                             </div>
                         </div>
@@ -195,6 +184,26 @@
                                 }
                             </svg>
                         </div>
+                    </div>
+                    <div class="mat-layout-grid-cell mat-layout-grid-cell-span-2">
+                        <MatAccordion Multi="true">
+                            @for (var i = 0; i < _savedVessels.Count; i++)
+                            {
+                                var i1 = i;
+                                <MatExpansionPanel>
+                                    <MatExpansionPanelSummary>
+                                        <MatExpansionPanelHeader> Tree @i1 </MatExpansionPanelHeader>
+                                    </MatExpansionPanelSummary>
+                                    <MatExpansionPanelDetails>
+                                        @for (var j = 0; j < _savedVessels[i1].Points.Count; j++)
+                                        {
+                                            var j1 = j;
+                                            <p> point @j </p>
+                                        }
+                                    </MatExpansionPanelDetails>
+                                </MatExpansionPanel>
+                            }
+                        </MatAccordion>
                     </div>
                 </div>
             </div>

@@ -92,6 +92,7 @@ using (var scope = app.Services.CreateScope())
 
 UserEndpoints.MapEndpoints(app.MapGroup("/users").RequireAuthorization());
 ImageEndpoints.MapEndpoints(app.MapGroup("/images").RequireAuthorization());//TODO    DONT DO THIS. REMOVE 
+AnnotationEndpoints.MapEndpoints(app.MapGroup("/images/annotations").RequireAuthorization());
 
 app.MapGet("/error", () => "Dette er en 400-599 eller værre");
 

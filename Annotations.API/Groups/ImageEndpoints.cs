@@ -33,7 +33,7 @@ public static class ImageEndpoints
 
         pathBuilder.MapGet("/datasets", RetrieveAllDatasetHandler);
 
-        pathBuilder.MapGet("/datasets/{datasetid}", RetrieveImagesFromDatasetHandler);
+        pathBuilder.MapGet("/datasets/{datasetId}", RetrieveImagesFromDatasetHandler);
         
         pathBuilder.MapGet("/exception",
             () =>

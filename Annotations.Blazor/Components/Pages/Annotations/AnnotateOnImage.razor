@@ -3,6 +3,7 @@
 @using Home
 @implements IDisposable
 @inject NavigationManager Navigation
+@inject IAPIServices IapiServices
 @attribute [Authorize(Roles = "Administrator, Manager, AnnotationsUser")]
 
 
@@ -216,15 +217,15 @@
     private bool _showTextField;
     private bool _showSegmentDialog;
 
-    private VesselPoint? _draggedPoint;
-    private VesselPoint _currentPoint = new VesselPoint();
-    private VesselSegment _currentSegment = new VesselSegment();
+    private VesselPointModel? _draggedPoint;
+    private VesselPointModel? _currentPoint; //maybe issue here
+    private VesselSegmentModel? _currentSegment; //here
 
-    private VesselAnnotation? _currentVesselAnnotation = new VesselAnnotation();
-    private List<VesselAnnotation> _savedVessels = new List<VesselAnnotation>();
+    private VesselAnnotationModel? _currentVesselAnnotation; //here
+    private List<VesselAnnotationModel>? _savedVessels;
 
-    private List<VesselSegment> _drawableSegments = new();
-    private List<VesselPoint> _drawablePoints = new();
+    private List<VesselSegmentModel> _drawableSegments = new();
+    private List<VesselPointModel> _drawablePoints = new();
 
     private string _currentVesselType = "";
     private double _currentThickness = 0.0;
@@ -255,7 +256,7 @@
         StateHasChanged();
     }
     
-    private void HandleSegmentClick(VesselSegment segment)
+    private void HandleSegmentClick(VesselSegmentModel segment)
     {
         _currentSegment = segment;
         _showSegmentDialog = true;
@@ -279,7 +280,7 @@
 
             if (vessel.Points != null)
             {
-                _drawablePoints.AddRange(vessel.Points.Where(point => point != null).Cast<VesselPoint>());
+                _drawablePoints.AddRange(vessel.Points.Where(point => point != null).Cast<VesselPointModel>());
             }
         }
     }
@@ -293,8 +294,9 @@
             if (_currentVesselAnnotation.Points.Count > 1)
             {
                 var lastPoint = _currentVesselAnnotation.Points[^2];
-                var segment = new VesselSegment
+                var segment = new VesselSegmentModel
                 {
+                    Id = 0,
                     StartPoint = lastPoint,
                     EndPoint = _currentPoint,
                     Type = _currentVesselType,
@@ -341,7 +343,10 @@
         }
 
         _savedVessels.Add(_currentVesselAnnotation!);
-        _currentVesselAnnotation = new VesselAnnotation();
+
+        SaveAnnotationToDb(_currentVesselAnnotation);
+        
+        //_currentVesselAnnotation = new VesselAnnotation();
 
         _completionTitle = "Success";
         _completionMessage = "Your blood vessel tree has been successfully completed";
@@ -351,23 +356,45 @@
         PrecomputeAnnotations();
     }
 
+    private async Task SaveAnnotationToDb(VesselAnnotationModel _currentVesselAnnotation)
+    {
+        //try
+        //{
+        var response = await IapiServices.CreatePostRequest($"/images/annotations/save", _currentVesselAnnotation); //sending the response
+        if (!response.IsSuccessStatusCode)
+        {
+            Console.WriteLine("Error with post request for Annotation");
+        }
+        //else
+        //{
+        //error handling?
+        //}
+        //}
+        //catch
+        //{
+        //error handling?
+        //}
+    }
+    
     private async Task HandleImageClick(MouseEventArgs e)
     {
         var rect = await JsRuntime.InvokeAsync<BoundingClientRect>(
             "getBoundingClientRect", _imageContainer);
 
-        _currentPoint = new VesselPoint
+        _currentPoint = new VesselPointModel
         {
+            Id = 0, //arbitrary
             X = (int)(e.ClientX - rect.Left),
             Y = (int)(e.ClientY - rect.Top),
-            Type = _currentVesselType
+            Type = _currentVesselType,
+            Text = ""
         };
 
         _showTextField = true;
         StateHasChanged();
     }
 
-    private void StartDrag(PointerEventArgs e, VesselPoint point)
+    private void StartDrag(PointerEventArgs e, VesselPointModel point)
     {
         _draggedPoint = point;
     }

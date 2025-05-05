@@ -3,16 +3,13 @@ using Annotations.Core.Entities;
 using Annotations.Core.Models;
 using Annotations.Core.VesselObjects;
 using Microsoft.AspNetCore.Mvc;
-using Azure.Storage.Blobs;
-using Microsoft.Extensions.Azure;
-using Microsoft.IdentityModel.Tokens;
-
+using Microsoft.EntityFrameworkCore;
 
 namespace Annotations.API.Groups;
 
 public static class AnnotationEndpoints
 {
-    //how to route all to /images/annotations?
+
     public static void MapEndpoints(RouteGroupBuilder pathBuilder)
     {
         pathBuilder.RequireAuthorization().DisableAntiforgery();

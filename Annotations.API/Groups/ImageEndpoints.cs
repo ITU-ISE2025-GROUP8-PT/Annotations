@@ -9,10 +9,16 @@ namespace Annotations.API.Groups;
 
 public static class ImageEndpoints
 {
-    private static int _counter = 0;//change this - it gets reset every time the program resets
+    //the counter represents which id an image will get. This is reset every time the program resets
+    private static int _counter = 0;
  
     
     
+    /// <summary>
+    /// Where all the endpoints are initialized to their respective handler
+    /// </summary>
+    /// <param name="pathBuilder"></param>
+    /// <exception cref="InvalidOperationException"></exception>
     public static void MapEndpoints(RouteGroupBuilder pathBuilder)
     {
         pathBuilder.RequireAuthorization().DisableAntiforgery();
@@ -44,8 +50,15 @@ public static class ImageEndpoints
 
     
     
-    //This is the upload endpoint where the image first gets validated,
-    //and then gets uploaded into your local Azurite BlobStorage as a JSON file
+    /// <summary>
+    /// This is the upload endpoint where the image first gets validated,
+    /// and then gets uploaded into your local Azurite BlobStorage as a JSON file
+    /// </summary>
+    /// <param name="image">The file containing the image</param>
+    /// <param name="category"> Which category the image should have</param>
+    /// <param name="context"> The SQLite database conetx</param>
+    /// <param name="_imageService"> The injected service class</param>
+    /// <returns></returns>
     public static async Task<IResult> UploadImageHandler(IFormFile image, string category, AnnotationsDbContext context, 
          [FromServices] IImageService _imageService)
     {
@@ -63,10 +76,14 @@ public static class ImageEndpoints
 
     
     
-    public static async Task<IResult> DeleteImageHandler(string imageId, [FromServices] IAzureClientFactory<BlobServiceClient> clientFactory, 
-        [FromServices] IImageService _imageService)
+    /// <summary>
+    /// Deletes image
+    /// </summary>
+    /// <param name="imageId"></param>
+    /// <param name="_imageService">the injected service class with methods</param>
+    /// <returns> the statuscode of deleting the image</returns>
+    public static async Task<IResult> DeleteImageHandler(string imageId, [FromServices] IImageService _imageService)
     {
-
         bool deleting = await _imageService.DeleteImage(imageId);
         if (deleting)
         {
@@ -79,7 +96,13 @@ public static class ImageEndpoints
     
     
     
-    public static async Task<string> RetrieveImageHandler([FromRoute] string imageId, [FromServices] IAzureClientFactory<BlobServiceClient> clientFactory, 
+    /// <summary>
+    /// Retrieves an image based on the provided imageid
+    /// </summary>
+    /// <param name="imageId"></param>
+    /// <param name="_imageService">the injected service class with methods</param>
+    /// <returns> Either JSON string (if image exist) otherwise an errormessage</returns>
+    public static async Task<string> RetrieveImageHandler([FromRoute] string imageId, 
         [FromServices] IImageService _imageService)
     {
         //insert password restrictions here 🐿️
@@ -91,15 +114,18 @@ public static class ImageEndpoints
             return getImageResult.image; 
         }
         
-        //will only reach here if it cannot find an image with the id of the correct file type,
-        //or else the request will terminate inside the for-loop
         Console.WriteLine("Cannot retrieve image because it doesn't exist");
         return "Cannot retrieve image because it doesn't exist";
     }
     
     
-    
-    public static async Task<string[]> FilterImagesHandler(string category, [FromServices] IAzureClientFactory<BlobServiceClient> clientFactory, 
+    /// <summary>
+    /// finds and returns all images within a certain category
+    /// </summary>
+    /// <param name="category"></param>
+    /// <param name="_imageService">the injected service class with methods</param>
+    /// <returns> an array of images as JSON string with the wanted category</returns>
+    public static async Task<string[]> FilterImagesHandler(string category, 
         [FromServices] IImageService _imageService)
     {
 
@@ -112,13 +138,19 @@ public static class ImageEndpoints
             //return Results.StatusCode(404);
         }
         
-        return collection.ToArray();//returns array of the JSON files as strings
-
+        return collection.ToArray();
     }
     
     
     
-    public static async Task<DatasetModel[]> RetrieveAllDatasetHandler(AnnotationsDbContext context, [FromServices] IImageService _imageService)
+    /// <summary>
+    /// Retrieves all existing datasets 
+    /// </summary>
+    /// <param name="context">the DbContext where the datasets are</param>
+    /// <param name="_imageService">the injected service class with methods</param>
+    /// <returns>An array of all existing datasetModels</returns>
+    public static async Task<DatasetModel[]> RetrieveAllDatasetHandler(AnnotationsDbContext context, 
+        [FromServices] IImageService _imageService)
     {
         return await _imageService.GetAllDatasets();
 
@@ -126,8 +158,15 @@ public static class ImageEndpoints
     
     
     
+    /// <summary>
+    /// Retrieves all the images inside a specific dataset
+    /// </summary>
+    /// <param name="id">ID of the desired dataset</param>
+    /// <param name="context">DbContext where the dataset is located</param>
+    /// <param name="_imageService">the injected service class with methods</param>
+    /// <returns>A string array of the needed images as a JSON string</returns>
     public static async Task<string[]> RetrieveImagesFromDatasetHandler(string id, AnnotationsDbContext context, 
-        [FromServices] IAzureClientFactory<BlobServiceClient> clientFactory, [FromServices] IImageService _imageService)
+        [FromServices] IImageService _imageService)
     {
          //TODO: almost identical code as "/filter/{category}" - remove the code duplication
 
@@ -135,7 +174,7 @@ public static class ImageEndpoints
             
             HashSet<string> collection = new HashSet<string>();
 
-            //foreach (DatasetModel datasetModel in datasets)//guaranteed to only be one dataset in "datasets", so this is not linear time. 
+            //guaranteed to only be one dataset in "datasets", so this is constant time. 
             //there is a better way of doing this
             
                 foreach (int ids in datasetModel.ImageIds)
@@ -149,11 +188,13 @@ public static class ImageEndpoints
                     else
                     {
                         Console.WriteLine("Cannot retrieve image because it doesn't exist");
+                        //needed proper error handling here
+                        //an actual error should be returned (e.g. status code 404)
                         break;
                     }
                 }
             
-            return collection.ToArray();//returns array of all images as JSON strings
+            return collection.ToArray();
             
     }
 }

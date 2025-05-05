@@ -19,7 +19,7 @@ public record ValidationResponse(bool Success, string Message);
 /// returns the needed data for the image
 /// </summary>
 /// <param name="Image">The image model</param>
-/// <param name="JSONString">JSONString representing the JSONfile</param>
+/// <param name="JSONString">JSONString representing the JSON file</param>
 public record ImageData(ImageModel Image, string JSONString);
 
 /// <summary>
@@ -142,13 +142,13 @@ public class ImageService: IImageService
     
     
     /// <summary>
-    /// converts a json string to a byte arrau and then uploads to the Blobstorage as a JSON file
+    /// converts a JSON string to a byte arrau and then uploads to the Blobstorage as a JSON file
     /// </summary>
-    /// <param name="id">The ID of the image, the jsonString represents</param>
-    /// <param name="jsonString">The string of the JSONfile representing an image</param>
-    private async Task UploadAsJSON(int id, string jsonString)
+    /// <param name="id">The ID of the image, the JSON string represents</param>
+    /// <param name="JSONString">The string of the JSON file representing an image</param>
+    private async Task UploadAsJSON(int id, string JSONString)
     {
-        var byteContent = System.Text.Encoding.UTF8.GetBytes(jsonString); //JSON string becomes byte array
+        var byteContent = System.Text.Encoding.UTF8.GetBytes(JSONString); //JSON string becomes byte array
         BlobClient thisImageBlobClient = _containerClient.GetBlobClient($"{id}.json");
 
         var blobHeaders = new BlobHttpHeaders
@@ -165,7 +165,7 @@ public class ImageService: IImageService
     
     
     /// <summary>
-    /// Uploads a JSONfile containing the image to the blobstorage with the given id
+    /// Uploads a JSON file containing the image to the blobstorage with the given id
     /// </summary>
     /// <param name="image"></param>
     /// <param name="id"></param>
@@ -189,8 +189,8 @@ public class ImageService: IImageService
                
                 await AddImagesToDatasets(thisImage);
                 
-                string jsonString = System.Text.Json.JsonSerializer.Serialize(thisImage); //objects becomes JSON string
-                await UploadAsJSON(id, jsonString);
+                string JSONString = System.Text.Json.JsonSerializer.Serialize(thisImage); //objects becomes JSON string
+                await UploadAsJSON(id, JSONString);
             }
     }
 
@@ -219,14 +219,14 @@ public class ImageService: IImageService
     public async Task<ImageData> GetImageForFiltering(BlobContainerClient containerClient, BlobItem blobItem)
     {
         var blobClient = containerClient.GetBlobClient(blobItem.Name);
-        string jsonString = await convertToJSONString(blobClient);
-        var imageObject = System.Text.Json.JsonSerializer.Deserialize<ImageModel>(jsonString);//deserialize so it becomes imageModel
+        string JSONString = await convertToJSONString(blobClient);
+        var imageObject = System.Text.Json.JsonSerializer.Deserialize<ImageModel>(JSONString);//deserialize so it becomes imageModel
         if (imageObject == null)
         {
             throw new Exception("img object is null");
         }
 
-        return new(imageObject, jsonString);
+        return new(imageObject, JSONString);
     }
 
     

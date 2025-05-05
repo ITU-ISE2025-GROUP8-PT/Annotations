@@ -178,6 +178,11 @@ public class ImageService: IImageService
 
     
     
+    /// <summary>
+    /// Currently, it just prints out an error message in terminal
+    /// In the future when error handling is properly implemented, here is where it would be 
+    /// </summary>
+    /// <param name="response">The error response that will be printed out</param>
     public void UploadImageError(ValidationResponse response)
     {
         Console.WriteLine("rejecting image");
@@ -237,7 +242,13 @@ public class ImageService: IImageService
     
     
 
-    public async Task<DatasetModel> GetDataset(string dataset)
+    /// <summary>
+    /// Gets a Dataset object from the DbContext using a id 
+    /// </summary>
+    /// <param name="dataset"></param>
+    /// <returns>The Dataset Model of the wanted dataset</returns>
+    /// <exception cref="Exception"></exception>
+    public async Task<DatasetModel> GetDataset(string id)
     {
         var datasets = _DbContext.Datasets
             .Select(u => new DatasetModel()
@@ -247,7 +258,7 @@ public class ImageService: IImageService
                 Category = u.Category,
                 AnnotatedBy= u.AnnotatedBy,
                 ReviewedBy = u.ReviewedBy
-            }).Where(DatasetModel => DatasetModel.Id == Int32.Parse(dataset));
+            }).Where(DatasetModel => DatasetModel.Id == Int32.Parse(id));
         //there is only one dataset with a certain Id, so no point of taking more
         var datasetModel = await datasets.FirstOrDefaultAsync();
 
@@ -261,22 +272,30 @@ public class ImageService: IImageService
 
     
     
+    /// <summary>
+    /// Attempts to retrieves an image based on id
+    /// </summary>
+    /// <param name="imageId"></param>
+    /// <returns>Returns image as JSON string if exists, otherwise empty string is returned</returns>
     public async Task<GetImageResult> GetImage(string imageId)
     {
         var cts = new CancellationTokenSource(5000);
         //enters images
         BlobClient blobClient = _containerClient.GetBlobClient(imageId + ".json");
-        if (!blobClient.Exists(cts.Token).ToString()
-                .Contains("404")) //checks if the blobClient is empty/couldn't find the image of that format
+        //checks if the blobClient is empty/couldn't find the image of that format
+        if (!blobClient.Exists(cts.Token).ToString().Contains("404")) 
         {
-            
             return new GetImageResult(true, await convertToJSONString(blobClient));
         }
         return new GetImageResult(false, "");
     }
     
     
-
+    
+    /// <summary>
+    /// Retrieves all existing datasets in the dbContext
+    /// </summary>
+    /// <returns>An array of all datasets model</returns>
     public async Task<DatasetModel[]> GetAllDatasets()
     {
         //Datasets from DBContext are transformed to DatasetModels
@@ -297,6 +316,12 @@ public class ImageService: IImageService
     
     
 
+    /// <summary>
+    /// Attempts to retrieve the image
+    /// If it succeeds, then it deletes the image
+    /// </summary>
+    /// <param name="imageId"></param>
+    /// <returns>A boolean indicating whether the image was deleted or not</returns>
     public async Task<bool> DeleteImage(string imageId)
     {
         var cts = new CancellationTokenSource(5000);

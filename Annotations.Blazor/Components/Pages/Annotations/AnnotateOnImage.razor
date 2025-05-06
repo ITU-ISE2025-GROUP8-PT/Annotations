@@ -11,49 +11,37 @@
 <AuthorizeView>
     <Authorized>
         <MatThemeProvider Theme="@_theme">
+            @* DialogBox for when completing a annotation, containing a text field for notes *@
             <MatDialog @bind-IsOpen="@_showCompletionDialog">
                 <MatDialogTitle>@_completionTitle</MatDialogTitle>
-                <MatDialogContent>@_completionMessage</MatDialogContent>
-                <MatDialogActions>
-                    <MatButton OnClick="@(() => _showCompletionDialog = false)">OK</MatButton>
-                </MatDialogActions>
-            </MatDialog>
-
-            <MatDialog @bind-IsOpen="@_showTextField">
-                <MatDialogTitle>Blood vessel point annotation</MatDialogTitle>
                 <MatDialogContent>
-                    <p>
-                        <MatTextField @bind-Value="_currentPoint.Text"
-                                      Label="Annotation"
-                                      FullWidth="true"
-                                      Immediate="true"
-                                      Id="annotationTextField"
-                                      class="MatOverwriteWhiteBG">
-                        </MatTextField>
-                    </p>
-                    <p>
-                        <MatSelectItem @bind-Value="@_currentPoint.Type" Label="Type" Items="@_types"></MatSelectItem>
-                    </p>
+                    @_completionMessage
+                    @if (_completionTitle == "Success")
+                    {
+                        <p>
+                            <MatTextField @bind-Value="_currentVesselAnnotation!.Description"
+                                          Label="Annotation"
+                                          FullWidth="true"
+                                          Immediate="true"
+                                          Id="annotationTextField"
+                                          class="MatOverwriteWhiteBG">
+                            </MatTextField>
+                        </p>
+                    }
                 </MatDialogContent>
                 <MatDialogActions>
-                    <div>
-                        <MatButton class="MatOverwriteButton" OnClick="SavePointAnnotation">Save</MatButton>
-                        <MatButton class="MatOverwriteButton" OnClick="CancelPointAnnotation">Cancel</MatButton>
-                    </div>
+                    <MatButton OnClick="@(() =>
+                                        {
+                                            _showCompletionDialog = false;
+                                            StateHasChanged();
+                                        })">OK</MatButton>
                 </MatDialogActions>
             </MatDialog>
-
+            
+            @* DialogBox that shown when clicking a segment. Thickness can be defined here *@
             <MatDialog @bind-IsOpen="_showSegmentDialog">
                 <MatDialogTitle>Blood vessel segment annotation</MatDialogTitle>
                 <MatDialogContent>
-                    <p>
-                        <MatTextField @bind-Value="_currentSegment.Text"
-                                      Label="Annotation"
-                                      FullWidth="true"
-                                      Immediate="true"
-                                      class="MatOverwriteWhiteBG">
-                        </MatTextField>
-                    </p>
                     <p>
                         <MatTextField @bind-Value="_currentSegment.Thickness"
                                       Label="Blood vessel thickness"
@@ -61,9 +49,6 @@
                                       Immediate="true"
                                       class="MatOverwriteWhiteBG">
                         </MatTextField>
-                    </p>
-                    <p>
-                        <MatSelectItem @bind-Value="@_currentSegment.Type" Label="Type" Items="@_types"></MatSelectItem>
                     </p>
                 </MatDialogContent>
                 <MatDialogActions>
@@ -73,10 +58,12 @@
                     </div>
                 </MatDialogActions>
             </MatDialog>
-
+            
+            
             <div class="mat-layout-grid">
                 <div class="mat-layout-grid-inner">
                     <div class="mat-layout-grid-cell mat-layout-grid-cell-span-2">
+                        @* Shows userdata in the left corner (currently hardcoded) *@
                         <div class="MatOverwriteGrid">
                             <img src="img/billede1.png" alt="Profile Picture" class="MatOverwriteProfilePic">
                             <div>
@@ -85,22 +72,23 @@
                                 <small>Surgeon</small>
                             </div>
                         </div>
+                        @* RadioButtons for selecting Annotation types. Radiobuttons ensure that only one button can be on at once *@
                         <div class="MatOverwriteMarginTop50">
-                            <MatCheckbox @bind-Value="@_arteriesMarked">Arteries marked</MatCheckbox>
-                        </div>
-                        <div>
-                            <MatCheckbox @bind-Value="@_veinsMarked">Veins marked</MatCheckbox>
-                        </div>
-                        <div>
-                            <MatCheckbox @bind-Value="@_flowDirectionSet">Flow direction set</MatCheckbox>
-                        </div>
-                        <div>
-                            <MatCheckbox @bind-Value="@_videoReviewed">Video reviewed</MatCheckbox>
+                            <p>Choose a type here</p>
+                            <MatRadioGroup @bind-Value="@_currentVesselAnnotation!.Type">
+                                <div>
+                                    <MatRadioButton Value="@("Arteries")" TValue="string">Arteries</MatRadioButton>
+                                </div>
+                                <div>
+                                    <MatRadioButton Value="@("Veins")" TValue="string">Veins</MatRadioButton>
+                                </div>
+                            </MatRadioGroup>
                         </div>
                     </div>
-                    <div class="mat-layout-grid-cell mat-layout-grid-cell-span-10">
+                    <div class="mat-layout-grid-cell mat-layout-grid-cell-span-8">
                         <div class="mat-layout-grid-inner">
                             <div class="mat-layout-grid-cell mat-layout-grid-cell-span-3">
+                                @* Tab groups. Placeholders for features not yet implemented. The tabs currently does nothing *@
                                 <div class="MatOverwriteIdentification">
                                     <MatTabGroup>
                                         <MatTab Label="Vessels">
@@ -121,6 +109,11 @@
                                     </MatTabGroup>
                                 </div>
                             </div>
+                            @*  
+                                The complete and skip buttons. 
+                                Skip is just a placeholder. 
+                                Complete saves the drawn annotation, and adds it to the visual "list" of trees shown to the right on the page.  
+                            *@
                             <div class="mat-layout-grid-cell mat-layout-grid-cell-span-9 mat-layout-grid-align-right">
                                 <div class="MatOverwriteDecisions">
                                     <MatButton>Skip</MatButton>
@@ -128,41 +121,54 @@
                                 </div>
                             </div>
                         </div>
-
+                        @*  
+                            Draws the image getting annotated (image currently hardcoded) 
+                            and logic for drawing the annotation trees
+                        *@
                         <div class="MatOverwriteRelative" @ref="_imageContainer">
-                            <img src="img/Skærmbillede%202025-03-27%20kl.%2014.05.56.png" alt="Annotation Image" 
+                            <img src="img/Skærmbillede%202025-03-27%20kl.%2014.05.56.png" alt="Annotation Image"
                                  @onclick="HandleImageClick" class="MatOverwriteWorkImage"/>
-
+                            
+                            @* For dragging around points *@
                             <svg @onpointermove="HandleDrag"
                                  @onpointerup="EndDrag"
                                  @onpointerleave="EndDrag"
                                  class="MatOverwriteSVG">
 
+                                @* Logic for drawing all segments that are supposed to be toggled *@
                                 @foreach (var segment in _drawableSegments)
                                 {
-                                    <line x1="@segment.StartPoint!.X" y1="@segment.StartPoint.Y"
-                                          x2="@segment.EndPoint!.X" y2="@segment.EndPoint.Y"
-                                          stroke="transparent"
-                                          stroke-width="20"
-                                          @onclick="@(() => HandleSegmentClick(segment))"
-                                          pointer-events="visibleStroke"/>
+                                    if (segment.isVisible)
+                                    {
+                                        <line x1="@segment.StartPoint!.X" y1="@segment.StartPoint.Y"
+                                              x2="@segment.EndPoint!.X" y2="@segment.EndPoint.Y"
+                                              stroke="transparent"
+                                              stroke-width="20"
+                                              @onclick="@(() => HandleSegmentClick(segment))"
+                                              pointer-events="visibleStroke"/>
 
-                                    <line x1="@segment.StartPoint.X" y1="@segment.StartPoint.Y"
-                                          x2="@segment.EndPoint.X" y2="@segment.EndPoint.Y"
-                                          stroke="white"
-                                          stroke-width="2"
-                                          pointer-events="none"/>
+                                        <line x1="@segment.StartPoint.X" y1="@segment.StartPoint.Y"
+                                              x2="@segment.EndPoint.X" y2="@segment.EndPoint.Y"
+                                              stroke="white"
+                                              stroke-width="2"
+                                              pointer-events="none"/>
+                                    }
                                 }
-
+                                @* Logic for drawing all points that are supposed to be toggled *@
                                 @foreach (var point in _drawablePoints)
                                 {
-                                    <circle cx="@point.X" cy="@point.Y" r="10"
-                                            fill="white" stroke="white"
-                                            stroke-width="2"
-                                            @onpointerdown="@(e => StartDrag(e, point))"
-                                            class="MatOverwriteCursor"/>
+                                    if (point.isVisible)
+                                    {
+                                        <circle cx="@point.X" cy="@point.Y" r="10"
+                                                fill="white" stroke="white"
+                                                stroke-width="2"
+                                                @onpointerdown="@(e => StartDrag(e, point))"
+                                                @onclick="@(() => HandlePointClick(point))"
+                                                class="MatOverwriteCursor"/>
+                                    }
                                 }
-
+                                @* Draws the annotation tree currently being drawn 
+                                (draws all points and segments within the tree) *@
                                 @if (_currentVesselAnnotation != null)
                                 {
                                     @foreach (var segment in _currentVesselAnnotation.Segments)
@@ -186,12 +192,57 @@
                                         <circle cx="@point!.X" cy="@point.Y" r="10"
                                                 fill="white" stroke="white"
                                                 stroke-width="2"
+                                                @onclick="@(() => HandlePointClick(point))"
                                                 @onpointerdown="@(e => StartDrag(e, point))"
                                                 class="MatOverwriteCursor"/>
                                     }
                                 }
                             </svg>
                         </div>
+                    </div>
+                    <div class="mat-layout-grid-cell mat-layout-grid-cell-span-2">
+                        @*
+                            Creates a Expansion panel of all completed annotation trees 
+                            Expansion panel is used because they can show the points and segments within a tree easily 
+                        *@
+                        <MatAccordion Multi="true">
+                            @for (var i = 0; i < _savedVessels.Count; i++)
+                            {
+                                var i1 = i;
+                                <MatExpansionPanel>
+                                    <MatExpansionPanelSummary>
+                                        <MatExpansionPanelHeader> Tree @i1 </MatExpansionPanelHeader>
+                                    </MatExpansionPanelSummary>
+                                    <MatExpansionPanelDetails>
+                                        <h6>Vessel Points</h6>
+                                        @for (var j = 0; j < _savedVessels[i1].Points.Count; j++)
+                                        {
+                                            var j1 = j;
+                                            var point = _savedVessels[i1].Points[j1];
+                                            <p>
+                                                point @j
+                                                @* Visibility button that can be clicked to toggle/ untoggle points 
+                                                   MatIconButton is chosen because its easy to change/ use icons with *@
+                                                <MatIconButton Icon="visibility_off" ToggleIcon="visibility" @bind-Toggled="@point!.isVisible">
+                                                </MatIconButton>
+                                            </p>
+                                        }
+                                        <h6>Vessel Segments</h6>
+                                        @for (var j = 0; j < _savedVessels[i1].Segments.Count; j++)
+                                        {
+                                            var j1 = j;
+                                            var segment = _savedVessels[i1].Segments[j1];
+                                            <p>
+                                                segment @j
+                                                @* Visibility button that can be clicked to toggle/ untoggle segments *@
+                                                <MatIconButton Icon="visibility_off" ToggleIcon="visibility" @bind-Toggled="@segment!.isVisible">
+                                                </MatIconButton>
+                                            </p>
+                                        }
+                                    </MatExpansionPanelDetails>
+                                </MatExpansionPanel>
+                            }
+                        </MatAccordion>
                     </div>
                 </div>
             </div>
@@ -204,21 +255,16 @@
 
 @code {
     private string? _currentUrl;
-    private bool _arteriesMarked;
-    private bool _veinsMarked;
-    private bool _flowDirectionSet;
-    private bool _videoReviewed;
 
     private bool _showCompletionDialog;
     private string _completionMessage = "";
     private string _completionTitle = "";
 
-    private bool _showTextField;
     private bool _showSegmentDialog;
 
     private VesselPoint? _draggedPoint;
-    private VesselPoint _currentPoint = new VesselPoint();
-    private VesselSegment _currentSegment = new VesselSegment();
+    private VesselPoint _currentPoint = new();
+    private VesselSegment _currentSegment = new();
 
     private VesselAnnotation? _currentVesselAnnotation = new VesselAnnotation();
     private List<VesselAnnotation> _savedVessels = new List<VesselAnnotation>();
@@ -226,17 +272,10 @@
     private List<VesselSegment> _drawableSegments = new();
     private List<VesselPoint> _drawablePoints = new();
 
-    private string _currentVesselType = "";
     private double _currentThickness = 0.0;
 
     private ElementReference _imageContainer;
 
-    private string[] _types =
-    [
-        "Artery",
-        "Vein",
-        "Flow direction"
-    ];
 
     MatTheme _theme = new MatTheme()
     {
@@ -263,6 +302,12 @@
         StateHasChanged();
     }
 
+    
+    private void HandlePointClick(VesselPoint point)
+    {
+        _currentPoint = point;
+    }
+    
     public void Dispose() => Navigation.LocationChanged -= OnLocationChanged;
 
     private void PrecomputeAnnotations()
@@ -284,7 +329,7 @@
         }
     }
 
-    private void SavePointAnnotation()
+    private void SavePointAnnotation(VesselPoint lastPoint)
     {
         if (_currentVesselAnnotation != null)
         {
@@ -292,28 +337,20 @@
 
             if (_currentVesselAnnotation.Points.Count > 1)
             {
-                var lastPoint = _currentVesselAnnotation.Points[^2];
                 var segment = new VesselSegment
                 {
                     StartPoint = lastPoint,
                     EndPoint = _currentPoint,
-                    Type = _currentVesselType,
                     Thickness = _currentThickness,
-                    Text = _currentPoint.Text
                 };
+                segment.isVisible = true;
                 _currentVesselAnnotation.Segments.Add(segment);
             }
         }
 
-        _showTextField = false;
+        _currentPoint.isVisible = true;
         StateHasChanged();
         PrecomputeAnnotations();
-    }
-
-    private void CancelPointAnnotation()
-    {
-        _showTextField = false;
-        StateHasChanged();
     }
 
     private void SaveSegmentAnnotation()
@@ -339,6 +376,15 @@
             StateHasChanged();
             return;
         }
+        
+        if (_currentVesselAnnotation!.Type == "")
+        {
+            _completionTitle = "Fail";
+            _completionMessage = "Please choose a type.";
+            _showCompletionDialog = true;
+            StateHasChanged();
+            return;
+        } 
 
         _savedVessels.Add(_currentVesselAnnotation!);
         _currentVesselAnnotation = new VesselAnnotation();
@@ -346,9 +392,9 @@
         _completionTitle = "Success";
         _completionMessage = "Your blood vessel tree has been successfully completed";
         _showCompletionDialog = true;
-        StateHasChanged();
 
         PrecomputeAnnotations();
+        StateHasChanged();
     }
 
     private async Task HandleImageClick(MouseEventArgs e)
@@ -356,14 +402,15 @@
         var rect = await JsRuntime.InvokeAsync<BoundingClientRect>(
             "getBoundingClientRect", _imageContainer);
 
+        var lastPoint = _currentPoint; 
         _currentPoint = new VesselPoint
         {
             X = (int)(e.ClientX - rect.Left),
             Y = (int)(e.ClientY - rect.Top),
-            Type = _currentVesselType
         };
 
-        _showTextField = true;
+        SavePointAnnotation(lastPoint);
+
         StateHasChanged();
     }
 
@@ -395,26 +442,27 @@
 
     private class VesselPoint
     {
+        public bool isVisible;
         public int X { get; set; }
         public int Y { get; set; }
-        public string Text { get; set; } = "";
-        public string Type { get; set; } = "";
     }
 
     private class VesselSegment
     {
+        public bool isVisible;
         public VesselPoint? StartPoint { get; set; }
         public VesselPoint? EndPoint { get; set; }
-        public string Text { get; set; } = "";
         public double Thickness { get; set; } = 1.0;
-        public string Type { get; set; } = "";
     }
 
     private class VesselAnnotation
     {
         public List<VesselPoint?> Points { get; } = new();
         public List<VesselSegment> Segments { get; } = new();
+        public string Description { get; set; } = "";
+        public string Type { get; set; } = "";
     }
 
     [Inject] private IJSRuntime JsRuntime { get; set; } = default!;
+    
 }

@@ -1,47 +1,60 @@
+using Annotations.API.Services;
 using Annotations.Core.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+
 
 namespace Annotations.API.Groups;
 
 public static class UserEndpoints
 {
+    /// <summary>
+    /// Where all the endpoints are initialized to their respective handler. 
+    /// </summary>
+    /// <param name="pathBuilder"></param>
     public static void MapEndpoints(RouteGroupBuilder pathBuilder)
     {
-        pathBuilder.MapGet("/", () => "Hello Kitty!");
-        pathBuilder.MapGet("/admins", async (AnnotationsDbContext context) =>
-            {
-                var admins = await context.Admins
-                    .Select(u => new AdminUserModel
-                    {
-                        Id = u.UserId,
-                        FirstName = u.FirstName,
-                        LastName = u.LastName,
-                        Email = u.Email
-                    })
-                    .ToListAsync();
-                return admins;
-            });
-        pathBuilder.MapGet("/medicalprofessionals", async (AnnotationsDbContext context) =>
-            {
-                var medicalProfessionals = await context.MedicalProfessionals
-                    .Select(u => new MedicalProfessionalUserModel
-                    {
-                        Id = u.UserId,
-                        FirstName = u.FirstName,
-                        LastName = u.LastName,
-                        Email = u.Email,
-                        Affiliation = u.Affiliation,
-                        JobTitle = u.JobTitle,
-                        TotalAssignmentsFinished = u.TotalAssignmentsFinished,
-                        ProfilePictureID = u.ProfilePictureId
-                    })
-                    .ToListAsync();
-                return medicalProfessionals;
-            });
-        pathBuilder.MapGet("/exception", () => 
+        // Anti-forgery is disabled. This was decided because the backend will not serve any forms.
+        // Anti-forgery measures are covered in the front-end, and by the JWT token protection. 
+        pathBuilder.RequireAuthorization().DisableAntiforgery(); 
+        
+        pathBuilder.MapGet("/admins", RetrieveAdmins);
+        
+        pathBuilder.MapGet("/medicalprofessionals", RetrieveMedicalProfessionals);
+        
+        pathBuilder.MapGet("/exception", () =>
         {
-            throw new InvalidOperationException("Exception has been raised in the API. Look for further details in the log.");
+            throw new InvalidOperationException(
+                "Exception has been raised in the API. Look for further details in the log.");
         });
+    }
+
+
+
+    /// <summary>
+    /// Retrieves all registered admins. 
+    /// </summary>
+    /// <param name="context"> Annotations database context containing the user data. </param>
+    /// <param name="_userService"> A user service instance. </param>
+    /// <returns> A list of the AdminUserModels. </returns>
+    public static async Task<List<AdminUserModel>> RetrieveAdmins(
+        AnnotationsDbContext context, 
+        [FromServices] IUserService _userService)
+    {
+        return await _userService.GetAdmins();
+    }
+
+
+
+    /// <summary>
+    /// Retrieves all registered medical professionals. 
+    /// </summary>
+    /// <param name="context"> Annotations database context containing the user data. </param>
+    /// <param name="_userService"> A user service instance. </param>
+    /// <returns> A list of the MedicalProfessionalUserModels. </returns>
+    public static async Task<List<MedicalProfessionalUserModel>> RetrieveMedicalProfessionals(
+        AnnotationsDbContext context, 
+        [FromServices] IUserService _userService)
+    {
+        return await _userService.GetMedicalProfessionals();
     }
 }

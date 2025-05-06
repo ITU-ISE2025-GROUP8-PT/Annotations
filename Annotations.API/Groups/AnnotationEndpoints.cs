@@ -20,7 +20,7 @@ public static class AnnotationEndpoints
 
         //pathBuilder.MapDelete("/{annotationId}", DeleteAnnotation);
 
-        //pathBuilder.MapGet("/", Annotate);
+        pathBuilder.MapGet("/", GetAnnotationsByImage);
 
         pathBuilder.MapGet("/exception",
             () =>
@@ -32,7 +32,7 @@ public static class AnnotationEndpoints
     
     
     
-    public static Task<IResult> SaveAnnotation(VesselAnnotationModel AnnotationTree, AnnotationsDbContext context,
+    public static Task<IResult> SaveAnnotation(VesselAnnotationModel annotationTree, AnnotationsDbContext context,
         [FromServices] IAnnotationService _annotationService)
     {
         /*if doesnotwork
@@ -41,17 +41,18 @@ public static class AnnotationEndpoints
             //TODO: how should the end user see this?
         }*/
 
-        List<VesselPoint> PointsList = _annotationService.ConvertVesselPointModelToVesselPoint(AnnotationTree.Points);
-        List<VesselSegment> SegmentList = _annotationService.ConvertVesselSegmentModelToVesselPoint(AnnotationTree.Segments);
+        List<VesselPoint> pointsList = _annotationService.ConvertVesselPointModelToVesselPoint(annotationTree.Points);
+        List<VesselSegment> segmentList = _annotationService.ConvertVesselSegmentModelToVesselPoint(annotationTree.Segments);
         
         
         context.Add(new VesselAnnotation
         {
-            Id = AnnotationTree.Id,
-            Points = PointsList,
-            Segments = SegmentList,
-            Description = AnnotationTree.Description,
-            Type = AnnotationTree.Type,
+            Id = annotationTree.Id,
+            ImagePath = annotationTree.ImagePath,
+            Points = pointsList,
+            Segments = segmentList,
+            Description = annotationTree.Description,
+            Type = annotationTree.Type,
         });
         
         context.SaveChanges();
@@ -66,5 +67,61 @@ public static class AnnotationEndpoints
     {
         Annotation annotation = await _annotationService.GetAnnotationFromId(annotationId);
         return annotation;
+    }
+    
+    public static async Task<IResult> GetAnnotationsByImage(
+        [FromQuery] string imagePath,
+        [FromServices] AnnotationsDbContext context,
+        [FromServices] IAnnotationService annotationService)
+    {
+        var annotations = await context.VesselAnnotation
+            .Include(a => a.Points)
+            .Include(a => a.Segments)
+            .ThenInclude(s => s.StartPoint)
+            .Include(a => a.Segments)
+            .ThenInclude(s => s.EndPoint)
+            .Where(a => a.ImagePath == imagePath)
+            .ToListAsync();
+
+        var models = annotations.Select(a => new VesselAnnotationModel
+        {
+            Id = a.Id,
+            ImagePath = a.ImagePath,
+            Description = a.Description,
+            Type = a.Type,
+            Points = a.Points.Select(p => new VesselPointModel
+            {
+                Id = p.Id,
+                X = p.X,
+                Y = p.Y,
+                Text = p.Text,
+                Type = p.Type
+            }).ToList(),
+            Segments = a.Segments.Select(s => new VesselSegmentModel
+            {
+                Id = s.Id,
+                StartPoint = new VesselPointModel
+                {
+                    Id = s.StartPoint.Id,
+                    X = s.StartPoint.X,
+                    Y = s.StartPoint.Y,
+                    Text = s.StartPoint.Text,
+                    Type = s.StartPoint.Type
+                },
+                EndPoint = new VesselPointModel
+                {
+                    Id = s.EndPoint.Id,
+                    X = s.EndPoint.X,
+                    Y = s.EndPoint.Y,
+                    Text = s.EndPoint.Text,
+                    Type = s.EndPoint.Type
+                },
+                Text = s.Text,
+                Thickness = s.Thickness,
+                Type = s.Type
+            }).ToList()
+        }).ToList();
+
+        return Results.Ok(models);
     }
 }

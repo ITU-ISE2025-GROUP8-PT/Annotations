@@ -8,7 +8,7 @@ namespace Annotations.Blazor;
 
 public interface IAPIServices
 {
-    Task<HttpResponseMessage> createGetResponse(string requestURI);
+    Task<HttpResponseMessage> CreateGetResponse(string requestURI);
     Task<HttpResponseMessage> CreatePostRequest(string requestURI, VesselAnnotationModel annotation);
 }
 public class APIServices : IAPIServices
@@ -28,10 +28,10 @@ public class APIServices : IAPIServices
     /// Calls the Web API. 
     /// Response is received and passed along.
     /// </summary>
-    /// <param name="requestURI"></param>
+    /// <param name="requestUri"></param>
     /// <returns>Response of the Web API</returns>
     /// <exception cref="InvalidOperationException"></exception>
-    public async Task<HttpResponseMessage> createGetResponse(string requestURI)
+    public async Task<HttpResponseMessage> CreateGetResponse(string requestUri)
     {
         var httpContext = _httpContextAccessor.HttpContext ??
                           throw new InvalidOperationException("No HttpContext available"); //receive httpContext
@@ -42,13 +42,13 @@ public class APIServices : IAPIServices
         var client = _clientFactory.CreateClient();
         client.BaseAddress = new("https://localhost:7250"); //Web API address
 
-        using var requestMessage = new HttpRequestMessage(HttpMethod.Get, requestURI); //access endpoint
+        using var requestMessage = new HttpRequestMessage(HttpMethod.Get, requestUri); //access endpoint
         requestMessage.Headers.Authorization = new("Bearer", accessToken); //bearer token for authorization
 
         return await client.SendAsync(requestMessage); //sending the response
     }
     
-    public async Task<HttpResponseMessage> CreatePostRequest(string requestURI, VesselAnnotationModel Annotation)
+    public async Task<HttpResponseMessage> CreatePostRequest(string requestUri, VesselAnnotationModel annotation)
     {
         var httpContext = _httpContextAccessor.HttpContext ??
                           throw new InvalidOperationException("No HttpContext available"); //receive httpContext
@@ -59,10 +59,10 @@ public class APIServices : IAPIServices
         var client = _clientFactory.CreateClient();
         client.BaseAddress = new("https://localhost:7250"); //Web API address
 
-        using (var requestMessage = new HttpRequestMessage(HttpMethod.Post, requestURI))
+        using (var requestMessage = new HttpRequestMessage(HttpMethod.Post, requestUri))
         {
             requestMessage.Headers.Authorization = new("Bearer", accessToken);
-            requestMessage.Content = new StringContent(JsonSerializer.Serialize(Annotation),
+            requestMessage.Content = new StringContent(JsonSerializer.Serialize(annotation),
                 Encoding.UTF8, "application/json");
             var result = await client.SendAsync(requestMessage);
             

@@ -1,5 +1,6 @@
 @rendermode InteractiveServer
 @page "/images/annotations"
+@using System.Text.Json
 @using Home
 @implements IDisposable
 @inject NavigationManager Navigation
@@ -222,6 +223,8 @@
 
     private bool _showTextField;
     private bool _showSegmentDialog;
+    
+    private string _currentImagePath = "img/Skærmbillede%202025-03-27%20kl.%2014.05.56.png";
 
     private VesselPointModel? _draggedPoint;
     private VesselPointModel? _currentPoint = new VesselPointModel
@@ -245,6 +248,7 @@
     private VesselAnnotationModel? _currentVesselAnnotation = new()
     {
         Id = 0,
+        ImagePath = "",
         Points = new(),
         Segments = new(),
         Description = "",
@@ -272,16 +276,42 @@
         Primary = MatThemeColors.Green._800.Value
     };
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
         _currentUrl = Navigation.Uri;
         Navigation.LocationChanged += OnLocationChanged;
+        
+        await LoadAnnotationsForImage(_currentImagePath);
     }
 
     private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
     {
         _currentUrl = Navigation.Uri;
         StateHasChanged();
+    }
+    
+    private async Task LoadAnnotationsForImage(string imagePath)
+    {
+        try
+        {
+            var response = await IapiServices.CreateGetResponse($"/images/annotations?imagePath={Uri.EscapeDataString(imagePath)}");
+            if (response.IsSuccessStatusCode)
+            {
+                var options = new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                };
+            
+                var content = await response.Content.ReadAsStringAsync();
+                _savedVessels = JsonSerializer.Deserialize<List<VesselAnnotationModel>>(content, options);
+                PrecomputeAnnotations();
+                StateHasChanged();
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading annotations: {ex.Message}");
+        }
     }
     
     private void HandleSegmentClick(VesselSegmentModel segment)
@@ -375,6 +405,7 @@
         _currentVesselAnnotation = new VesselAnnotationModel
         {
             Id = 0,
+            ImagePath = "",
             Points = new(),
             Segments = new(),
             Description = "",
@@ -391,6 +422,7 @@
 
     private async Task SaveAnnotationToDb(VesselAnnotationModel vessel)
     {
+        vessel.ImagePath = _currentImagePath;
         //try
         //{
         var response = await IapiServices.CreatePostRequest($"/images/annotations/save", vessel); //sending the response
@@ -401,6 +433,7 @@
         else
         {
             _savedVessels!.Add(_currentVesselAnnotation!);
+            await LoadAnnotationsForImage(_currentImagePath);
         }
         //}
         //catch
@@ -451,29 +484,6 @@
     {
         public double Left { get; set; }
         public double Top { get; set; }
-    }
-
-    private class VesselPoint
-    {
-        public int X { get; set; }
-        public int Y { get; set; }
-        public string Text { get; set; } = "";
-        public string Type { get; set; } = "";
-    }
-
-    private class VesselSegment
-    {
-        public VesselPoint? StartPoint { get; set; }
-        public VesselPoint? EndPoint { get; set; }
-        public string Text { get; set; } = "";
-        public double Thickness { get; set; } = 1.0;
-        public string Type { get; set; } = "";
-    }
-
-    private class VesselAnnotation
-    {
-        public List<VesselPoint?> Points { get; } = new();
-        public List<VesselSegment> Segments { get; } = new();
     }
 
     [Inject] private IJSRuntime JsRuntime { get; set; } = default!;

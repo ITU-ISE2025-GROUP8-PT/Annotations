@@ -39,7 +39,7 @@ else if (Images.Length == 0) //This will show on screen in a milisecond before i
     
     protected override async Task OnInitializedAsync()
     {
-        var response = await IapiServices.createGetResponse( $"/images/datasets/{Dataset}");
+        var response = await IapiServices.CreateGetResponse( $"/images/datasets/{Dataset}");
 
             try
             {

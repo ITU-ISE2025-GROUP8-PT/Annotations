@@ -7,6 +7,9 @@ public class VesselAnnotation
     public required int Id { get; set; }
     
     [Required]
+    public required string ImagePath { get; set; }
+    
+    [Required]
     public required List<VesselPoint> Points { get; set; }
     
     [Required]

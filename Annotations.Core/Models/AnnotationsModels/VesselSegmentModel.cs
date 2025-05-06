@@ -6,5 +6,5 @@ public class VesselSegmentModel
     public required VesselPointModel StartPoint { get; set; }
     public required VesselPointModel EndPoint { get; set; }
     public required double Thickness { get; set; }
-    public bool IsVisible { get; set; }
+    public required bool IsVisible { get; set; }
 }

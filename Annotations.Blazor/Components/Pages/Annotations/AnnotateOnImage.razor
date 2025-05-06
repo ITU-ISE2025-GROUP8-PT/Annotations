@@ -277,14 +277,16 @@
     {
         Id = 0,
         X = 0,
-        Y = 0
+        Y = 0,
+        IsVisible = true
     }; //maybe issue here
     private VesselSegmentModel? _currentSegment = new VesselSegmentModel
     {
         Id = 0,
         StartPoint = null!,
         EndPoint = null!,
-        Thickness = 0
+        Thickness = 0,
+        IsVisible = true
     }; //here
 
     private VesselAnnotationModel? _currentVesselAnnotation = new()
@@ -397,9 +399,10 @@
                     Id = 0,
                     StartPoint = lastPoint,
                     EndPoint = _currentPoint!,
-                    Thickness = _currentThickness
+                    Thickness = _currentThickness,
+                    IsVisible = true
                 };
-                segment.IsVisible = true;
+                //segment.IsVisible = true;
                 _currentVesselAnnotation.Segments.Add(segment);
             }
         }
@@ -467,7 +470,7 @@
         vessel.ImagePath = _currentImagePath;
         //try
         //{
-        var response = await IapiServices.CreatePostRequest($"/images/annotations/save", vessel); //sending the response
+        var response = await IapiServices.CreatePostRequest($"/images/annotations/save", vessel); 
         if (!response.IsSuccessStatusCode)
         {
             Console.WriteLine("Error with post request for Annotation");
@@ -495,6 +498,7 @@
             Id = 0, //arbitrary
             X = (int)(e.ClientX - rect.Left),
             Y = (int)(e.ClientY - rect.Top),
+            IsVisible = true
         };
 
         SavePointAnnotation(lastPoint);
@@ -526,29 +530,6 @@
     {
         public double Left { get; set; }
         public double Top { get; set; }
-    }
-
-    private class VesselPoint
-    {
-        public bool isVisible;
-        public int X { get; set; }
-        public int Y { get; set; }
-    }
-
-    private class VesselSegment
-    {
-        public bool isVisible;
-        public VesselPoint? StartPoint { get; set; }
-        public VesselPoint? EndPoint { get; set; }
-        public double Thickness { get; set; } = 1.0;
-    }
-
-    private class VesselAnnotation
-    {
-        public List<VesselPoint?> Points { get; } = new();
-        public List<VesselSegment> Segments { get; } = new();
-        public string Description { get; set; } = "";
-        public string Type { get; set; } = "";
     }
 
     [Inject] private IJSRuntime JsRuntime { get; set; } = default!;

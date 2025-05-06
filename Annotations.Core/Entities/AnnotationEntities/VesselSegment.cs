@@ -13,4 +13,7 @@ public class VesselSegment
     
     [Required]
     public required double Thickness { get; set; }
+    
+    [Required]
+    public required bool IsVisible { get; set; }
 }

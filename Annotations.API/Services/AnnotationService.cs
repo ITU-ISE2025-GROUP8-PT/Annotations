@@ -25,7 +25,8 @@ public class AnnotationService : IAnnotationService
             {
                 Id = PointModel.Id,
                 X = PointModel.X,
-                Y = PointModel.Y
+                Y = PointModel.Y,
+                IsVisible = PointModel.IsVisible
             });
         }
 
@@ -46,15 +47,18 @@ public class AnnotationService : IAnnotationService
                 {
                     Id = SegmentModel.StartPoint.Id,
                     X = SegmentModel.StartPoint.X,
-                    Y = SegmentModel.StartPoint.Y
+                    Y = SegmentModel.StartPoint.Y,
+                    IsVisible = SegmentModel.EndPoint.IsVisible
                 },
                 EndPoint = new VesselPoint()
                 {
                     Id = SegmentModel.EndPoint.Id,
                     X = SegmentModel.EndPoint.X,
-                    Y = SegmentModel.EndPoint.Y
+                    Y = SegmentModel.EndPoint.Y,
+                    IsVisible = SegmentModel.EndPoint.IsVisible
                 },
                 Thickness = SegmentModel.Thickness,
+                IsVisible = SegmentModel.IsVisible
             });
         }
 

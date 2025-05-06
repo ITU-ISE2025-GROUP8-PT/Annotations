@@ -53,6 +53,7 @@ public static class AnnotationEndpoints
             Segments = segmentList,
             Description = annotationTree.Description,
             Type = annotationTree.Type,
+            IsVisible = annotationTree.IsVisible
         });
         
         context.SaveChanges();
@@ -89,6 +90,7 @@ public static class AnnotationEndpoints
             ImagePath = a.ImagePath,
             Description = a.Description,
             Type = a.Type,
+            IsVisible = a.IsVisible,
             Points = a.Points.Select(p => new VesselPointModel
             {
                 Id = p.Id,

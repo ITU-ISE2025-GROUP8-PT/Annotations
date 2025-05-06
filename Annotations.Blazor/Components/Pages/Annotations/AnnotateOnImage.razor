@@ -131,81 +131,70 @@
                             <img src="img/Skærmbillede%202025-03-27%20kl.%2014.05.56.png" alt="Annotation Image"
                                  @onclick="HandleImageClick" class="MatOverwriteWorkImage"/>
                             
-                            @* For dragging around points *@
                             <svg @onpointermove="HandleDrag"
-                                 @onpointerup="EndDrag"
-                                 @onpointerleave="EndDrag"
-                                 class="MatOverwriteSVG">
+                             @onpointerup="EndDrag"
+                             @onpointerleave="EndDrag"
+                             class="MatOverwriteSVG">
 
-                                @* Logic for drawing all segments that are supposed to be toggled *@
-                                @foreach (var segment in _drawableSegments)
+                            @foreach (var vessel in _savedVessels!.Where(v => v.IsVisible))
+                            {
+                                @foreach (var segment in vessel.Segments.Where(s => s.IsVisible))
                                 {
-                                    if (segment.IsVisible)
-                                    {
-                                        <line x1="@segment.StartPoint!.X" y1="@segment.StartPoint.Y"
-                                              x2="@segment.EndPoint!.X" y2="@segment.EndPoint.Y"
-                                              stroke="transparent"
-                                              stroke-width="20"
-                                              @onclick="@(() => HandleSegmentClick(segment))"
-                                              pointer-events="visibleStroke"/>
+                                    <line x1="@segment.StartPoint.X" y1="@segment.StartPoint.Y"
+                                          x2="@segment.EndPoint.X" y2="@segment.EndPoint.Y"
+                                          stroke="transparent"
+                                          stroke-width="20"
+                                          @onclick="@(() => HandleSegmentClick(segment))"
+                                          pointer-events="visibleStroke"/>
 
-                                        <line x1="@segment.StartPoint.X" y1="@segment.StartPoint.Y"
-                                              x2="@segment.EndPoint.X" y2="@segment.EndPoint.Y"
-                                              stroke="white"
-                                              stroke-width="2"
-                                              pointer-events="none"/>
-                                    }
+                                    <line x1="@segment.StartPoint.X" y1="@segment.StartPoint.Y"
+                                          x2="@segment.EndPoint.X" y2="@segment.EndPoint.Y"
+                                          stroke="white"
+                                          stroke-width="2"
+                                          pointer-events="none"/>
                                 }
-                                @* Logic for drawing all points that are supposed to be toggled *@
-                                @foreach (var point in _drawablePoints)
+
+                                @foreach (var point in vessel.Points.Where(p => p.IsVisible))
                                 {
-                                    if (point.IsVisible)
-                                    {
-                                        <circle cx="@point.X" cy="@point.Y" r="10"
-                                                fill="white" stroke="white"
-                                                stroke-width="2"
-                                                @onpointerdown="@(e => StartDrag(e, point))"
-                                                @onclick="@(() => HandlePointClick(point))"
-                                                class="MatOverwriteCursor"/>
-                                    }
+                                    <circle cx="@point.X" cy="@point.Y" r="10"
+                                            fill="white" stroke="white"
+                                            stroke-width="2"
+                                            @onpointerdown="@(e => StartDrag(e, point))"
+                                            @onclick="@(() => HandlePointClick(point))"
+                                            class="MatOverwriteCursor"/>
                                 }
-                                @* Draws the annotation tree currently being drawn 
-                                (draws all points and segments within the tree) *@
-                                @if (_currentVesselAnnotation != null)
+                            }
+
+                            @* Current working annotation (always visible) *@
+                            @if (_currentVesselAnnotation != null)
+                            {
+                                @foreach (var segment in _currentVesselAnnotation.Segments)
                                 {
-                                    if (_currentVesselAnnotation.Segments != null)
-                                    {
-                                        @foreach (var segment in _currentVesselAnnotation.Segments)
-                                        {
-                                            <line x1="@segment.StartPoint!.X" y1="@segment.StartPoint.Y"
-                                                  x2="@segment.EndPoint!.X" y2="@segment.EndPoint.Y"
-                                                  stroke="transparent"
-                                                  stroke-width="20"
-                                                  @onclick="@(() => HandleSegmentClick(segment))"
-                                                  pointer-events="visibleStroke"/>
+                                    <line x1="@segment.StartPoint.X" y1="@segment.StartPoint.Y"
+                                          x2="@segment.EndPoint.X" y2="@segment.EndPoint.Y"
+                                          stroke="transparent"
+                                          stroke-width="20"
+                                          @onclick="@(() => HandleSegmentClick(segment))"
+                                          pointer-events="visibleStroke"/>
 
-                                            <line x1="@segment.StartPoint.X" y1="@segment.StartPoint.Y"
-                                                  x2="@segment.EndPoint.X" y2="@segment.EndPoint.Y"
-                                                  stroke="white"
-                                                  stroke-width="2"
-                                                  pointer-events="none"/>
-                                        }
-                                    }
-
-                                    if (_currentVesselAnnotation.Points != null)
-                                    {
-                                        @foreach (var point in _currentVesselAnnotation.Points)
-                                        {
-                                            <circle cx="@point!.X" cy="@point.Y" r="10"
-                                                    fill="white" stroke="white"
-                                                    stroke-width="2"
-                                                    @onclick="@(() => HandlePointClick(point))"
-                                                    @onpointerdown="@(e => StartDrag(e, point))"
-                                                    class="MatOverwriteCursor"/>
-                                        }
-                                    }
+                                    <line x1="@segment.StartPoint.X" y1="@segment.StartPoint.Y"
+                                          x2="@segment.EndPoint.X" y2="@segment.EndPoint.Y"
+                                          stroke="white"
+                                          stroke-width="2"
+                                          pointer-events="none"/>
                                 }
-                            </svg>
+
+                                @foreach (var point in _currentVesselAnnotation.Points)
+                                {
+                                    <circle cx="@point.X" cy="@point.Y" r="10"
+                                            fill="white" stroke="white"
+                                            stroke-width="2"
+                                            @onclick="@(() => HandlePointClick(point))"
+                                            @onpointerdown="@(e => StartDrag(e, point))"
+                                            class="MatOverwriteCursor"/>
+                                }
+                            }
+                        </svg>
                         </div>
                     </div>
                     <div class="mat-layout-grid-cell mat-layout-grid-cell-span-2">
@@ -214,12 +203,21 @@
                             Expansion panel is used because they can show the points and segments within a tree easily 
                         *@
                         <MatAccordion Multi="true">
-                            @for (var i = 0; i < _savedVessels.Count; i++)
+                            @for (var i = 0; i < _savedVessels!.Count; i++)
                             {
                                 var i1 = i;
                                 <MatExpansionPanel>
                                     <MatExpansionPanelSummary>
-                                        <MatExpansionPanelHeader> Tree @i1 </MatExpansionPanelHeader>
+                                        <MatExpansionPanelHeader>
+                                            <div style="display: flex; align-items: center;">
+                                                <span style="flex-grow: 1;">Tree @i1 (@_savedVessels[i1].Type)</span>
+                                                <MatIconButton Icon="visibility_off" 
+                                                               ToggleIcon="visibility" 
+                                                               @bind-Toggled="@_savedVessels[i1].IsVisible"
+                                                               OnClick="@(() => ToggleTreeVisibility(i1))">
+                                                </MatIconButton>
+                                            </div>
+                                        </MatExpansionPanelHeader>
                                     </MatExpansionPanelSummary>
                                     <MatExpansionPanelDetails>
                                         <h6>Vessel Points</h6>
@@ -296,7 +294,8 @@
         Points = new(),
         Segments = new(),
         Description = "",
-        Type = ""
+        Type = "",
+        IsVisible = true
     }; //here
     private List<VesselAnnotationModel>? _savedVessels = new();
 
@@ -454,7 +453,8 @@
             Points = new(),
             Segments = new(),
             Description = "",
-            Type = ""
+            Type = "",
+            IsVisible = true
         };
 
         _completionTitle = "Success";
@@ -525,6 +525,20 @@
     }
 
     private void EndDrag() => _draggedPoint = null;
+    
+    private void ToggleTreeVisibility(int treeIndex)
+    {
+        var tree = _savedVessels![treeIndex];
+        foreach (var point in tree.Points)
+        {
+            point.IsVisible = tree.IsVisible;
+        }
+        foreach (var segment in tree.Segments)
+        {
+            segment.IsVisible = tree.IsVisible;
+        }
+        StateHasChanged();
+    }
 
     private struct BoundingClientRect
     {

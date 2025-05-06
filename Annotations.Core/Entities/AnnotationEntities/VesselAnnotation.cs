@@ -20,4 +20,7 @@ public class VesselAnnotation
     
     [Required]
     public required string Type { get; set; }
+    
+    [Required]
+    public required bool IsVisible { get; set; }
 }

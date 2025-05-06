@@ -8,4 +8,5 @@ public class VesselAnnotationModel
     public required List<VesselSegmentModel> Segments { get; set; }
     public required string Description { get; set; }
     public required string Type { get; set; }
+    public required bool IsVisible { get; set; } = true;
 }

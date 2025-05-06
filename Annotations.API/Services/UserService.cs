@@ -1,24 +1,32 @@
-﻿using Annotations.Core.Entities;
-using Annotations.Core.Models;
+﻿using Annotations.Core.Models;
 using Microsoft.EntityFrameworkCore;
+
 
 namespace Annotations.API.Services;
 
+
+/// <summary>
+/// Defines a service for accessing user data.
+/// </summary>
 public interface IUserService
 {
     Task<List<AdminUserModel>> GetAdmins();
+
     Task<List<MedicalProfessionalUserModel>> GetMedicalProfessionals();
 }
+
+
+
 public class UserService : IUserService
 {
     private AnnotationsDbContext _context;
-    
-    
-    
+
+
+
     /// <summary>
-    /// Constructor of the service class
+    /// Constructor of the service class. 
     /// </summary>
-    /// <param name="context">DbContext where the users are located</param>
+    /// <param name="context"> Annotations database context containing the user data. </param>
     public UserService(AnnotationsDbContext context)
     {
         _context = context;
@@ -27,9 +35,9 @@ public class UserService : IUserService
     
     
     /// <summary>
-    /// Retrieves all admins
+    /// Retrieves all admins. 
     /// </summary>
-    /// <returns>A list of all AdminUserModels</returns>
+    /// <returns> A list of all AdminUserModel. </returns>
     public async Task<List<AdminUserModel>> GetAdmins()
     {
         var admins = await _context.Admins
@@ -47,9 +55,9 @@ public class UserService : IUserService
     
     
     /// <summary>
-    /// Retrieves all medical professionals
+    /// Retrieves all medical professionals. 
     /// </summary>
-    /// <returns>A list of all MedicalProfessionalUserModel </returns>
+    /// <returns> A list of all MedicalProfessionalUserModel. </returns>
     public async Task<List<MedicalProfessionalUserModel>> GetMedicalProfessionals()
     {
         var medicalProfessionals = await _context.MedicalProfessionals

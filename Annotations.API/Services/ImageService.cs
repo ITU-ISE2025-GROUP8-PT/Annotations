@@ -6,40 +6,55 @@ using Azure.Storage.Blobs.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Azure;
 
+
 namespace Annotations.API.Services;
 
+
 /// <summary>
-/// the response given after validating image
+/// The response given after validating image.
 /// </summary>
-/// <param name="Success">a boolean returning true if the image is validated</param>
-/// <param name="Message">message containing a success or the specific error message</param>
+/// <param name="Success"> A boolean returning true if the image is validated. </param>
+/// <param name="Message"> Message containing a success or the specific error message. </param>
 public record ValidationResponse(bool Success, string Message);
 
 /// <summary>
-/// returns the needed data for the image
+/// Returns the needed data for the image. 
 /// </summary>
-/// <param name="Image">The image model</param>
-/// <param name="JSONString">JSONString representing the JSON file</param>
+/// <param name="Image"> The image model. </param>
+/// <param name="JSONString"> JSONString representing the JSON file. </param>
 public record ImageData(ImageModel Image, string JSONString);
 
 /// <summary>
-/// the result of retrieving an image from the blobstorage
+/// The result of retrieving an image from the blob storage. 
 /// </summary>
-/// <param name="Success">whether image was succesfully retrieved or not</param>
-/// <param name="image"> the image in question as a JSON string.
-/// If image could not be retrieved, an empty string is returned</param>
+/// <param name="Success"> Whether image was succesfully retrieved or not. </param>
+/// <param name="image"> 
+/// The image in question as a JSON string.
+/// If image could not be retrieved, an empty string is returned. 
+/// </param>
 public record GetImageResult(bool Success, string image);
 
 
+
+/// <summary>
+/// Defines a service for accessing images.
+/// </summary>
 public interface IImageService
 {
     ValidationResponse ValidateImage(IFormFile file);
+
     Task UploadingImage(IFormFile image, int counter, string category);
+
     void UploadImageError(ValidationResponse response);
+
     Task<HashSet<string>> Filter(string category);
+
     Task<DatasetModel> GetDataset(string datasetId);
+
     Task<GetImageResult> GetImage(string imageId);
+
     Task<DatasetModel[]> GetAllDatasets();
+
     Task<bool> DeleteImage(string imageId);
 }
 
@@ -54,10 +69,10 @@ public class ImageService: IImageService
 
     
     /// <summary>
-    /// Constructor of the ImageService
+    /// Constructor of the ImageService.
     /// </summary>
-    /// <param name="clientFactory">the client for the BlobService</param>
-    /// <param name="context">the SQLite database</param>
+    /// <param name="clientFactory"> The client for the BlobService. </param>
+    /// <param name="context"> Annotations database context. </param>
     public ImageService(IAzureClientFactory<BlobServiceClient> clientFactory , AnnotationsDbContext context)
     {
         _clientFactory = clientFactory;

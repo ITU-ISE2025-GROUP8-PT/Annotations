@@ -14,26 +14,29 @@ else if (!imgExist)
 } else
 {
     <div class="container DivToScroll">
-        <img class="displaySoloImage" src="data:image;base64, @image" alt="@altText" /><!--src is a URL - it's converted from a string of the byte array--> 
+        @* src is a URL - it's converted from a string of the byte array *@
+        <img class="displaySoloImage" src="data:image;base64, @image" alt="@altText"/>
     </div>
 }
 @code{
 
-    private string? image;//byte array as string
+    @* note that this is a string stored on the basis of the imageId and the byte array *@
+    private string? image;
     private bool error = false;
     private bool imgExist = true;
     private string? altText;
 
-    [Parameter] public string imageId { get; set; } = ""; //get access to parameter from URL/get request
+    @* get access to parameter from URL/get request *@
+    [Parameter] public string imageId { get; set; } = ""; 
 
     protected override async Task OnInitializedAsync()
     {
-
         var response = await IapiService.createGetResponse($"/images/{imageId}");
 
         try
         {
-            var jsonString = await response.Content.ReadAsStringAsync();//string of JSON file of the image as a string
+            @* string array of JSON files of the images as strings *@
+            var jsonString = await response.Content.ReadAsStringAsync();
             if (jsonString.Length == 0)
             {
                 imgExist = false;
@@ -41,16 +44,13 @@ else if (!imgExist)
             var imageObject = System.Text.Json.JsonSerializer.Deserialize<ImageModel>(jsonString) ?? throw new NoNullAllowedException();//JSON file becomes imageModel object
             var imageData = imageObject.ImageData;
             altText = imageObject.Description;
-            image = System.Convert.ToBase64String(imageData);//byte array to string
+            @* byte array to string *@
+            image = System.Convert.ToBase64String(imageData);
         }
         catch 
         {
-            Console.WriteLine("Status code: " + response.StatusCode);
             image = response.StatusCode.ToString();
-            
-            error = true;//there has been an error
+            error = true;
         }
-
     }
-
 }

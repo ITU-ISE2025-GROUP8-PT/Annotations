@@ -25,9 +25,7 @@ public class AnnotationService : IAnnotationService
             {
                 Id = PointModel.Id,
                 X = PointModel.X,
-                Y = PointModel.Y,
-                Text = PointModel.Text,
-                Type = PointModel.Type
+                Y = PointModel.Y
             });
         }
 
@@ -48,21 +46,15 @@ public class AnnotationService : IAnnotationService
                 {
                     Id = SegmentModel.StartPoint.Id,
                     X = SegmentModel.StartPoint.X,
-                    Y = SegmentModel.StartPoint.Y,
-                    Text = SegmentModel.StartPoint.Text,
-                    Type = SegmentModel.StartPoint.Type
+                    Y = SegmentModel.StartPoint.Y
                 },
                 EndPoint = new VesselPoint()
                 {
                     Id = SegmentModel.EndPoint.Id,
                     X = SegmentModel.EndPoint.X,
-                    Y = SegmentModel.EndPoint.Y,
-                    Text = SegmentModel.EndPoint.Text,
-                    Type = SegmentModel.EndPoint.Type
+                    Y = SegmentModel.EndPoint.Y
                 },
-                Text = SegmentModel.Text,
                 Thickness = SegmentModel.Thickness,
-                Type = SegmentModel.Type
             });
         }
 

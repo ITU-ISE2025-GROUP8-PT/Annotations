@@ -45,15 +45,7 @@
                 <MatDialogTitle>Blood vessel segment annotation</MatDialogTitle>
                 <MatDialogContent>
                     <p>
-                        <MatTextField @bind-Value="_currentSegment!.Text"
-                                      Label="Annotation"
-                                      FullWidth="true"
-                                      Immediate="true"
-                                      class="MatOverwriteWhiteBG">
-                        </MatTextField>
-                    </p>
-                    <p>
-                        <MatTextField @bind-Value="_currentSegment.Thickness"
+                        <MatTextField @bind-Value="_currentSegment!.Thickness"
                                       Label="Blood vessel thickness"
                                       FullWidth="true"
                                       Immediate="true"
@@ -148,7 +140,7 @@
                                 @* Logic for drawing all segments that are supposed to be toggled *@
                                 @foreach (var segment in _drawableSegments)
                                 {
-                                    if (segment.isVisible)
+                                    if (segment.IsVisible)
                                     {
                                         <line x1="@segment.StartPoint!.X" y1="@segment.StartPoint.Y"
                                               x2="@segment.EndPoint!.X" y2="@segment.EndPoint.Y"
@@ -167,7 +159,7 @@
                                 @* Logic for drawing all points that are supposed to be toggled *@
                                 @foreach (var point in _drawablePoints)
                                 {
-                                    if (point.isVisible)
+                                    if (point.IsVisible)
                                     {
                                         <circle cx="@point.X" cy="@point.Y" r="10"
                                                 fill="white" stroke="white"
@@ -239,7 +231,7 @@
                                                 point @j
                                                 @* Visibility button that can be clicked to toggle/ untoggle points 
                                                    MatIconButton is chosen because its easy to change/ use icons with *@
-                                                <MatIconButton Icon="visibility_off" ToggleIcon="visibility" @bind-Toggled="@point!.isVisible">
+                                                <MatIconButton Icon="visibility_off" ToggleIcon="visibility" @bind-Toggled="@point.IsVisible">
                                                 </MatIconButton>
                                             </p>
                                         }
@@ -251,7 +243,7 @@
                                             <p>
                                                 segment @j
                                                 @* Visibility button that can be clicked to toggle/ untoggle segments *@
-                                                <MatIconButton Icon="visibility_off" ToggleIcon="visibility" @bind-Toggled="@segment!.isVisible">
+                                                <MatIconButton Icon="visibility_off" ToggleIcon="visibility" @bind-Toggled="@segment.IsVisible">
                                                 </MatIconButton>
                                             </p>
                                         }
@@ -285,18 +277,14 @@
     {
         Id = 0,
         X = 0,
-        Y = 0,
-        Text = "",
-        Type = ""
+        Y = 0
     }; //maybe issue here
     private VesselSegmentModel? _currentSegment = new VesselSegmentModel
     {
         Id = 0,
         StartPoint = null!,
         EndPoint = null!,
-        Text = "",
-        Thickness = 0,
-        Type = ""
+        Thickness = 0
     }; //here
 
     private VesselAnnotationModel? _currentVesselAnnotation = new()
@@ -370,7 +358,7 @@
     }
 
     
-    private void HandlePointClick(VesselPoint point)
+    private void HandlePointClick(VesselPointModel point)
     {
         _currentPoint = point;
     }
@@ -396,7 +384,7 @@
         }
     }
 
-    private void SavePointAnnotation(VesselPoint lastPoint)
+    private void SavePointAnnotation(VesselPointModel lastPoint)
     {
         if (_currentVesselAnnotation != null)
         {
@@ -411,12 +399,12 @@
                     EndPoint = _currentPoint!,
                     Thickness = _currentThickness
                 };
-                segment.isVisible = true;
+                segment.IsVisible = true;
                 _currentVesselAnnotation.Segments.Add(segment);
             }
         }
 
-        _currentPoint.isVisible = true;
+        _currentPoint!.IsVisible = true;
         StateHasChanged();
         PrecomputeAnnotations();
     }

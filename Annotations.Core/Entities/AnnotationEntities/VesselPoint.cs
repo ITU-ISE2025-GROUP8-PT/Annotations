@@ -11,10 +11,4 @@ public class VesselPoint
     
     [Required]
     public required int Y { get; set; }
-    
-    [Required]
-    public required string Text { get; set; }
-    
-    [Required]
-    public required string Type { get; set; }
 }

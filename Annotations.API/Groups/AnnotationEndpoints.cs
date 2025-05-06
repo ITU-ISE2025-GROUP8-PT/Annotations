@@ -93,9 +93,7 @@ public static class AnnotationEndpoints
             {
                 Id = p.Id,
                 X = p.X,
-                Y = p.Y,
-                Text = p.Text,
-                Type = p.Type
+                Y = p.Y
             }).ToList(),
             Segments = a.Segments.Select(s => new VesselSegmentModel
             {
@@ -104,21 +102,15 @@ public static class AnnotationEndpoints
                 {
                     Id = s.StartPoint.Id,
                     X = s.StartPoint.X,
-                    Y = s.StartPoint.Y,
-                    Text = s.StartPoint.Text,
-                    Type = s.StartPoint.Type
+                    Y = s.StartPoint.Y
                 },
                 EndPoint = new VesselPointModel
                 {
                     Id = s.EndPoint.Id,
                     X = s.EndPoint.X,
-                    Y = s.EndPoint.Y,
-                    Text = s.EndPoint.Text,
-                    Type = s.EndPoint.Type
+                    Y = s.EndPoint.Y
                 },
-                Text = s.Text,
-                Thickness = s.Thickness,
-                Type = s.Type
+                Thickness = s.Thickness
             }).ToList()
         }).ToList();
 

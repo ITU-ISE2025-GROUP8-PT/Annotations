@@ -144,7 +144,6 @@
                                           x2="@segment.EndPoint.X" y2="@segment.EndPoint.Y"
                                           stroke="transparent"
                                           stroke-width="20"
-                                          @onclick="@(() => HandleSegmentClick(segment))"
                                           pointer-events="visibleStroke"/>
 
                                     <line x1="@segment.StartPoint.X" y1="@segment.StartPoint.Y"
@@ -156,11 +155,9 @@
 
                                 @foreach (var point in vessel.Points.Where(p => p.IsVisible))
                                 {
-                                    <circle cx="@point.X" cy="@point.Y" r="10"
-                                            fill="white" stroke="white"
+                                    <circle cx="@point.X" cy="@point.Y" r="5"
+                                            fill="red" stroke="white"
                                             stroke-width="2"
-                                            @onpointerdown="@(e => StartDrag(e, point))"
-                                            @onclick="@(() => HandlePointClick(point))"
                                             class="MatOverwriteCursor"/>
                                 }
                             }
@@ -187,7 +184,7 @@
                                 @foreach (var point in _currentVesselAnnotation.Points)
                                 {
                                     <circle cx="@point.X" cy="@point.Y" r="10"
-                                            fill="white" stroke="white"
+                                            fill="red" stroke="white"
                                             stroke-width="2"
                                             @onclick="@(() => HandlePointClick(point))"
                                             @onpointerdown="@(e => StartDrag(e, point))"

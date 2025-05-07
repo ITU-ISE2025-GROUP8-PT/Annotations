@@ -85,24 +85,17 @@ public class AnnotationService(AnnotationsDbContext context) : IAnnotationServic
             Description = a.Description,
             Type = a.Type,
             IsVisible = a.IsVisible,
-            Points = a.Points.Select(mapToVesselPointModel).ToList(),
+            Points = a.Points.Select(VesselModelSupport.mapToVesselPointModel).ToList(),
             Segments = a.Segments.Select(s => new VesselSegmentModel
             {
                 Id = s.Id,
-                StartPoint = mapToVesselPointModel(s.StartPoint),
-                EndPoint = mapToVesselPointModel(s.EndPoint),
+                StartPoint = VesselModelSupport.mapToVesselPointModel(s.StartPoint),
+                EndPoint = VesselModelSupport.mapToVesselPointModel(s.EndPoint),
                 Thickness = s.Thickness,
                 IsVisible = s.IsVisible
             }).ToList()
         }).ToList();
     }
 
-    private static readonly Func<VesselPoint, VesselPointModel> mapToVesselPointModel =
-        vp => new VesselPointModel
-    {
-        Id = vp.Id,
-        X = vp.X,
-        Y = vp.Y,
-        IsVisible = vp.IsVisible
-    };
+   
 }

@@ -71,4 +71,17 @@ public static class VesselModelSupport
         return segmentList;
     }
 
+    
+    
+    /// <summary>
+    /// Helper function for converting VesselPoint to VesselPointModel.
+    /// </summary>
+    public static readonly Func<VesselPoint, VesselPointModel> mapToVesselPointModel =
+        vp => new VesselPointModel
+        {
+            Id = vp.Id,
+            X = vp.X,
+            Y = vp.Y,
+            IsVisible = vp.IsVisible
+        };
 }

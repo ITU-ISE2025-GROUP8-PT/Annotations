@@ -10,17 +10,21 @@ namespace Annotations.API.Groups;
 public static class AnnotationEndpoints
 {
 
+    /// <summary>
+    /// Where all the endpoints are initialized to their respective handler. 
+    /// </summary>
+    /// <param name="pathBuilder"></param>
     public static void MapEndpoints(RouteGroupBuilder pathBuilder)
     {
         pathBuilder.RequireAuthorization().DisableAntiforgery();
 
-        pathBuilder.MapPost("/save", SaveAnnotation); //should url not be this?
+        pathBuilder.MapPost("/save", SaveAnnotationHandler); //should url not be this?
 
-        pathBuilder.MapGet("/{annotationId}", RetrieveAnnotation);
+        pathBuilder.MapGet("/{annotationId}", RetrieveAnnotationHandler);
 
         //pathBuilder.MapDelete("/{annotationId}", DeleteAnnotation);
 
-        pathBuilder.MapGet("/", GetAnnotationsByImage);
+        pathBuilder.MapGet("/", GetAnnotationsByImageHandler);
 
         pathBuilder.MapGet("/exception",
             () =>
@@ -31,8 +35,16 @@ public static class AnnotationEndpoints
     }
     
     
-    
-    public static Task<IResult> SaveAnnotation(VesselAnnotationModel annotationTree, AnnotationsDbContext context,
+    /// <summary>
+    /// When completed, a vessel annotation is saved to the database,
+    /// containing its vessel points and segments.
+    /// All points and segments are thereby stored in its respective tree.
+    /// </summary>
+    /// <param name="annotationTree"> The model for one vessel tree. </param>
+    /// <param name="context"> The SQLite database context. </param>
+    /// <param name="_annotationService"> An annotation service instance. </param>
+    /// <returns> A result with status code 200 OK. </returns>
+    public static Task<IResult> SaveAnnotationHandler(VesselAnnotationModel annotationTree, AnnotationsDbContext context,
         [FromServices] IAnnotationService _annotationService)
     {
         /*if doesnotwork
@@ -63,14 +75,23 @@ public static class AnnotationEndpoints
     }
     
     
-    public static async Task<Annotation> RetrieveAnnotation([FromRoute] int annotationId,
+    public static async Task<Annotation> RetrieveAnnotationHandler([FromRoute] int annotationId,
         [FromServices] IAnnotationService _annotationService)
     {
         Annotation annotation = await _annotationService.GetAnnotationFromId(annotationId);
         return annotation;
     }
     
-    public static async Task<IResult> GetAnnotationsByImage(
+    /// <summary>
+    /// The handler for retrieving all annotations from a specified image.
+    /// All vessel annotations containing the image path from query,
+    /// is retrieved from the database.
+    /// </summary>
+    /// <param name="imagePath"> Path of the image containing the retrievable annotations. </param>
+    /// <param name="context"> The SQLite database context. </param>
+    /// <param name="annotationService"> An annotation service instance. </param>
+    /// <returns> The list of vessel annotation models retrieved from the specified image. </returns>
+    public static async Task<IResult> GetAnnotationsByImageHandler(
         [FromQuery] string imagePath,
         [FromServices] AnnotationsDbContext context,
         [FromServices] IAnnotationService annotationService)
@@ -84,41 +105,7 @@ public static class AnnotationEndpoints
             .Where(a => a.ImagePath == imagePath)
             .ToListAsync();
 
-        var models = annotations.Select(a => new VesselAnnotationModel
-        {
-            Id = a.Id,
-            ImagePath = a.ImagePath,
-            Description = a.Description,
-            Type = a.Type,
-            IsVisible = a.IsVisible,
-            Points = a.Points.Select(p => new VesselPointModel
-            {
-                Id = p.Id,
-                X = p.X,
-                Y = p.Y,
-                IsVisible = p.IsVisible
-            }).ToList(),
-            Segments = a.Segments.Select(s => new VesselSegmentModel
-            {
-                Id = s.Id,
-                StartPoint = new VesselPointModel
-                {
-                    Id = s.StartPoint.Id,
-                    X = s.StartPoint.X,
-                    Y = s.StartPoint.Y,
-                    IsVisible = s.StartPoint.IsVisible
-                },
-                EndPoint = new VesselPointModel
-                {
-                    Id = s.EndPoint.Id,
-                    X = s.EndPoint.X,
-                    Y = s.EndPoint.Y,
-                    IsVisible = s.EndPoint.IsVisible
-                },
-                Thickness = s.Thickness,
-                IsVisible = s.IsVisible
-            }).ToList()
-        }).ToList();
+        var models = annotationService.GetAnnotationsByImage(annotations);
 
         return Results.Ok(models);
     }

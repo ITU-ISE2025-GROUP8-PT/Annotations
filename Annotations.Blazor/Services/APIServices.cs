@@ -1,15 +1,14 @@
 using System.Text;
 using System.Text.Json;
 using Annotations.Core.Models;
-using Annotations.Core.VesselObjects;
 using Microsoft.AspNetCore.Authentication;
 
-namespace Annotations.Blazor;
+namespace Annotations.Blazor.Services;
 
 public interface IAPIServices
 {
-    Task<HttpResponseMessage> CreateGetResponse(string requestURI);
-    Task<HttpResponseMessage> CreatePostRequest(string requestURI, VesselAnnotationModel annotation);
+    Task<HttpResponseMessage> CreateGetResponse(string requestUri);
+    Task<HttpResponseMessage> CreatePostRequest(string requestUri, VesselAnnotationModel annotation);
 }
 public class APIServices : IAPIServices
 {

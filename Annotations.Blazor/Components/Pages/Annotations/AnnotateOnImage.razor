@@ -195,6 +195,7 @@
                                     }
                                 }
                             </svg>
+                            
                             @if (_currentPoint != null)
                             {
                                 <div style="position: absolute; bottom: 1%; right: 1%;">
@@ -394,7 +395,7 @@
         }
     }
 
-    private void SavePointAnnotation(VesselPointModel lastPoint)
+    private void SaveVesselAnnotation(VesselPointModel lastPoint)
     {
         if (_currentVesselAnnotation != null)
         {
@@ -451,7 +452,7 @@
             _showCompletionDialog = true;
             StateHasChanged();
             return;
-        } 
+        }
 
         await SaveAnnotationToDb(_currentVesselAnnotation!);
         
@@ -501,21 +502,37 @@
         if (_currentVesselAnnotation == null || _currentPoint == null) 
             return;
 
-        // Remove the point
-        _currentVesselAnnotation.Points.Remove(_currentPoint);
-
-        // Remove connected segments
-        var segmentsToRemove = _currentVesselAnnotation.Segments
-            .Where(s => s.StartPoint == _currentPoint || s.EndPoint == _currentPoint)
-            .ToList();
-
-        foreach (var segment in segmentsToRemove)
+        if (CanDeletePoint(_currentPoint))
         {
-            _currentVesselAnnotation.Segments.Remove(segment);
-        }
+            // Remove the point
+            _currentVesselAnnotation.Points.Remove(_currentPoint);
 
-        _currentPoint = null;
+            // Remove connected segments
+            var segmentsToRemove = _currentVesselAnnotation.Segments
+                .Where(s => s.StartPoint == _currentPoint || s.EndPoint == _currentPoint)
+                .ToList();
+            
+            foreach (var segment in segmentsToRemove)
+            {
+                _currentVesselAnnotation.Segments.Remove(segment);
+            }
+
+            _currentPoint = _currentVesselAnnotation.Points.Count == 0 ? null : _currentVesselAnnotation.Points[0];
+        } 
+        
         StateHasChanged();
+    }
+    
+    private bool CanDeletePoint(VesselPointModel point)
+    {
+        if (_currentVesselAnnotation == null) return false;
+    
+        var connections = _currentVesselAnnotation.Segments
+            .Count(s => s.StartPoint == point || s.EndPoint == point);
+        
+        return _currentVesselAnnotation.Points.Count == 1 ||  // Only point
+               connections <= 1 ||                           // Leaf node
+               point == _currentVesselAnnotation.Points.Last(); // Last added
     }
     
     private async Task HandleImageClick(MouseEventArgs e)
@@ -532,7 +549,7 @@
             IsVisible = true
         };
 
-        SavePointAnnotation(lastPoint);
+        SaveVesselAnnotation(lastPoint!);
 
         StateHasChanged();
     }

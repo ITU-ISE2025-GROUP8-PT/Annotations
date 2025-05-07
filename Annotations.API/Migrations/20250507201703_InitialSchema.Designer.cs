@@ -11,14 +11,46 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Annotations.API.Migrations
 {
     [DbContext(typeof(AnnotationsDbContext))]
-    [Migration("20250402134633_listInDataSetCorrect")]
-    partial class listInDataSetCorrect
+    [Migration("20250507201703_InitialSchema")]
+    partial class InitialSchema
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.2");
+
+            modelBuilder.Entity("Annotations.Core.Entities.Annotation", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("AnnotationTreeId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("ImgId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<int?>("VesselAnnotationId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AnnotationTreeId");
+
+                    b.HasIndex("ImgId");
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("VesselAnnotationId");
+
+                    b.ToTable("Annotation");
+                });
 
             modelBuilder.Entity("Annotations.Core.Entities.Dataset", b =>
                 {
@@ -54,6 +86,10 @@ namespace Annotations.API.Migrations
                     b.Property<string>("Category")
                         .IsRequired()
                         .HasMaxLength(100)
+                        .HasColumnType("TEXT");
+
+                    b.PrimitiveCollection<string>("DatasetsIds")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Description")
@@ -138,8 +174,8 @@ namespace Annotations.API.Migrations
                     b.Property<bool>("TwoFactorEnabled")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("UserId")
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("UserName")
                         .HasMaxLength(256)
@@ -159,6 +195,89 @@ namespace Annotations.API.Migrations
                     b.HasDiscriminator().HasValue("User");
 
                     b.UseTphMappingStrategy();
+                });
+
+            modelBuilder.Entity("Annotations.Core.VesselObjects.VesselAnnotation", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ImagePath")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsVisible")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("VesselAnnotation");
+                });
+
+            modelBuilder.Entity("Annotations.Core.VesselObjects.VesselPoint", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("IsVisible")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int?>("VesselAnnotationId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("X")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("Y")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("VesselAnnotationId");
+
+                    b.ToTable("VesselPoint");
+                });
+
+            modelBuilder.Entity("Annotations.Core.VesselObjects.VesselSegment", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("EndPointId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("IsVisible")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("StartPointId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<double>("Thickness")
+                        .HasColumnType("REAL");
+
+                    b.Property<int?>("VesselAnnotationId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EndPointId");
+
+                    b.HasIndex("StartPointId");
+
+                    b.HasIndex("VesselAnnotationId");
+
+                    b.ToTable("VesselSegment");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -319,6 +438,63 @@ namespace Annotations.API.Migrations
                     b.HasDiscriminator().HasValue("MedicalProfessional");
                 });
 
+            modelBuilder.Entity("Annotations.Core.Entities.Annotation", b =>
+                {
+                    b.HasOne("Annotations.Core.VesselObjects.VesselAnnotation", "AnnotationTree")
+                        .WithMany()
+                        .HasForeignKey("AnnotationTreeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Annotations.Core.Entities.Image", null)
+                        .WithMany()
+                        .HasForeignKey("ImgId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Annotations.Core.Entities.User", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Annotations.Core.VesselObjects.VesselAnnotation", null)
+                        .WithMany()
+                        .HasForeignKey("VesselAnnotationId");
+
+                    b.Navigation("AnnotationTree");
+                });
+
+            modelBuilder.Entity("Annotations.Core.VesselObjects.VesselPoint", b =>
+                {
+                    b.HasOne("Annotations.Core.VesselObjects.VesselAnnotation", null)
+                        .WithMany("Points")
+                        .HasForeignKey("VesselAnnotationId");
+                });
+
+            modelBuilder.Entity("Annotations.Core.VesselObjects.VesselSegment", b =>
+                {
+                    b.HasOne("Annotations.Core.VesselObjects.VesselPoint", "EndPoint")
+                        .WithMany()
+                        .HasForeignKey("EndPointId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Annotations.Core.VesselObjects.VesselPoint", "StartPoint")
+                        .WithMany()
+                        .HasForeignKey("StartPointId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Annotations.Core.VesselObjects.VesselAnnotation", null)
+                        .WithMany("Segments")
+                        .HasForeignKey("VesselAnnotationId");
+
+                    b.Navigation("EndPoint");
+
+                    b.Navigation("StartPoint");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -368,6 +544,13 @@ namespace Annotations.API.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Annotations.Core.VesselObjects.VesselAnnotation", b =>
+                {
+                    b.Navigation("Points");
+
+                    b.Navigation("Segments");
                 });
 #pragma warning restore 612, 618
         }

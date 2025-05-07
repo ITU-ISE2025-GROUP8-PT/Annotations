@@ -78,7 +78,7 @@ public class AnnotationService(AnnotationsDbContext context) : IAnnotationServic
     /// <returns> The list of VesselAnnotationModels, containing their points and segments. </returns>
     public List<VesselAnnotationModel> GetAnnotationsByImage(List<VesselAnnotation> annotations)
     {
-        var models = annotations.Select(a => new VesselAnnotationModel
+        return annotations.Select(a => new VesselAnnotationModel
         {
             Id = a.Id,
             ImagePath = a.ImagePath,
@@ -95,8 +95,6 @@ public class AnnotationService(AnnotationsDbContext context) : IAnnotationServic
                 IsVisible = s.IsVisible
             }).ToList()
         }).ToList();
-
-        return models;
     }
 
     private static readonly Func<VesselPoint, VesselPointModel> mapToVesselPointModel =

@@ -9,16 +9,18 @@ namespace Annotations.API.Groups;
 
 public static class AnnotationEndpoints
 {
-
     /// <summary>
-    /// Where all the endpoints are initialized to their respective handler. 
+    /// Where all the annotations endpoints are initialized to their respective handler.
+    /// The base endpoint for annotations is /images/annotations. 
     /// </summary>
     /// <param name="pathBuilder"></param>
     public static void MapEndpoints(RouteGroupBuilder pathBuilder)
     {
+        // Anti-forgery is disabled. This was decided because the backend will not serve any forms.
+        // Anti-forgery measures are covered in the front-end, and by the JWT token protection. 
         pathBuilder.RequireAuthorization().DisableAntiforgery();
 
-        pathBuilder.MapPost("/save", SaveAnnotationHandler); //should url not be this?
+        pathBuilder.MapPost("/save", SaveAnnotationHandler);
 
         pathBuilder.MapGet("/{annotationId}", RetrieveAnnotationHandler);
 
@@ -35,44 +37,31 @@ public static class AnnotationEndpoints
     }
     
     
+    
     /// <summary>
-    /// When completed, a vessel annotation is saved to the database,
-    /// containing its vessel points and segments.
-    /// All points and segments are thereby stored in its respective tree.
+    /// When completed in the front end, a vessel annotation model, 
+    /// containing its vessel points and segments, is retrieved via Post request.
+    /// The model is forwarded to the service class to be saved in the database
+    /// as an entity.
     /// </summary>
     /// <param name="annotationTree"> The model for one vessel tree. </param>
-    /// <param name="context"> The SQLite database context. </param>
     /// <param name="_annotationService"> An annotation service instance. </param>
     /// <returns> A result with status code 200 OK. </returns>
-    public static Task<IResult> SaveAnnotationHandler(VesselAnnotationModel annotationTree, AnnotationsDbContext context,
+    public static Task<IResult> SaveAnnotationHandler(VesselAnnotationModel annotationTree,
         [FromServices] IAnnotationService _annotationService)
     {
-        /*if doesnotwork
-        {
-            return Results.StatusCode(422);
-            //TODO: how should the end user see this?
-        }*/
+        var saved = _annotationService.SaveAnnotationToDatabase(annotationTree);
 
-        List<VesselPoint> pointsList = _annotationService.ConvertVesselPointModelToVesselPoint(annotationTree.Points);
-        List<VesselSegment> segmentList = _annotationService.ConvertVesselSegmentModelToVesselPoint(annotationTree.Segments);
-        
-        
-        context.Add(new VesselAnnotation
+        if (saved)
         {
-            Id = annotationTree.Id,
-            ImagePath = annotationTree.ImagePath,
-            Points = pointsList,
-            Segments = segmentList,
-            Description = annotationTree.Description,
-            Type = annotationTree.Type,
-            IsVisible = annotationTree.IsVisible
-        });
+            return Task.FromResult(Results.StatusCode(200));
+        }
         
-        context.SaveChanges();
-        
-        
-        return Task.FromResult(Results.StatusCode(200));
+        return Task.FromResult(Results.StatusCode(500));
+        //TODO: Think more about what statuscode to return on error,
+        //and how to do error handling if tree has not been saved?
     }
+    
     
     
     public static async Task<Annotation> RetrieveAnnotationHandler([FromRoute] int annotationId,
@@ -81,6 +70,8 @@ public static class AnnotationEndpoints
         Annotation annotation = await _annotationService.GetAnnotationFromId(annotationId);
         return annotation;
     }
+    
+    
     
     /// <summary>
     /// The handler for retrieving all annotations from a specified image.

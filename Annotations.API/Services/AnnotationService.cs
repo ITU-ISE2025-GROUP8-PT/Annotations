@@ -1,6 +1,7 @@
 using Annotations.Core.Entities;
 using Annotations.Core.Models;
 using Annotations.Core.VesselObjects;
+using Microsoft.EntityFrameworkCore;
 
 namespace Annotations.API.Services;
 
@@ -11,9 +12,7 @@ namespace Annotations.API.Services;
 /// </summary>
 public interface IAnnotationService
 {
-    public bool SaveAnnotationToDatabase(VesselAnnotationModel annotationTree);
-    public List<VesselPoint> ConvertVesselPointModelToVesselPoint(List<VesselPointModel> points);
-    public List<VesselSegment> ConvertVesselSegmentModelToVesselPoint(List<VesselSegmentModel> segments);
+    public Task<bool> SaveAnnotationToDatabase(VesselAnnotationModel annotationTree);
     public Task<Annotation> GetAnnotationFromId(int annotationId);
     public List<VesselAnnotationModel> GetAnnotationsByImage(List<VesselAnnotation> annotations);
 }
@@ -29,11 +28,11 @@ public class AnnotationService(AnnotationsDbContext context) : IAnnotationServic
     /// it to the database and returns the result of this as a bool.
     /// </summary>
     /// <param name="annotationTree"></param>
-    /// <returns></returns>
-    public bool SaveAnnotationToDatabase(VesselAnnotationModel annotationTree)
+    /// <returns>A bool status of the save operation</returns>
+    public async Task<bool> SaveAnnotationToDatabase(VesselAnnotationModel annotationTree)
     {
-        List<VesselPoint> pointsList = ConvertVesselPointModelToVesselPoint(annotationTree.Points);
-        List<VesselSegment> segmentList = ConvertVesselSegmentModelToVesselPoint(annotationTree.Segments);
+        List<VesselPoint> pointsList = VesselModelSupport.ConvertVesselPointModelToVesselPoint(annotationTree.Points);
+        List<VesselSegment> segmentList = VesselModelSupport.ConvertVesselSegmentModelToVesselPoint(annotationTree.Segments);
         
         context.Add(new VesselAnnotation
         {
@@ -46,77 +45,14 @@ public class AnnotationService(AnnotationsDbContext context) : IAnnotationServic
             IsVisible = annotationTree.IsVisible
         });
         
-        var saved = context.SaveChangesAsync();
+        var saved = await context.SaveChangesAsync();
         
         
         // If anything has been saved to the database, the value of the save operation
         // will be more than 0. Therefore, true will be a successful operation.
-        return saved.Result > 1;
+        return saved > 1;
     }
     
-    
-    
-    /// <summary>
-    /// Conversion from VesselPointModel to VesselPoint entity, for saving in the database.
-    /// </summary>
-    /// <param name="points"></param>
-    /// <returns></returns>
-    public List<VesselPoint> ConvertVesselPointModelToVesselPoint(List<VesselPointModel> points)
-    {
-        List<VesselPoint> pointsList = new  List<VesselPoint>();
-        
-        foreach (VesselPointModel pointModel in points)
-        {
-            pointsList.Add(new VesselPoint
-            {
-                Id = pointModel.Id,
-                X = pointModel.X,
-                Y = pointModel.Y,
-                IsVisible = pointModel.IsVisible
-            });
-        }
-
-        return pointsList;
-    }
-
-    
-    
-    /// <summary>
-    /// Conversion from VesselSegmentModel to VesselSegment entity, for saving in the database.
-    /// </summary>
-    /// <param name="segments"></param>
-    /// <returns></returns>
-    public List<VesselSegment> ConvertVesselSegmentModelToVesselPoint(List<VesselSegmentModel> segments)
-    {
-        List<VesselSegment> segmentList = new  List<VesselSegment>();
-        
-        foreach (VesselSegmentModel segmentModel in segments)
-        {
-            segmentList.Add(new VesselSegment
-            {
-                Id = segmentModel.Id,
-                StartPoint = new VesselPoint
-                {
-                    Id = segmentModel.StartPoint.Id,
-                    X = segmentModel.StartPoint.X,
-                    Y = segmentModel.StartPoint.Y,
-                    IsVisible = segmentModel.EndPoint.IsVisible
-                },
-                EndPoint = new VesselPoint
-                {
-                    Id = segmentModel.EndPoint.Id,
-                    X = segmentModel.EndPoint.X,
-                    Y = segmentModel.EndPoint.Y,
-                    IsVisible = segmentModel.EndPoint.IsVisible
-                },
-                Thickness = segmentModel.Thickness,
-                IsVisible = segmentModel.IsVisible
-            });
-        }
-
-        return segmentList;
-    }
-
 
     
     /// <summary>
@@ -124,14 +60,14 @@ public class AnnotationService(AnnotationsDbContext context) : IAnnotationServic
     /// provided parameter annotationId.
     /// </summary>
     /// <param name="annotationId"></param>
-    /// <returns></returns>
-    public Task<Annotation> GetAnnotationFromId(int annotationId)
+    /// <returns>The annotation associated with the Id</returns>
+    public async Task<Annotation> GetAnnotationFromId(int annotationId)
     {
         IQueryable<Annotation> response = context.Annotation
             .Select(annotation => annotation)
             .Where(annotation => annotation.Id == annotationId);
         
-        return Task.FromResult(response.First());
+        return await response.FirstAsync();
     }
 
     
@@ -143,6 +79,7 @@ public class AnnotationService(AnnotationsDbContext context) : IAnnotationServic
     /// <returns> The list of VesselAnnotationModels, containing their points and segments. </returns>
     public List<VesselAnnotationModel> GetAnnotationsByImage(List<VesselAnnotation> annotations)
     {
+
         var models = annotations.Select(a => new VesselAnnotationModel
         {
             Id = a.Id,

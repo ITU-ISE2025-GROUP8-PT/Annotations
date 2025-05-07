@@ -50,7 +50,7 @@ public static class AnnotationEndpoints
     public static Task<IResult> SaveAnnotationHandler(VesselAnnotationModel annotationTree,
         [FromServices] IAnnotationService _annotationService)
     {
-        var saved = _annotationService.SaveAnnotationToDatabase(annotationTree);
+        var saved = _annotationService.SaveAnnotationToDatabase(annotationTree).Result;
 
         if (saved)
         {

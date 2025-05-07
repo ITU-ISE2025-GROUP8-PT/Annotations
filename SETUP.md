@@ -168,8 +168,6 @@ On this page, ensure the following:
 4. Set the "Token Format" to "JSON Web Token (JWT)"
 5. Set "Disable Access Token Encryption"
 
-Press to update and reload the server settings.
-
 - [ ] For `Annotations.API` you will need to set the authority as a user secret. 
 
 ```bash
@@ -182,8 +180,9 @@ dotnet user-secrets set "Authentication:jwt:authority" "https://localhost:5001/"
 dotnet user-secrets set "Authentication:oidc:authority" "https://localhost:5001/"
 ```
 
-
 ![](docs/images/Pasted%20image%2020250507201233.png)
+
+Press the button to update and reload the server settings.
 
 ### 5.4 Setup scopes for application
 

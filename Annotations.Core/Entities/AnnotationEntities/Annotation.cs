@@ -6,8 +6,7 @@ namespace Annotations.Core.Entities;
 
 public class Annotation
 {
-    [Required]
-    public required int Id { get; set; }
+    public int Id { get; set; }
 
     [ForeignKey("User")]
     [Required]

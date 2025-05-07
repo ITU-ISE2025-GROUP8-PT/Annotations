@@ -2,7 +2,7 @@
 
 public class VesselAnnotationModel
 {
-    public required int Id { get; set; }
+    public int Id { get; set; }
     public required string ImagePath { get; set; }
     public required List<VesselPointModel> Points { get; set; }
     public required List<VesselSegmentModel> Segments { get; set; }

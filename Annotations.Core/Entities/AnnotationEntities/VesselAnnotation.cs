@@ -3,8 +3,7 @@ namespace Annotations.Core.VesselObjects;
 
 public class VesselAnnotation 
 {
-    [Required]
-    public required int Id { get; set; }
+    public int Id { get; set; }
     
     [Required]
     public required string ImagePath { get; set; }

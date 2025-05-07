@@ -21,7 +21,6 @@ public interface IAnnotationService
 
 public class AnnotationService(AnnotationsDbContext context) : IAnnotationService
 {
-    
     /// <summary>
     /// Receives a VesselAnnotationModel from the AnnotationEndpoints class.
     /// Converts the model into a VesselAnnotation database entity, saves
@@ -87,30 +86,12 @@ public class AnnotationService(AnnotationsDbContext context) : IAnnotationServic
             Description = a.Description,
             Type = a.Type,
             IsVisible = a.IsVisible,
-            Points = a.Points.Select(p => new VesselPointModel
-            {
-                Id = p.Id,
-                X = p.X,
-                Y = p.Y,
-                IsVisible = p.IsVisible
-            }).ToList(),
+            Points = a.Points.Select(mapToVesselPointModel).ToList(),
             Segments = a.Segments.Select(s => new VesselSegmentModel
             {
                 Id = s.Id,
-                StartPoint = new VesselPointModel
-                {
-                    Id = s.StartPoint.Id,
-                    X = s.StartPoint.X,
-                    Y = s.StartPoint.Y,
-                    IsVisible = s.StartPoint.IsVisible
-                },
-                EndPoint = new VesselPointModel
-                {
-                    Id = s.EndPoint.Id,
-                    X = s.EndPoint.X,
-                    Y = s.EndPoint.Y,
-                    IsVisible = s.EndPoint.IsVisible
-                },
+                StartPoint = mapToVesselPointModel(s.StartPoint),
+                EndPoint = mapToVesselPointModel(s.EndPoint),
                 Thickness = s.Thickness,
                 IsVisible = s.IsVisible
             }).ToList()
@@ -118,4 +99,13 @@ public class AnnotationService(AnnotationsDbContext context) : IAnnotationServic
 
         return models;
     }
+
+    private static readonly Func<VesselPoint, VesselPointModel> mapToVesselPointModel =
+        vp => new VesselPointModel
+    {
+        Id = vp.Id,
+        X = vp.X,
+        Y = vp.Y,
+        IsVisible = vp.IsVisible
+    };
 }

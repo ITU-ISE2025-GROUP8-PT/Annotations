@@ -129,70 +129,72 @@
                             and logic for drawing the annotation trees
                         *@
                         <div class="MatOverwriteRelative" @ref="_imageContainer">
+                            
                             <img src="img/Skærmbillede%202025-03-27%20kl.%2014.05.56.png" alt="Annotation Image"
                                  @onclick="HandleImageClick" class="MatOverwriteWorkImage"/>
-                            
+
                             <svg @onpointermove="HandleDrag"
-                             @onpointerup="EndDrag"
-                             @onpointerleave="EndDrag"
-                             class="MatOverwriteSVG">
-
-                            @foreach (var vessel in _savedVessels!.Where(v => v.IsVisible))
-                            {
-                                @foreach (var segment in vessel.Segments.Where(s => s.IsVisible))
+                                 @onpointerup="EndDrag"
+                                 @onpointerleave="EndDrag"
+                                 class="MatOverwriteSVG">
+                                
+                                @foreach (var vessel in _savedVessels!.Where(v => v.IsVisible))
                                 {
-                                    <line x1="@segment.StartPoint.X" y1="@segment.StartPoint.Y"
-                                          x2="@segment.EndPoint.X" y2="@segment.EndPoint.Y"
-                                          stroke="transparent"
-                                          stroke-width="20"
-                                          pointer-events="visibleStroke"/>
+                                    @foreach (var segment in vessel.Segments.Where(s => s.IsVisible))
+                                    {
+                                        <line x1="@segment.StartPoint.X" y1="@segment.StartPoint.Y"
+                                              x2="@segment.EndPoint.X" y2="@segment.EndPoint.Y"
+                                              stroke="transparent"
+                                              stroke-width="20"
+                                              pointer-events="visibleStroke"/>
 
-                                    <line x1="@segment.StartPoint.X" y1="@segment.StartPoint.Y"
-                                          x2="@segment.EndPoint.X" y2="@segment.EndPoint.Y"
-                                          stroke="white"
-                                          stroke-width="2"
-                                          pointer-events="none"/>
+                                        <line x1="@segment.StartPoint.X" y1="@segment.StartPoint.Y"
+                                              x2="@segment.EndPoint.X" y2="@segment.EndPoint.Y"
+                                              stroke="white"
+                                              stroke-width="2"
+                                              pointer-events="none"/>
+                                    }
+
+                                    @foreach (var point in vessel.Points.Where(p => p.IsVisible))
+                                    {
+                                        <circle cx="@point.X" cy="@point.Y" r="5"
+                                                fill="red" stroke="white"
+                                                stroke-width="2"
+                                                class="MatOverwriteCursor"/>
+                                    }
                                 }
 
-                                @foreach (var point in vessel.Points.Where(p => p.IsVisible))
+                                @* Current working annotation (always visible) *@
+                                @if (_currentVesselAnnotation != null)
                                 {
-                                    <circle cx="@point.X" cy="@point.Y" r="5"
-                                            fill="red" stroke="white"
-                                            stroke-width="2"
-                                            class="MatOverwriteCursor"/>
-                                }
-                            }
+                                    @foreach (var segment in _currentVesselAnnotation.Segments)
+                                    {
+                                        <line x1="@segment.StartPoint.X" y1="@segment.StartPoint.Y"
+                                              x2="@segment.EndPoint.X" y2="@segment.EndPoint.Y"
+                                              stroke="transparent"
+                                              stroke-width="20"
+                                              @onclick="@(() => HandleSegmentClick(segment))"
+                                              pointer-events="visibleStroke"/>
 
-                            @* Current working annotation (always visible) *@
-                            @if (_currentVesselAnnotation != null)
-                            {
-                                @foreach (var segment in _currentVesselAnnotation.Segments)
-                                {
-                                    <line x1="@segment.StartPoint.X" y1="@segment.StartPoint.Y"
-                                          x2="@segment.EndPoint.X" y2="@segment.EndPoint.Y"
-                                          stroke="transparent"
-                                          stroke-width="20"
-                                          @onclick="@(() => HandleSegmentClick(segment))"
-                                          pointer-events="visibleStroke"/>
+                                        <line x1="@segment.StartPoint.X" y1="@segment.StartPoint.Y"
+                                              x2="@segment.EndPoint.X" y2="@segment.EndPoint.Y"
+                                              stroke="@(_currentSegment == segment ? "red" : "white")"
+                                              stroke-width="2"
+                                              pointer-events="none"/>
+                                    }
 
-                                    <line x1="@segment.StartPoint.X" y1="@segment.StartPoint.Y"
-                                          x2="@segment.EndPoint.X" y2="@segment.EndPoint.Y"
-                                          stroke="white"
-                                          stroke-width="2"
-                                          pointer-events="none"/>
+                                    @foreach (var point in _currentVesselAnnotation.Points)
+                                    {
+                                        <circle cx="@point.X" cy="@point.Y" r="10"
+                                                fill="@(_currentPoint == point ? "#FFCCCB" : "red")"
+                                                stroke="white"
+                                                stroke-width="2"
+                                                @onclick="@(e => HandlePointClick(e, point))"
+                                                @onpointerdown="@(e => StartDrag(e, point))"
+                                                class="MatOverwriteCursor"/>
+                                    }
                                 }
-
-                                @foreach (var point in _currentVesselAnnotation.Points)
-                                {
-                                    <circle cx="@point.X" cy="@point.Y" r="10"
-                                            fill="red" stroke="white"
-                                            stroke-width="2"
-                                            @onclick="@(() => HandlePointClick(point))"
-                                            @onpointerdown="@(e => StartDrag(e, point))"
-                                            class="MatOverwriteCursor"/>
-                                }
-                            }
-                        </svg>
+                            </svg>
                         </div>
                     </div>
                     <div class="mat-layout-grid-cell mat-layout-grid-cell-span-2">
@@ -355,9 +357,8 @@
 
         StateHasChanged();
     }
-
     
-    private void HandlePointClick(VesselPointModel point)
+    private void HandlePointClick(MouseEventArgs e, VesselPointModel point)
     {
         _currentPoint = point;
     }

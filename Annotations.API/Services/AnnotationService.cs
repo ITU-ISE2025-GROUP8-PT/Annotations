@@ -78,7 +78,6 @@ public class AnnotationService(AnnotationsDbContext context) : IAnnotationServic
     /// <returns> The list of VesselAnnotationModels, containing their points and segments. </returns>
     public List<VesselAnnotationModel> GetAnnotationsByImage(List<VesselAnnotation> annotations)
     {
-
         var models = annotations.Select(a => new VesselAnnotationModel
         {
             Id = a.Id,

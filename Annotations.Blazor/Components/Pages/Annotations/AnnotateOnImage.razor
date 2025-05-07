@@ -195,6 +195,16 @@
                                     }
                                 }
                             </svg>
+                            @if (_currentPoint != null)
+                            {
+                                <div style="position: absolute; bottom: 1%; right: 1%;">
+                                    <MatIconButton Icon="delete" 
+                                                   OnClick="DeleteSelectedPoint"
+                                                   Style="color: white"
+                                                   Title="Delete selected point">
+                                    </MatIconButton>
+                                </div>
+                            }
                         </div>
                     </div>
                     <div class="mat-layout-grid-cell mat-layout-grid-cell-span-2">
@@ -484,6 +494,28 @@
         //{
         //error handling?
         //}
+    }
+    
+    private void DeleteSelectedPoint()
+    {
+        if (_currentVesselAnnotation == null || _currentPoint == null) 
+            return;
+
+        // Remove the point
+        _currentVesselAnnotation.Points.Remove(_currentPoint);
+
+        // Remove connected segments
+        var segmentsToRemove = _currentVesselAnnotation.Segments
+            .Where(s => s.StartPoint == _currentPoint || s.EndPoint == _currentPoint)
+            .ToList();
+
+        foreach (var segment in segmentsToRemove)
+        {
+            _currentVesselAnnotation.Segments.Remove(segment);
+        }
+
+        _currentPoint = null;
+        StateHasChanged();
     }
     
     private async Task HandleImageClick(MouseEventArgs e)

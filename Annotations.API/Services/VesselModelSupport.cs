@@ -1,8 +1,8 @@
 using Annotations.Core.Models;
 using Annotations.Core.VesselObjects;
 
-namespace Annotations.API.Services;
 
+namespace Annotations.API.Services;
 
 
 /// <summary>
@@ -71,12 +71,40 @@ public static class VesselModelSupport
         return segmentList;
     }
 
-    
-    
+
+
+    /// <summary>
+    /// Initialisation of the VesselAnnotationModels retrieved from a specified image.
+    /// </summary>
+    /// <param name="annotations"> A list of VesselAnnotation entities. </param>
+    /// <returns> The list of VesselAnnotationModels, containing their points and segments. </returns>
+    public static List<VesselAnnotationModel> ConvertVesselAnnotationsToVesselAnnotationModels(List<VesselAnnotation> annotations)
+    {
+        return annotations.Select(a => new VesselAnnotationModel
+        {
+            Id = a.Id,
+            ImagePath = a.ImagePath,
+            Description = a.Description,
+            Type = a.Type,
+            IsVisible = a.IsVisible,
+            Points = a.Points.Select(mapToVesselPointModel).ToList(),
+            Segments = a.Segments.Select(s => new VesselSegmentModel
+            {
+                Id = s.Id,
+                StartPoint = mapToVesselPointModel(s.StartPoint),
+                EndPoint = mapToVesselPointModel(s.EndPoint),
+                Thickness = s.Thickness,
+                IsVisible = s.IsVisible
+            }).ToList()
+        }).ToList();
+    }
+
+
+
     /// <summary>
     /// Helper function for converting VesselPoint to VesselPointModel.
     /// </summary>
-    public static readonly Func<VesselPoint, VesselPointModel> mapToVesselPointModel =
+    private static readonly Func<VesselPoint, VesselPointModel> mapToVesselPointModel =
         vp => new VesselPointModel
         {
             Id = vp.Id,

@@ -1,9 +1,9 @@
 using Annotations.API.Services;
 using Annotations.Core.Entities;
 using Annotations.Core.Models;
-using Annotations.Core.VesselObjects;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+
 
 namespace Annotations.API.Groups;
 
@@ -96,7 +96,7 @@ public static class AnnotationEndpoints
             .Where(a => a.ImagePath == imagePath)
             .ToListAsync();
 
-        var models = annotationService.GetAnnotationsByImage(annotations);
+        var models = VesselModelSupport.ConvertVesselAnnotationsToVesselAnnotationModels(annotations);
 
         return Results.Ok(models);
     }

@@ -3,8 +3,8 @@ using Annotations.Core.Models;
 using Annotations.Core.VesselObjects;
 using Microsoft.EntityFrameworkCore;
 
-namespace Annotations.API.Services;
 
+namespace Annotations.API.Services;
 
 
 /// <summary>
@@ -14,7 +14,6 @@ public interface IAnnotationService
 {
     public Task<bool> SaveAnnotationToDatabase(VesselAnnotationModel annotationTree);
     public Task<Annotation> GetAnnotationFromId(int annotationId);
-    public List<VesselAnnotationModel> GetAnnotationsByImage(List<VesselAnnotation> annotations);
 }
 
 
@@ -68,34 +67,4 @@ public class AnnotationService(AnnotationsDbContext context) : IAnnotationServic
         
         return await response.FirstAsync();
     }
-
-    
-    
-    /// <summary>
-    /// Initialisation of the VesselAnnotationModels retrieved from a specified image.
-    /// </summary>
-    /// <param name="annotations"> A list of VesselAnnotation entities. </param>
-    /// <returns> The list of VesselAnnotationModels, containing their points and segments. </returns>
-    public List<VesselAnnotationModel> GetAnnotationsByImage(List<VesselAnnotation> annotations)
-    {
-        return annotations.Select(a => new VesselAnnotationModel
-        {
-            Id = a.Id,
-            ImagePath = a.ImagePath,
-            Description = a.Description,
-            Type = a.Type,
-            IsVisible = a.IsVisible,
-            Points = a.Points.Select(VesselModelSupport.mapToVesselPointModel).ToList(),
-            Segments = a.Segments.Select(s => new VesselSegmentModel
-            {
-                Id = s.Id,
-                StartPoint = VesselModelSupport.mapToVesselPointModel(s.StartPoint),
-                EndPoint = VesselModelSupport.mapToVesselPointModel(s.EndPoint),
-                Thickness = s.Thickness,
-                IsVisible = s.IsVisible
-            }).ToList()
-        }).ToList();
-    }
-
-   
 }

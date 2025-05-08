@@ -241,6 +241,26 @@ dotnet user-secrets set "authentication:oidc:clientsecret" "<client secret>"
 
 Save the application settings.
 
+### 5.6 Configure specific roles for Annotations
+
+Apart from the `Administrator` super user role for Orchard Core, our project requires two additional roles to be configured:
+
+1. `Manager`
+2. `AnnotationsUser`
+
+These are the roles for which RBAC is configured within Annotations. 
+
+Navigate to `Security -> Roles`
+
+![](docs/images/Screen%20Capture%202025-05-08%20195507.png)
+
+Notice that there are already some roles defined, which are specific to CMS. 
+
+1. Press "Add Role" to create a new role. 
+2. Use this to create the `Manager` and the `AnnotationsUser` roles.
+
+It will then be possible to assign these roles to users, using the user management interface within Orchard Core. 
+
 ## 6. Start the app
 
 1. Start Azurite in your storage data folder: `azurite run`

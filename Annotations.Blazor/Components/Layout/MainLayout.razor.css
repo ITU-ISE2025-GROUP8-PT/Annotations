@@ -79,7 +79,7 @@
 
 
 .page {
-    position: fixed;
+    position: absolute;
     display: flex;
     min-width: 100%;
     flex-direction: column;

@@ -650,12 +650,12 @@
     {
         if (_draggedPoint == null) return;
 
-        var rect = await JsRuntime.InvokeAsync<BoundingClientRect>(
+         var rect = await JsRuntime.InvokeAsync<BoundingClientRect>(
             "getBoundingClientRect", _imageContainer);
-
+         
         _draggedPoint.X = (int)(e.ClientX - rect.Left);
         _draggedPoint.Y = (int)(e.ClientY - rect.Top);
-
+        
         StateHasChanged();
     }
 

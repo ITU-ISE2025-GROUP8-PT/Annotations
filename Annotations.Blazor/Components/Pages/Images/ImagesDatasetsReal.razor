@@ -15,7 +15,7 @@
 
 @if (_error)
 {
-    <Error/>
+    <p>Der opstod desværre en fejl. Prøv igen, eller kontakt din system administrator hvis problemet forsætter.</p>
 }
 
 <MatThemeProvider Theme="_theme">
@@ -48,9 +48,8 @@
 </MatThemeProvider>
 
 @code{
-    public List<Dataset> Datasets = new List<Dataset>();//it only works as a list, not an array
-    private bool _error; //this isn't used yet
-    //TODO: error handling (what blazor pages returns)
+    public List<Dataset> Datasets = new List<Dataset>();
+    private bool _error;
     
     private MatTheme _theme = new MatTheme()
     {
@@ -61,12 +60,14 @@
     {
         try
         {
-            var response = await IapiServices.CreateGetResponse($"/images/datasets/");//sending the response
+            @* Storing the incomming response in a variable, so that we can check if there is an error *@
+            var response = await IapiServices.createGetResponse($"/images/datasets/");
             if (response.IsSuccessStatusCode)
             {
-                var datasetmodels = await response.Content.ReadFromJsonAsync<DatasetModel[]>();//int array of all the ids of all the existing datasets
+                var datasetmodels = await response.Content.ReadFromJsonAsync<DatasetModel[]>();
                 ArgumentNullException.ThrowIfNull(datasetmodels);
                 await Task.Yield();
+                @* Iterating over the datasetmodels and adding them to the Datasets list *@
                 foreach (var datasetmodel in datasetmodels)
                 {
                     Datasets.Add(new Dataset(datasetmodel.Id,
@@ -76,21 +77,18 @@
                     datasetmodel.ReviewedBy));
                 }
             }
-
+            @* If there is an error response, the error is updated to true *@
             else
             {
                 _error = true;
-                Console.WriteLine("Status code: " + response.StatusCode);
             }
         }
         catch 
         {
             _error = true;
-            
         }
     }
-    
-    // Dataset model - to be expanded
+
     public class Dataset
     {
         public int Id { get; set; }

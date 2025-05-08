@@ -46,7 +46,7 @@ else
     protected override async Task OnInitializedAsync()
     {
         @* Storing the incomming response in a variable, so that we can check if there is an error *@
-        var response = await IapiServices.createGetResponse($"/images/filter/{category}");
+        var response = await IapiServices.CreateGetResponse($"/images/filter/{category}");
         try
         {
             @* string array of JSON files of the images as strings *@

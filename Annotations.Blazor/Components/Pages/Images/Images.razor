@@ -32,7 +32,7 @@ else if (!imgExist)
 
     protected override async Task OnInitializedAsync()
     {
-        var response = await IapiService.createGetResponse($"/images/{imageId}");
+        var response = await IapiService.CreateGetResponse($"/images/{imageId}");
 
         try
         {

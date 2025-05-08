@@ -61,7 +61,7 @@
         try
         {
             @* Storing the incomming response in a variable, so that we can check if there is an error *@
-            var response = await IapiServices.createGetResponse($"/images/datasets/");
+            var response = await IapiServices.CreateGetResponse($"/images/datasets/");
             if (response.IsSuccessStatusCode)
             {
                 var datasetmodels = await response.Content.ReadFromJsonAsync<DatasetModel[]>();

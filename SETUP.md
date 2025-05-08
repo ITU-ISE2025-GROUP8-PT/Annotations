@@ -201,7 +201,7 @@ It is most important that
 
 Save this scope, and continue with registering the application. 
 
-- [ ] For `Annotations.API` you will need to set the authority as a user secret. 
+- [ ] For `Annotations.API` you will need to set the audience as a user secret. 
 
 ```bash
 dotnet user-secrets set "Authentication:jwt:audience" "https://localhost:7250"

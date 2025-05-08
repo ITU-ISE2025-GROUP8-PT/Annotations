@@ -3,8 +3,10 @@ namespace Annotations.Core.VesselObjects;
 
 public class VesselAnnotation 
 {
+    public int Id { get; set; }
+    
     [Required]
-    public required int Id { get; set; }
+    public required string ImagePath { get; set; }
     
     [Required]
     public required List<VesselPoint> Points { get; set; }
@@ -17,4 +19,7 @@ public class VesselAnnotation
     
     [Required]
     public required string Type { get; set; }
+    
+    [Required]
+    public required bool IsVisible { get; set; }
 }

@@ -12,11 +12,8 @@ public class VesselSegment
     public required VesselPoint EndPoint { get; set; }
     
     [Required]
-    public required string Text { get; set; }
-    
-    [Required]
     public required double Thickness { get; set; }
     
     [Required]
-    public required string Type { get; set; }
+    public required bool IsVisible { get; set; }
 }

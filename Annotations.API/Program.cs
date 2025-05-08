@@ -83,6 +83,7 @@ builder.Services.AddAzureClients(clientBuilder =>
 });
 
 builder.Services.AddScoped<IImageService, ImageService>();
+builder.Services.AddScoped<IAnnotationService, AnnotationService>();
 builder.Services.AddScoped<IUserService, UserService>();
 
 
@@ -98,6 +99,7 @@ using (var scope = app.Services.CreateScope())
 }
 
 UserEndpoints.MapEndpoints(app.MapGroup("/users").RequireAuthorization());
+AnnotationEndpoints.MapEndpoints(app.MapGroup("/images/annotations").RequireAuthorization());
 ImageEndpoints.MapEndpoints(app.MapGroup("/images").RequireAuthorization());
 
 app.MapGet("/error", () => "Dette er en 400-599 eller værre");

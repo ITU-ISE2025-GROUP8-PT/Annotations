@@ -13,8 +13,5 @@ public class VesselPoint
     public required int Y { get; set; }
     
     [Required]
-    public required string Text { get; set; }
-    
-    [Required]
-    public required string Type { get; set; }
+    public required bool IsVisible { get; set; }
 }

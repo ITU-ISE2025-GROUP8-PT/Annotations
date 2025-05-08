@@ -1,5 +1,6 @@
 @rendermode InteractiveServer
 @page "/images/datasets/{datasetId}/"
+@using global::Annotations.Blazor.Services
 @inject IAPIServices IapiServices
 @attribute [Authorize(Roles = "Administrator, Manager")]
 
@@ -42,7 +43,7 @@ else
     
     protected override async Task OnInitializedAsync()
     {
-        var response = await IapiServices.createGetResponse( $"/images/datasets/{datasetId}");
+        var response = await IapiServices.CreateGetResponse( $"/images/datasets/{datasetId}");
 
             try
             {

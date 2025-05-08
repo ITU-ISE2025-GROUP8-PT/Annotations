@@ -1,4 +1,8 @@
-﻿using Annotations.Blazor.Components.Pages.Annotations;
+﻿using System.Net.Http;
+using Annotations.Blazor.Components.Pages.Annotations;
+using Annotations.Blazor.Services;
+using Microsoft.AspNetCore.Http;
+
 
 namespace Annotations.Blazor.Tests.Unit;
 
@@ -12,6 +16,10 @@ public class AnnotateOnImageTests : TestContext
         JSInterop.Mode = JSRuntimeMode.Loose; // allows JS to run during bUnit tests
         var authContext = this.AddTestAuthorization();
         authContext.SetAuthorized("", AuthorizationState.Unauthorized); // fakes authorized state for a fake user
+        
+        Services.AddSingleton<IAPIServices, APIServices>();
+        Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+        Services.AddHttpClient();
         
         // Act
         var annotatePage = RenderComponent<AnnotateOnImage>();
@@ -28,6 +36,10 @@ public class AnnotateOnImageTests : TestContext
         JSInterop.Mode = JSRuntimeMode.Loose; // allows JS to run during bUnit tests
         var authContext = this.AddTestAuthorization();
         authContext.SetAuthorized("FAKE USER TEST"); // fakes authorized state for a fake user
+        
+        Services.AddSingleton<IAPIServices, APIServices>();
+        Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+        Services.AddHttpClient();
         
         // Act
         var annotatePage = RenderComponent<AnnotateOnImage>();

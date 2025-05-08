@@ -204,6 +204,13 @@ namespace Annotations.API.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("ImagePath")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsVisible")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("Type")
                         .IsRequired()
                         .HasColumnType("TEXT");
@@ -219,13 +226,8 @@ namespace Annotations.API.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("Text")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Type")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
+                    b.Property<bool>("IsVisible")
+                        .HasColumnType("INTEGER");
 
                     b.Property<int?>("VesselAnnotationId")
                         .HasColumnType("INTEGER");
@@ -252,19 +254,14 @@ namespace Annotations.API.Migrations
                     b.Property<int>("EndPointId")
                         .HasColumnType("INTEGER");
 
+                    b.Property<bool>("IsVisible")
+                        .HasColumnType("INTEGER");
+
                     b.Property<int>("StartPointId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("Text")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
                     b.Property<double>("Thickness")
                         .HasColumnType("REAL");
-
-                    b.Property<string>("Type")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
 
                     b.Property<int?>("VesselAnnotationId")
                         .HasColumnType("INTEGER");

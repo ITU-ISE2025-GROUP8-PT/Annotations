@@ -1,7 +1,9 @@
 using System.Net.Http.Headers;
 using Annotations.API;
 using Annotations.API.Groups;
+using Annotations.API.Services;
 using Annotations.Core.Entities;
+using Annotations.Core.VesselObjects;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Data.Sqlite;
@@ -79,11 +81,26 @@ builder.Services.AddAzureClients(clientBuilder =>
     clientBuilder.AddQueueServiceClient(builder.Configuration["AzureStorageConnection"]!);
     clientBuilder.AddTableServiceClient(builder.Configuration["AzureStorageConnection"]!);
 });
+
+builder.Services.AddScoped<IImageService, ImageService>();
+builder.Services.AddScoped<IAnnotationService, AnnotationService>();
+builder.Services.AddScoped<IUserService, UserService>();
+
+
+
 var app = builder.Build();
 
 
-UsersGroup.MapEndpoints(app.MapGroup("/users").RequireAuthorization());
-ImagesGroup.MapEndpoints(app.MapGroup("/images").RequireAuthorization());//TODO    DONT DO THIS. REMOVE 
+
+using (var scope = app.Services.CreateScope())
+{
+    using var context = scope.ServiceProvider.GetRequiredService<AnnotationsDbContext>();
+    context.Database.Migrate();
+}
+
+UserEndpoints.MapEndpoints(app.MapGroup("/users").RequireAuthorization());
+AnnotationEndpoints.MapEndpoints(app.MapGroup("/images/annotations").RequireAuthorization());
+ImageEndpoints.MapEndpoints(app.MapGroup("/images").RequireAuthorization());
 
 app.MapGet("/error", () => "Dette er en 400-599 eller værre");
 
@@ -116,14 +133,14 @@ void InitializeTempDatabase()
 
     context.Add(new Admin
     {
-        UserId = 0,
+        UserId = "0",
         FirstName = "Admin",
         LastName = "Adminsen",
         Email = "admin@adminsen.com"
     }); 
     context.Add(new MedicalProfessional
     {
-        UserId = 1,
+        UserId = "1",
         FirstName = "Medical",
         LastName = "Professional",
         Email = "med@prof.com",
@@ -145,7 +162,7 @@ void InitializeTempDatabase()
     //this is only for testing/showcasing
     
     /*
-    Due to the hard-coding of database elements below, we override code from ImagesGroup
+    Due to the hard-coding of database elements below, we override code from ImageEndpoints
     image-upload-functionality, that adds an image to the dataset.
     */  
 context.Add(new Dataset//different images compared to the other 5 datasets

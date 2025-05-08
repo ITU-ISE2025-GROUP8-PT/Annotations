@@ -22,7 +22,7 @@ else
         <button class="filterButton">Filter by...</button>
     </div>
 
-    <div class="container DivTohøjrereScroll" >
+    <div class="container DivToScroll" >
     @* Virtualize is a special loop that loops OverscanCount data - here the imgs received from API *@
         <Virtualize ItemsProvider="@LoadImages" OverscanCount="15">
             @* OverscanCount must always be divisible by 3! As we have 3 imgs per line

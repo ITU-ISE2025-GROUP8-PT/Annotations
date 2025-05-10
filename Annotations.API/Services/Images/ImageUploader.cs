@@ -183,7 +183,6 @@ public class ImageUploader : IImageUploader
     {
         _dbContext.Images.Remove(image);
         await _dbContext.SaveChangesAsync();
-        Console.WriteLine($"Image {image.Id} deleted from database");
     }
 
 

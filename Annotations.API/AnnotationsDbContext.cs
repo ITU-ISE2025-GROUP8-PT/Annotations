@@ -8,25 +8,20 @@ namespace Annotations.API;
 /// <summary>
 /// Database context for the annotations application backend.
 /// </summary>
-public class AnnotationsDbContext : IdentityDbContext<User>
+public class AnnotationsDbContext : DbContext
 {
     /// <summary>
-    /// Database set of users. Currently unused.
+    /// Database set of users.
     /// </summary>
-    override public DbSet<User> Users { get; set; }
-    //Override has been added to circumvent IdentityUser warning
-    //for hiding inherited member (IdentityUserContext)
-    
-    public DbSet<Admin> Admins { get; set; }
-    public DbSet<MedicalProfessional> MedicalProfessionals { get; set; }
+    public DbSet<User> Users { get; set; }
 
     /// <summary>
-    /// Database set of images for research use.
+    /// Database set of medical research images.
     /// </summary>
     public DbSet<Image> Images { get; set; }
     
     /// <summary>
-    /// Database set of datasets
+    /// Database set of datasets. 
     /// </summary>
     public DbSet<Dataset> Datasets { get; set; }
     
@@ -40,8 +35,6 @@ public class AnnotationsDbContext : IdentityDbContext<User>
     public AnnotationsDbContext(DbContextOptions<AnnotationsDbContext> options) : base(options)
     {
         Users = Set<User>();
-        Admins = Set<Admin>();
-        MedicalProfessionals = Set<MedicalProfessional>();
         Images = Set<Image>();
         Datasets = Set<Dataset>();
         Annotation = Set<Annotation>();
@@ -53,7 +46,6 @@ public class AnnotationsDbContext : IdentityDbContext<User>
     protected override void OnModelCreating(ModelBuilder builder)
 	{
 		base.OnModelCreating(builder);
-
 		
 		//Foreign key setup between AnnotationType and UserId
 		builder.Entity<Annotation>()
@@ -69,6 +61,5 @@ public class AnnotationsDbContext : IdentityDbContext<User>
 		
 		//How to tell EF Core that VesselType AnnotationTree is not a DB entity
 		builder.Entity<Annotation>().HasOne<VesselAnnotation>();
-
 	}
 }

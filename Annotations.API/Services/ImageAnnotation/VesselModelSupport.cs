@@ -2,7 +2,7 @@ using Annotations.Core.Models;
 using Annotations.Core.VesselObjects;
 
 
-namespace Annotations.API.Services;
+namespace Annotations.API.Services.ImageAnnotation;
 
 
 /// <summary>

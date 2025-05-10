@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Azure;
 
 
-namespace Annotations.API.Services;
+namespace Annotations.API.Services.Images;
 
 
 /// <summary>
@@ -291,7 +291,7 @@ public class ImageService: IImageService
                 Category = u.Category,
                 AnnotatedBy= u.AnnotatedBy,
                 ReviewedBy = u.ReviewedBy
-            }).Where(DatasetModel => DatasetModel.Id == Int32.Parse(datasetId));
+            }).Where(DatasetModel => DatasetModel.Id == int.Parse(datasetId));
         //there is only one dataset with a certain Id, so no point of taking more
         var datasetModel = await datasets.FirstOrDefaultAsync();
 

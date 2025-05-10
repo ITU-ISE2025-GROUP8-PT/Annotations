@@ -28,6 +28,8 @@
 
   <ItemGroup>
     <Folder Include="Migrations\" />
+    <Folder Include="Services\Datasets\" />
+    <Folder Include="Services\ImageAnnotation\" />
   </ItemGroup>
 
 </Project>

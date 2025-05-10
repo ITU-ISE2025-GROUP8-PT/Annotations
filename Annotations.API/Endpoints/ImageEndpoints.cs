@@ -1,4 +1,4 @@
-using Annotations.API.Services;
+using Annotations.API.Services.Images;
 using Annotations.Core.Models;
 using Microsoft.AspNetCore.Mvc;
 

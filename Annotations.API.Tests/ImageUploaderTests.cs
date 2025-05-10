@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using System.Threading;
+using System.Text;
 using System.Threading.Tasks;
 using Annotations.API.Services.Images;
 using Annotations.Core.Entities;
@@ -26,7 +26,7 @@ public class ImageUploaderTests
     /// Refer to Andrew Lock page 909 for more information on dbContext and in memory database.
     /// </summary>
     [Fact]
-    public async Task CanUploadImage()
+    public async Task OnValidRequest_CanUploadImage()
     {
         // Arrange
         
@@ -67,11 +67,13 @@ public class ImageUploaderTests
 
         using (var context = new AnnotationsDbContext(options))
         {
-            var imageUploader = new ImageUploader(context, mockStore.MockBlobServiceClientFactory.Object);
-            imageUploader.OriginalFilename = "test.jpg";
-            imageUploader.ContentType = "image/jpeg";
-            imageUploader.InputStream = new MemoryStream(new byte[] { 0x01, 0x02, 0x03 });
-            imageUploader.UploadedBy = context.Users.Where(u => u.UserId == "1").Single();
+            var imageUploader = new ImageUploader(context, mockStore.MockBlobServiceClientFactory.Object)
+            {
+                OriginalFilename = "test.jpg",
+                ContentType = "image/jpeg",
+                InputStream = new MemoryStream([0x01, 0x02, 0x03]),
+                UploadedBy = context.Users.Where(u => u.UserId == "1").Single()
+            };
 
             uploadResult = await imageUploader.StoreAsync();
         }
@@ -83,7 +85,196 @@ public class ImageUploaderTests
         Assert.Equal(4, uploadResult.ImageId);
         Assert.Equal(string.Empty, uploadResult.Error);
     }
+
+
+
+
+
+    /// <summary>
+    /// Test to see that it is not possible to upload an image with an invalid media type.
+    /// </summary>
+    /// <returns></returns>
+    [Fact]
+    public async Task OnInvalidMediaType_UnsupportedMediaType()
+    {
+        // Arrange
+
+        // 1. Database context
+        var connection = new SqliteConnection("DataSource=:memory:");
+        connection.Open();
+
+        var options = new DbContextOptionsBuilder<AnnotationsDbContext>()
+            .UseSqlite(connection)
+            .Options;
+
+        var testUser = new User { UserId = "1", UserName = "Test User" };
+
+        using (var context = new AnnotationsDbContext(options))
+        {
+            context.Database.EnsureCreated();
+            context.Add(testUser);
+            context.SaveChanges();
+        }
+
+
+
+        // 2. Mock Azure Storage
+        var mockStore = new MockAzureBlobStorageClientFactory(
+            expectedName: "Default",
+            expectedContainerName: "images",
+            expectedBlobName: "1");
+
+
+
+        // Act
+        ImageUploaderResult uploadResult;
+
+        using (var context = new AnnotationsDbContext(options))
+        {
+            var imageUploader = new ImageUploader(context, mockStore.MockBlobServiceClientFactory.Object)
+            {
+                OriginalFilename = "test.txt",
+                ContentType = "text/plain",
+                InputStream = new MemoryStream(UTF8Encoding.UTF8.GetBytes("Hello World!")),
+                UploadedBy = context.Users.Where(u => u.UserId == "1").Single()
+            };
+
+            uploadResult = await imageUploader.StoreAsync();
+        }
+
+
+
+        // Assert
+        Assert.Equal(415, uploadResult.StatusCode);
+        Assert.Equal(-1, uploadResult.ImageId);
+        Assert.NotEqual(string.Empty, uploadResult.Error);
+    }
+
+
+
+
+
+    /// <summary>
+    /// Test to see that it is not possible to upload an image without a filename.
+    /// </summary>
+    /// <returns></returns>
+    [Fact]
+    public async Task OnNoFileName_BadRequest()
+    {
+        // Arrange
+
+        // 1. Database context
+        var connection = new SqliteConnection("DataSource=:memory:");
+        connection.Open();
+
+        var options = new DbContextOptionsBuilder<AnnotationsDbContext>()
+            .UseSqlite(connection)
+            .Options;
+
+        var testUser = new User { UserId = "1", UserName = "Test User" };
+
+        using (var context = new AnnotationsDbContext(options))
+        {
+            context.Database.EnsureCreated();
+            context.Add(testUser);
+            context.SaveChanges();
+        }
+
+
+
+        // 2. Mock Azure Storage
+        var mockStore = new MockAzureBlobStorageClientFactory(
+            expectedName: "Default",
+            expectedContainerName: "images",
+            expectedBlobName: "1");
+
+
+
+        // Act
+        ImageUploaderResult uploadResult;
+
+        using (var context = new AnnotationsDbContext(options))
+        {
+            var imageUploader = new ImageUploader(context, mockStore.MockBlobServiceClientFactory.Object)
+            {
+                OriginalFilename = "",
+                ContentType = "image/jpeg",
+                InputStream = new MemoryStream([0x01, 0x02, 0x03]),
+                UploadedBy = context.Users.Where(u => u.UserId == "1").Single()
+            };
+
+            uploadResult = await imageUploader.StoreAsync();
+        }
+
+
+
+        // Assert
+        Assert.Equal(400, uploadResult.StatusCode);
+        Assert.Equal(-1, uploadResult.ImageId);
+        Assert.NotEqual(string.Empty, uploadResult.Error);
+    }
+
+
+
+
+
+    /// <summary>
+    /// Test to see that it is not possible to upload an image without a user.
+    /// <br />
+    /// Note that this is a server side error.
+    /// An unauthorized user should get access to an endpoint where this is used. 
+    /// </summary>
+    /// <returns></returns>
+    [Fact]
+    public async Task OnNoUser_ThrowsException()
+    {
+        // Arrange
+
+        // 1. Database context
+        var connection = new SqliteConnection("DataSource=:memory:");
+        connection.Open();
+
+        var options = new DbContextOptionsBuilder<AnnotationsDbContext>()
+            .UseSqlite(connection)
+            .Options;
+
+        var testUser = new User { UserId = "1", UserName = "Test User" };
+
+        using (var context = new AnnotationsDbContext(options))
+        {
+            context.Database.EnsureCreated();
+            context.Add(testUser);
+            context.SaveChanges();
+        }
+
+
+
+        // 2. Mock Azure Storage
+        var mockStore = new MockAzureBlobStorageClientFactory(
+            expectedName: "Default",
+            expectedContainerName: "images",
+            expectedBlobName: "1");
+
+
+
+        // Act
+        using (var context = new AnnotationsDbContext(options))
+        {
+            var imageUploader = new ImageUploader(context, mockStore.MockBlobServiceClientFactory.Object)
+            {
+                OriginalFilename = "test.jpg",
+                ContentType = "image/jpeg",
+                InputStream = new MemoryStream([0x01, 0x02, 0x03]),
+                UploadedBy = null
+            };
+
+            // Assert Throws
+            await Assert.ThrowsAsync<ArgumentNullException>(imageUploader.StoreAsync);
+        }
+    }
 }
+
+
 
 
 

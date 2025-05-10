@@ -104,7 +104,7 @@ public static class VesselModelSupport
 
 
     /// <summary>
-    /// Helper function for converting VesselPoint to VesselPointModel.
+    /// Helper function for converting VesselPointModel to VesselPoint.
     /// </summary>
     private static readonly Func<VesselPointModel, VesselPoint> mapToVesselPoint =
         vpm => new VesselPoint

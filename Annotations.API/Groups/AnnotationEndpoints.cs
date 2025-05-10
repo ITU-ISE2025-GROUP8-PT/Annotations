@@ -46,7 +46,7 @@ public static class AnnotationEndpoints
     /// </summary>
     /// <param name="annotationTree"> The model for one vessel tree. </param>
     /// <param name="_annotationService"> An annotation service instance. </param>
-    /// <returns> A result with status code 200 OK. </returns>
+    /// <returns> Status code 200 OK for success, status 500 "Internal Server Error" for failure. </returns>
     public static Task<IResult> SaveAnnotationHandler(VesselAnnotationModel annotationTree,
         [FromServices] IAnnotationService _annotationService)
     {

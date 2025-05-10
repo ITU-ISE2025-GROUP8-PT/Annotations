@@ -49,20 +49,8 @@ public static class VesselModelSupport
             segmentList.Add(new VesselSegment
             {
                 Id = segmentModel.Id,
-                StartPoint = new VesselPoint
-                {
-                    Id = segmentModel.StartPoint.Id,
-                    X = segmentModel.StartPoint.X,
-                    Y = segmentModel.StartPoint.Y,
-                    IsVisible = segmentModel.EndPoint.IsVisible
-                },
-                EndPoint = new VesselPoint
-                {
-                    Id = segmentModel.EndPoint.Id,
-                    X = segmentModel.EndPoint.X,
-                    Y = segmentModel.EndPoint.Y,
-                    IsVisible = segmentModel.EndPoint.IsVisible
-                },
+                StartPoint = mapToVesselPoint(segmentModel.StartPoint),
+                EndPoint = mapToVesselPoint(segmentModel.EndPoint),
                 Thickness = segmentModel.Thickness,
                 IsVisible = segmentModel.IsVisible
             });
@@ -111,5 +99,19 @@ public static class VesselModelSupport
             X = vp.X,
             Y = vp.Y,
             IsVisible = vp.IsVisible
+        };
+
+
+
+    /// <summary>
+    /// Helper function for converting VesselPointModel to VesselPoint.
+    /// </summary>
+    private static readonly Func<VesselPointModel, VesselPoint> mapToVesselPoint =
+        vpm => new VesselPoint
+        {
+            Id = vpm.Id,
+            X = vpm.X,
+            Y = vpm.Y,
+            IsVisible = vpm.IsVisible
         };
 }

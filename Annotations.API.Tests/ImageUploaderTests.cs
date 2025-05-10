@@ -1,4 +1,7 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
+using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Annotations.API.Services.Images;
 using Annotations.Core.Entities;
@@ -31,9 +34,20 @@ public class ImageUploaderTests
             .UseSqlite(connection)
             .Options;
 
+        var testUser = new User { UserId = "1", UserName = "Test User" };
+
         using (var context = new AnnotationsDbContext(options))
         {
             context.Database.EnsureCreated();
+            for (int i = 1; i < 4; i++) {
+                context.Add(new Image 
+                {
+                    Id = i,
+                    CreatedAt = DateTime.UtcNow,
+                    UploadedBy = testUser,
+                });
+            }
+            context.SaveChanges();
         }
 
 
@@ -53,8 +67,12 @@ public class ImageUploaderTests
             .Returns(mockBlobContainerClient.Object);
 
         mockBlobContainerClient
-            .Setup(x => x.GetBlobClient(It.Is<string>(s => s.Equals("0"))))
+            .Setup(x => x.GetBlobClient(It.Is<string>(s => s.Equals("4"))))
             .Returns(mockBlobClient.Object);
+
+        mockBlobClient
+            .Setup(x => x.Exists(default))
+            .Returns(Azure.Response.FromValue(false, Mock.Of<Azure.Response>()));
 
 
 
@@ -67,7 +85,7 @@ public class ImageUploaderTests
             imageUploader.OriginalFilename = "test.jpg";
             imageUploader.ContentType = "image/jpeg";
             imageUploader.InputStream = new MemoryStream(new byte[] { 0x01, 0x02, 0x03 });
-            imageUploader.UploadedBy = new User { UserId = "1", UserName = "Test User" };
+            imageUploader.UploadedBy = context.Users.Where(u => u.UserId == "1").Single();
 
             uploadResult = await imageUploader.StoreAsync();
         }
@@ -76,7 +94,7 @@ public class ImageUploaderTests
 
         // Assert
         Assert.Equal(201, uploadResult.StatusCode);
-        Assert.Equal(0, uploadResult.ImageId);
+        Assert.Equal(4, uploadResult.ImageId);
         Assert.Equal(string.Empty, uploadResult.Error);
     }
 }

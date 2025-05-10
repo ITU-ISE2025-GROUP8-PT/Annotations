@@ -22,9 +22,6 @@ public class Image
     [StringLength(1000)]
     public string Description { get; set; } = string.Empty;
 
-    [Required]
-    public required byte[] ImageData { get; set; } // Not required, blob storage will contain the image data.
-
     /// <summary>
     /// Category of the image. This is a string that can be used to group images.
     /// </summary>
@@ -35,9 +32,19 @@ public class Image
     /// List of dataset IDs this image belongs to.
     /// </summary>
     public List<int> DatasetsIds { get; set; } = [];
-}
 
-    /*Later add foreign keys:
-    UploadedBy (referencing AdminId)
-    DeletedBy (referencing AdminId)
-    */
+    /// <summary>
+    /// Timestamp of when the image was uploaded. This is used to track when the image was added to the system.
+    /// </summary>
+    public required DateTime CreatedAt { get; set; }
+
+    /// <summary>
+    /// User who uploaded the image. This is used to track who added the image to the system.
+    /// </summary>
+    public required User UploadedBy { get; set; }
+
+    /// <summary>
+    /// Marks this image as deleted. This also stops another image from re-using the same ID. 
+    /// </summary>
+    public bool IsDeleted { get; set; }
+}

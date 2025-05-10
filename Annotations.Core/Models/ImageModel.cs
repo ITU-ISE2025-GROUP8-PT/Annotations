@@ -17,9 +17,6 @@ public class ImageModel
     /// </summary>
     public string Description { get; set; } = string.Empty;
 
-    
-    public required byte[] ImageData { get; set; } // Not required, blob storage will contain the image data.
-
     /// <summary>
     /// Category of the image. This is a string that can be used to group images.
     /// </summary>
@@ -29,9 +26,4 @@ public class ImageModel
     /// List of dataset IDs this image belongs to.
     /// </summary>
     public List<int> DatasetsIds { get; set; } = [];
-
-    /// <summary>
-    /// Marks this image as deleted.
-    /// </summary>
-    public bool IsDeleted { get; set; }
 }

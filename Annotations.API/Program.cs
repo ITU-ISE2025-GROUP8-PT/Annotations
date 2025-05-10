@@ -133,41 +133,18 @@ void InitializeTempDatabase()
     using var context = scope.ServiceProvider.GetRequiredService<AnnotationsDbContext>();
     context.Database.Migrate();
 
-    context.Add(new Admin
+    context.Add(new User
     {
         UserId = "0",
-        FirstName = "Admin",
-        LastName = "Adminsen",
-        Email = "admin@adminsen.com"
+        UserName = "SampleAdmin",
     }); 
-    context.Add(new MedicalProfessional
-    {
-        UserId = "1",
-        FirstName = "Medical",
-        LastName = "Professional",
-        Email = "med@prof.com",
-        Affiliation = "Rigshospitalet",
-        JobTitle = "Surgeon",
-        TotalAssignmentsFinished = 0,
-        ProfilePictureId = 123
-    });
-    context.Add(new Image
-    {
-        Id = 1,
-        Title = "Sample Image",
-        Description = "This is a sample image.",
-        ImageData = File.ReadAllBytes("../docs/images/Perfusiontech_sampleimage.png"),
-        Category = "category",
-        DatasetsIds = new List<int>(){0, 1, 2}
-        // ImageData = await GetImageDataAsync("Perfusiontech_sampleimage.png"); <-- Eller hvad den nu kommer til at hedde når den smides op
-    });
     //this is only for testing/showcasing
     
     /*
     Due to the hard-coding of database elements below, we override code from ImageEndpoints
     image-upload-functionality, that adds an image to the dataset.
     */  
-context.Add(new Dataset//different images compared to the other 5 datasets
+    context.Add(new Dataset//different images compared to the other 5 datasets
     {
         Id = 1,
         ImageIds = new List<int>(){0, 1},//TODO remove this - this is only for testing

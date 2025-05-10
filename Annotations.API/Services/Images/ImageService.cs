@@ -197,7 +197,7 @@ public class ImageService: IImageService
                         Id = id,
                         Title = "title",
                         Description = "description",
-                        ImageData = ms.ToArray(),
+                        //ImageData = ms.ToArray(),
                         Category = category,
                         DatasetsIds = new List<int>() { 1, 2 },
                     };

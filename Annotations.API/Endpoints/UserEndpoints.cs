@@ -17,44 +17,22 @@ public static class UserEndpoints
         // Anti-forgery measures are covered in the front-end, and by the JWT token protection. 
         pathBuilder.RequireAuthorization().DisableAntiforgery(); 
         
-        pathBuilder.MapGet("/admins", RetrieveAdmins);
-        
-        pathBuilder.MapGet("/medicalprofessionals", RetrieveMedicalProfessionals);
-        
-        pathBuilder.MapGet("/exception", () =>
-        {
-            throw new InvalidOperationException(
-                "Exception has been raised in the API. Look for further details in the log.");
-        });
+        pathBuilder.MapGet("/users", GetAllUsers);
+ 
     }
 
 
 
     /// <summary>
-    /// Retrieves all registered admins. 
+    /// Retrieves all users. 
     /// </summary>
     /// <param name="context"> Annotations database context containing the user data. </param>
     /// <param name="_userService"> A user service instance. </param>
     /// <returns> A list of the AdminUserModels. </returns>
-    public static async Task<List<AdminUserModel>> RetrieveAdmins(
-        AnnotationsDbContext context, 
+    public static async Task<List<UserModel>> GetAllUsers(
+        AnnotationsDbContext context,
         [FromServices] IUserService _userService)
     {
-        return await _userService.GetAdmins();
-    }
-
-
-
-    /// <summary>
-    /// Retrieves all registered medical professionals. 
-    /// </summary>
-    /// <param name="context"> Annotations database context containing the user data. </param>
-    /// <param name="_userService"> A user service instance. </param>
-    /// <returns> A list of the MedicalProfessionalUserModels. </returns>
-    public static async Task<List<MedicalProfessionalUserModel>> RetrieveMedicalProfessionals(
-        AnnotationsDbContext context, 
-        [FromServices] IUserService _userService)
-    {
-        return await _userService.GetMedicalProfessionals();
+        return await _userService.GetUsers();
     }
 }

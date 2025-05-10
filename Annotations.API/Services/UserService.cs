@@ -10,9 +10,7 @@ namespace Annotations.API.Services;
 /// </summary>
 public interface IUserService
 {
-    Task<List<AdminUserModel>> GetAdmins();
-
-    Task<List<MedicalProfessionalUserModel>> GetMedicalProfessionals();
+    Task<List<UserModel>> GetUsers();
 }
 
 
@@ -35,44 +33,17 @@ public class UserService : IUserService
     
     
     /// <summary>
-    /// Retrieves all admins. 
+    /// Retrieves all users. 
     /// </summary>
     /// <returns> A list of all AdminUserModel. </returns>
-    public async Task<List<AdminUserModel>> GetAdmins()
+    public async Task<List<UserModel>> GetUsers()
     {
-        var admins = await _context.Admins
-            .Select(u => new AdminUserModel
+        var users = await _context.Users
+            .Select(u => new UserModel
             {
-                Id = u.UserId,
-                FirstName = u.FirstName,
-                LastName = u.LastName,
-                Email = u.Email
+                UserName = u.UserName,
             })
             .ToListAsync();
-        return admins;
-    }
-
-    
-    
-    /// <summary>
-    /// Retrieves all medical professionals. 
-    /// </summary>
-    /// <returns> A list of all MedicalProfessionalUserModel. </returns>
-    public async Task<List<MedicalProfessionalUserModel>> GetMedicalProfessionals()
-    {
-        var medicalProfessionals = await _context.MedicalProfessionals
-            .Select(u => new MedicalProfessionalUserModel
-            {
-                Id = u.UserId,
-                FirstName = u.FirstName,
-                LastName = u.LastName,
-                Email = u.Email,
-                Affiliation = u.Affiliation,
-                JobTitle = u.JobTitle,
-                TotalAssignmentsFinished = u.TotalAssignmentsFinished,
-                ProfilePictureID = u.ProfilePictureId
-            })
-            .ToListAsync();
-        return medicalProfessionals;
+        return users;
     }
 }

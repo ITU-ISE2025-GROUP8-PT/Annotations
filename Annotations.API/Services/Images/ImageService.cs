@@ -41,12 +41,6 @@ public record GetImageResult(bool Success, string image);
 /// </summary>
 public interface IImageService
 {
-    ValidationResponse ValidateImage(IFormFile file);
-
-    Task UploadingImage(IFormFile image, int counter, string category);
-
-    void UploadImageError(ValidationResponse response);
-
     Task<HashSet<string>> Filter(string category);
 
     Task<DatasetModel> GetDataset(string datasetId);
@@ -57,6 +51,38 @@ public interface IImageService
 
     Task<bool> DeleteImage(string imageId);
 }
+
+
+
+
+
+/// <summary>
+/// The result of downloading an image.
+/// </summary>
+public sealed class ImageDownloadResult
+{
+    /// <summary>
+    /// Status code for HTTP response.
+    /// </summary>
+    public required int StatusCode { get; set; }
+
+    /// <summary>
+    /// Error message if applicable.
+    /// </summary>
+    public string Error { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Download stream. Empty stream in case of failure.
+    /// </summary>
+    public Stream Stream { get; set; } = Stream.Null;
+
+    /// <summary>
+    /// Content type. "text/plain" in case of failure.
+    /// </summary>
+    public string ContentType { get; set; } = "text/plain";
+}
+
+
 
 
 
@@ -83,6 +109,7 @@ public class ImageService: IImageService
     
     
     
+    /*
     /// <summary>
     /// Helping method that validates an image based on type, size, and also checks if it even contains anything
     /// Images can be JPEG, PNG and JPG, and everything else gets rejected
@@ -113,6 +140,7 @@ public class ImageService: IImageService
         return new ValidationResponse(false, "File is not a valid image.");
         
     }
+    */
 
     
     
@@ -178,7 +206,7 @@ public class ImageService: IImageService
     }
     
     
-    
+    /*
     /// <summary>
     /// Uploads a JSON file containing the image to the blobstorage with the given id
     /// </summary>
@@ -208,9 +236,11 @@ public class ImageService: IImageService
                 await UploadAsJSON(id, JSONString);
             }
     }
+    */
 
     
     
+    /*
     /// <summary>
     /// Currently, it just prints out an error message in terminal
     /// In the future when error handling is properly implemented, here is where it would be 
@@ -221,6 +251,7 @@ public class ImageService: IImageService
         Console.WriteLine("rejecting image");
         Console.WriteLine(response.Message);
     }
+    */
 
     
     

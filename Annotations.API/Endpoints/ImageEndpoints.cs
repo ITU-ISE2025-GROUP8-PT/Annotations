@@ -10,13 +10,6 @@ namespace Annotations.API.Endpoints;
 public static class ImageEndpoints
 {
     /// <summary>
-    /// The counter represents which id an image will get. This is reset every time the program resets. 
-    /// </summary>
-    private static int _counter = 0;
- 
-    
-    
-    /// <summary>
     /// Where all the endpoints are initialized to their respective handler. 
     /// </summary>
     /// <param name="pathBuilder"></param>

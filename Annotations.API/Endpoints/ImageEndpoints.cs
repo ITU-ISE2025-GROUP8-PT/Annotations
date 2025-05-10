@@ -3,7 +3,7 @@ using Annotations.Core.Models;
 using Microsoft.AspNetCore.Mvc;
 
 
-namespace Annotations.API.Groups;
+namespace Annotations.API.Endpoints;
 
 public static class ImageEndpoints
 {

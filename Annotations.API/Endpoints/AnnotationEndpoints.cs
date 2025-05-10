@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 
-namespace Annotations.API.Groups;
+namespace Annotations.API.Endpoints;
 
 public static class AnnotationEndpoints
 {

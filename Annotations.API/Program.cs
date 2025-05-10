@@ -1,6 +1,6 @@
 using System.Net.Http.Headers;
 using Annotations.API;
-using Annotations.API.Groups;
+using Annotations.API.Endpoints;
 using Annotations.API.Services;
 using Annotations.Core.Entities;
 using Annotations.Core.VesselObjects;

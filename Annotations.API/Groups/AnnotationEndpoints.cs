@@ -64,6 +64,12 @@ public static class AnnotationEndpoints
     
     
     
+    /// <summary>
+    /// Call upon the Annotation Service to retrieve a specific annotation tree.
+    /// </summary>
+    /// <param name="annotationId"> Id of the annotation tree to retrieve. </param>
+    /// <param name="_annotationService"> An instance of the Annotation Service class. </param>
+    /// <returns> The retrieved annotation tree. </returns>
     public static async Task<Annotation> RetrieveAnnotationHandler([FromRoute] int annotationId,
         [FromServices] IAnnotationService _annotationService)
     {

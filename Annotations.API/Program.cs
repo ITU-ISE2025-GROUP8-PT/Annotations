@@ -40,12 +40,11 @@ builder.Services.AddSwaggerGen(options =>
 
 builder.Services.AddControllers();
 
-// Temporary SQLite based database service.
 // This singleton pattern allows in-memory SQLite to work correctly.
 // From: https://www.answeroverflow.com/m/1071789602316238919
 builder.Services.AddSingleton(_ =>
 {
-    var connection = new SqliteConnection("Data Source=:memory:");
+    var connection = new SqliteConnection(builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string not found"));
     connection.Open();
     return connection;
 });

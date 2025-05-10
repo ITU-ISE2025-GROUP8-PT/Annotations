@@ -1,9 +1,9 @@
 using System.Net.Http.Headers;
 using Annotations.API;
 using Annotations.API.Endpoints;
-using Annotations.API.Services;
 using Annotations.API.Services.ImageAnnotation;
 using Annotations.API.Services.Images;
+using Annotations.API.Services.Users;
 using Annotations.Core.Entities;
 using Annotations.Core.VesselObjects;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -85,6 +85,7 @@ builder.Services.AddAzureClients(clientBuilder =>
 });
 
 builder.Services.AddScoped<IImageService, ImageService>();
+builder.Services.AddTransient<IImageUploader, ImageUploader>();
 builder.Services.AddScoped<IAnnotationService, AnnotationService>();
 builder.Services.AddScoped<IUserService, UserService>();
 

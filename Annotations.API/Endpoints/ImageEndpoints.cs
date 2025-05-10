@@ -1,4 +1,6 @@
+using System.Security.Claims;
 using Annotations.API.Services.Images;
+using Annotations.API.Services.Users;
 using Annotations.Core.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -60,22 +62,25 @@ public static class ImageEndpoints
     /// <param name="context"> The SQLite database context. </param>
     /// <param name="_imageService"> An image service instance. </param>
     /// <returns></returns>
-    private static async Task<IResult> UploadImageHandler(
-        IFormFile image, 
-        string category, 
-        AnnotationsDbContext context, 
-        [FromServices] IImageService _imageService)
+    private static async Task<ImageUploaderResult> UploadImageHandler(
+        IFormFile       image, 
+        string?         category,
+        ClaimsPrincipal claimsPrincipal,
+        HttpContext     httpContext,
+        [FromServices] IImageUploader uploader,
+        [FromServices] IUserService userService)
     {
-        ValidationResponse response = _imageService.ValidateImage(image);
-        if (!response.Success)
-        {
-            _imageService.UploadImageError(response);
-            return Results.StatusCode(422);
-            //TODO: how should the end user see this?
-        } 
-        await _imageService.UploadingImage(image,_counter, category);
-        _counter++;
-        return Results.StatusCode(200);
+        var user = await userService.TryFindUserAsync(claimsPrincipal) ?? await userService.CreateUser(claimsPrincipal);
+
+        uploader.OriginalFilename = image.FileName;
+        uploader.ContentType      = image.ContentType;
+        uploader.InputStream      = image.OpenReadStream();
+        uploader.UploadedBy       = user;
+
+        var uploaderResult = await uploader.StoreAsync();
+
+        httpContext.Response.StatusCode = uploaderResult.StatusCode;
+        return uploaderResult;
     }
 
 

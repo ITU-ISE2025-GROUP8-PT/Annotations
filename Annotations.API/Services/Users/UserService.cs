@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 
 
-namespace Annotations.API.Services;
+namespace Annotations.API.Services.Users;
 
 
 /// <summary>

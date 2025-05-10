@@ -162,7 +162,7 @@ public class ImageUploader : IImageUploader
         if (ContentType == string.Empty) throw new InvalidOperationException("Media type cannot be empty");
 
         var blob = _clientFactory.CreateClient("Default")
-            .GetBlobContainerClient("medical-image")
+            .GetBlobContainerClient("images")
             .GetBlobClient($"{imageId}");
 
         if (blob.Exists())

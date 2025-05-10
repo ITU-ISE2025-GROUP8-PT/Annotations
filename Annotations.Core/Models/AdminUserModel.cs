@@ -1,9 +1,9 @@
 namespace Annotations.Core.Models;
 
-public class AdminUserModel
+public class UserModel
 {
-    public required string Id { get; set; }
-    public required string FirstName { get; set; }
-    public required string LastName { get; set; }
-    public required string? Email { get; set; }
+    /// <summary>
+    /// The display name of the user. (Handle)
+    /// </summary>
+    public required string UserName { get; set; }
 }

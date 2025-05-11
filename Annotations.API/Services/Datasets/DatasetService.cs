@@ -1,4 +1,5 @@
-﻿using Annotations.Core.Entities;
+﻿using System.Net;
+using Annotations.Core.Entities;
 using Annotations.Core.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,6 +14,8 @@ public interface IDatasetService
     Task<DatasetModel?> GetSingleDataset(int datasetId);
 
     Task<ICollection<DatasetModel>> GetDatasetOverview();
+
+    Task<ModifyDatasetResult> SetImagesAsync(int datasetId, int[] imageIds);
 }
 
 
@@ -79,6 +82,86 @@ public class DatasetService : IDatasetService
                 ReviewedBy = ToUserModel(ds.ReviewedBy),
             })
             .SingleOrDefaultAsync();
+    }
+
+
+
+    public async Task<ModifyDatasetResult> SetImagesAsync(int datasetId, int[] imageIds)
+    {
+        var dataset = await _dbContext.Datasets
+            .Include(ds => ds.Entries)
+            .SingleOrDefaultAsync(ds => ds.Id == datasetId);
+
+        if (dataset == default(Dataset)) return new ModifyDatasetResult
+        {
+            StatusCode = (int)HttpStatusCode.NotFound,
+            Error = "Dataset not found"
+        };
+
+        if (dataset.IsDeleted) return new ModifyDatasetResult
+        {
+            StatusCode = (int)HttpStatusCode.NotFound,
+            Error = $"Dataset {dataset.Id} is marked as deleted"
+        };
+
+        var images = await _dbContext.Images
+            .Where(e => imageIds.Contains(e.Id))
+            .ToListAsync();
+
+        if (images.Count != imageIds.Length) return new ModifyDatasetResult
+        {
+            StatusCode = (int)HttpStatusCode.NotFound,
+            Error = "Some images not found"
+        };
+
+        var confirmed = new List<Image>();
+        foreach (var image in images)
+        {
+            if (image.IsDeleted) return new ModifyDatasetResult
+            {
+                StatusCode = (int)HttpStatusCode.NotFound,
+                Error = $"Image {image.Id} is marked as deleted"
+            };
+            if (confirmed.Contains(image)) return new ModifyDatasetResult
+            {
+                StatusCode = (int)HttpStatusCode.Conflict,
+                Error = $"Image {image.Id} is in the image sequence more than once"
+            };
+            confirmed.Add(image);
+        }
+
+        var newEntries = new List<DatasetEntry>();
+        for (int i = 0; i < confirmed.Count; i++)
+        {
+            var entry = new DatasetEntry
+            {
+                ImageId = confirmed[i].Id,
+                DatasetId = datasetId,
+                OrderNumber = i,
+            };
+            newEntries.Add(entry);
+        }
+
+        dataset.Entries = newEntries;
+
+        _dbContext.Update(dataset);
+
+        await _dbContext.SaveChangesAsync();
+
+        return new ModifyDatasetResult
+        {
+            StatusCode = (int)HttpStatusCode.OK,
+            Dataset = new DatasetModel
+            {
+                Id = dataset.Id,
+                ImageIds = dataset.Entries
+                    .Select(e => e.ImageId)
+                    .ToList(),
+                Category = dataset.Category,
+                AnnotatedBy = ToUserModel(dataset.AnnotatedBy),
+                ReviewedBy = ToUserModel(dataset.ReviewedBy),
+            }
+        };
     }
 
 

@@ -111,7 +111,7 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
-    InitializeTempDatabase();
+    //InitializeTempDatabase();
 }
 
 // Middleware pipeline.

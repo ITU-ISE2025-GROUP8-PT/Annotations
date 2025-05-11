@@ -1,3 +1,4 @@
+using System.Net;
 using Annotations.Core.Entities;
 using Annotations.Core.Models;
 using Azure;
@@ -24,16 +25,6 @@ public record ValidationResponse(bool Success, string Message);
 /// <param name="JSONString"> JSONString representing the JSON file. </param>
 public record ImageData(ImageModel Image, string JSONString);
 
-/// <summary>
-/// The result of retrieving an image from the blob storage. 
-/// </summary>
-/// <param name="Success"> Whether image was succesfully retrieved or not. </param>
-/// <param name="image"> 
-/// The image in question as a JSON string.
-/// If image could not be retrieved, an empty string is returned. 
-/// </param>
-public record GetImageResult(bool Success, string image);
-
 
 
 /// <summary>
@@ -45,7 +36,7 @@ public interface IImageService
 
     Task<DatasetModel> GetDataset(string datasetId);
 
-    Task<GetImageResult> GetImage(string imageId);
+    Task<GetImageResult> GetImageAsync(string imageId);
 
     Task<DatasetModel[]> GetAllDatasets();
 
@@ -59,7 +50,7 @@ public interface IImageService
 /// <summary>
 /// The result of downloading an image.
 /// </summary>
-public sealed class ImageDownloadResult
+public sealed class GetImageResult
 {
     /// <summary>
     /// Status code for HTTP response.
@@ -150,7 +141,7 @@ public class ImageService: IImageService
     /// </summary>
     /// <param name="blobClient">BlobClient</param>
     /// <returns>JSON file in the form of a string</returns>
-    public async Task<string> convertToJSONString(BlobClient blobClient)
+    private async Task<string> convertToJSONString(BlobClient blobClient)
     {
         using var memoryStream = new MemoryStream();
         await blobClient.DownloadToAsync(memoryStream);
@@ -341,18 +332,26 @@ public class ImageService: IImageService
     /// </summary>
     /// <param name="imageId"></param>
     /// <returns>Returns image as JSON string if exists, otherwise empty string is returned</returns>
-    public async Task<GetImageResult> GetImage(string imageId)
+    public async Task<GetImageResult> GetImageAsync(string imageId)
     {
         var cts = new CancellationTokenSource(5000);
         
-        BlobClient blobClient = _containerClient.GetBlobClient(imageId + ".json");
-        
-        //checks if the blobClient is empty/couldn't find the image of that format
-        if (!blobClient.Exists(cts.Token).ToString().Contains("404")) 
+        var blob = _containerClient.GetBlobClient(imageId);
+
+        if (!blob.Exists()) return new GetImageResult
         {
-            return new GetImageResult(true, await convertToJSONString(blobClient));
-        }
-        return new GetImageResult(false, "");
+            StatusCode = (int)HttpStatusCode.NotFound,
+            Error = "Image not found"
+        };
+
+        var properties = await blob.GetPropertiesAsync();
+
+        return new GetImageResult
+        {
+            StatusCode = (int)HttpStatusCode.OK,
+            Stream = await blob.OpenReadAsync(),
+            ContentType = properties.Value.ContentType
+        };
     }
     
     

@@ -85,6 +85,7 @@ public class ImageService: IImageService
     private readonly BlobContainerClient _containerClient;
 
     
+
     /// <summary>
     /// Constructor of the ImageService.
     /// </summary>

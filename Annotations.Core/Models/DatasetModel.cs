@@ -19,7 +19,7 @@ public class DatasetModel
     /// </summary>
     public string Category { get; set; } = string.Empty;
 
-    public required int AnnotatedBy { get; set; } // Change to be user data entity.
+    public UserModel? AnnotatedBy { get; set; } // Change to be user data entity.
  
-    public required int ReviewedBy { get; set; } // Change to be user data entity.
+    public UserModel? ReviewedBy { get; set; } // Change to be user data entity.
 }

@@ -12,21 +12,6 @@ namespace Annotations.API.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Datasets",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    Category = table.Column<string>(type: "TEXT", nullable: false),
-                    AnnotatedBy = table.Column<int>(type: "INTEGER", nullable: false),
-                    ReviewedBy = table.Column<int>(type: "INTEGER", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Datasets", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Users",
                 columns: table => new
                 {
@@ -52,6 +37,42 @@ namespace Annotations.API.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_VesselAnnotation", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Datasets",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Title = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false),
+                    Description = table.Column<string>(type: "TEXT", maxLength: 1000, nullable: false),
+                    Category = table.Column<string>(type: "TEXT", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    CreatedByUserId = table.Column<string>(type: "TEXT", nullable: false),
+                    AnnotatedByUserId = table.Column<string>(type: "TEXT", nullable: true),
+                    ReviewedByUserId = table.Column<string>(type: "TEXT", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "INTEGER", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Datasets", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Datasets_Users_AnnotatedByUserId",
+                        column: x => x.AnnotatedByUserId,
+                        principalTable: "Users",
+                        principalColumn: "UserId");
+                    table.ForeignKey(
+                        name: "FK_Datasets_Users_CreatedByUserId",
+                        column: x => x.CreatedByUserId,
+                        principalTable: "Users",
+                        principalColumn: "UserId",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Datasets_Users_ReviewedByUserId",
+                        column: x => x.ReviewedByUserId,
+                        principalTable: "Users",
+                        principalColumn: "UserId");
                 });
 
             migrationBuilder.CreateTable(
@@ -221,6 +242,21 @@ namespace Annotations.API.Migrations
                 name: "IX_DatasetEntry_ImageId",
                 table: "DatasetEntry",
                 column: "ImageId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Datasets_AnnotatedByUserId",
+                table: "Datasets",
+                column: "AnnotatedByUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Datasets_CreatedByUserId",
+                table: "Datasets",
+                column: "CreatedByUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Datasets_ReviewedByUserId",
+                table: "Datasets",
+                column: "ReviewedByUserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Images_UploadedByUserId",

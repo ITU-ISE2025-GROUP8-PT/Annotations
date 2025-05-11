@@ -98,19 +98,16 @@ namespace Annotations.API.Migrations
 
             modelBuilder.Entity("Annotations.Core.Entities.DatasetEntry", b =>
                 {
-                    b.Property<int>("DatasetsId")
+                    b.Property<int>("DatasetId")
                         .HasColumnType("INTEGER");
 
                     b.Property<int>("ImageId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("ImageSeriesId")
-                        .HasColumnType("INTEGER");
-
                     b.Property<int>("OrderNumber")
                         .HasColumnType("INTEGER");
 
-                    b.HasKey("DatasetsId", "ImageId");
+                    b.HasKey("DatasetId", "ImageId");
 
                     b.HasIndex("ImageId");
 
@@ -305,7 +302,7 @@ namespace Annotations.API.Migrations
                 {
                     b.HasOne("Annotations.Core.Entities.Dataset", null)
                         .WithMany("Entries")
-                        .HasForeignKey("DatasetsId")
+                        .HasForeignKey("DatasetId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

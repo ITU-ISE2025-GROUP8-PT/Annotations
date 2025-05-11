@@ -16,6 +16,24 @@ public interface IDatasetService
 
 
 
+public sealed class ModifyDatasetResult
+{
+    /// <summary>
+    /// Status code for HTTP response.
+    /// </summary>
+    public required int StatusCode { get; set; }
+
+    /// <summary>
+    /// Error message if applicable.
+    /// </summary>
+    public string Error { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Model for the dataset.
+    /// </summary>
+    public DatasetModel? Dataset { get; set; }
+}
+
 
 
 public class DatasetService : IDatasetService
@@ -54,8 +72,8 @@ public class DatasetService : IDatasetService
             { 
                 Id = ds.Id,
                 Category = ds.Category,
-                AnnotatedBy = ds.AnnotatedBy,
-                ReviewedBy = ds.ReviewedBy,
+                AnnotatedBy = ToUserModel(ds.AnnotatedBy),
+                ReviewedBy = ToUserModel(ds.ReviewedBy),
             })
             .ToListAsync();
     }
@@ -74,9 +92,23 @@ public class DatasetService : IDatasetService
                     .Select(e => e.ImageId)
                     .ToList(),
                 Category = ds.Category,
-                AnnotatedBy = ds.AnnotatedBy,
-                ReviewedBy = ds.ReviewedBy,
+                AnnotatedBy = ToUserModel(ds.AnnotatedBy),
+                ReviewedBy = ToUserModel(ds.ReviewedBy),
             })
             .SingleOrDefaultAsync();
+    }
+
+
+
+    private static UserModel? ToUserModel(User? user)
+    {
+        if (user == null)
+        {
+            return null;
+        }
+        return new UserModel
+        {
+            UserName = user.UserName,
+        };
     }
 }

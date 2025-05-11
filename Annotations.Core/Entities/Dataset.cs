@@ -11,6 +11,19 @@ public class Dataset
     public int Id { get; set; } // Not required, as it will be set by the database.
 
     /// <summary>
+    /// Title of the dataset. This is a short description that will be displayed to the user.
+    /// </summary>
+    [Required]
+    [StringLength(100)]
+    public required string Title { get; set; }
+
+    /// <summary>
+    /// Description of the dataset. This is a longer description that provides more details about the dataset.
+    /// </summary>
+    [StringLength(1000)]
+    public string Description { get; set; } = string.Empty;
+
+    /// <summary>
     /// List of image IDs that belong to this dataset.
     /// </summary>
     public List<Image> Images { get; set; } = [];
@@ -26,8 +39,30 @@ public class Dataset
     [Required]
     public required string Category { get; set; }
 
+    /// <summary>
+    /// Timestamp of when the dataset was created. This is used to track when the dataset was added to the system.
+    /// </summary>
     [Required]
-    public required int AnnotatedBy { get; set; } // Change to be user data entity.
+    public required DateTime CreatedAt { get; set; }
+
+    /// <summary>
+    /// User who created the dataset. This is used to track who added the dataset to the system.
+    /// </summary>
     [Required]
-    public required int ReviewedBy { get; set; } // Change to be user data entity.
+    public required User CreatedBy { get; set; }
+
+    /// <summary>
+    /// User who annotated the dataset. This is used to track who is set to work on this dataset.
+    /// </summary>
+    public User? AnnotatedBy { get; set; }
+
+    /// <summary>
+    /// User who reviewed the dataset. This is used to track who reviewed the dataset.
+    /// </summary>
+    public User? ReviewedBy { get; set; }
+
+    /// <summary>
+    /// Marks this dataset as deleted. This also stops another dataset from re-using the same ID.
+    /// </summary>
+    public bool IsDeleted { get; set; }
 }

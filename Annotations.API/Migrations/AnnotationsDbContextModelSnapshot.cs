@@ -55,17 +55,43 @@ namespace Annotations.API.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("AnnotatedBy")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("AnnotatedByUserId")
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Category")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("ReviewedBy")
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("CreatedByUserId")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsDeleted")
                         .HasColumnType("INTEGER");
 
+                    b.Property<string>("ReviewedByUserId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("TEXT");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("AnnotatedByUserId");
+
+                    b.HasIndex("CreatedByUserId");
+
+                    b.HasIndex("ReviewedByUserId");
 
                     b.ToTable("Datasets");
                 });
@@ -250,6 +276,29 @@ namespace Annotations.API.Migrations
                         .HasForeignKey("VesselAnnotationId");
 
                     b.Navigation("AnnotationTree");
+                });
+
+            modelBuilder.Entity("Annotations.Core.Entities.Dataset", b =>
+                {
+                    b.HasOne("Annotations.Core.Entities.User", "AnnotatedBy")
+                        .WithMany()
+                        .HasForeignKey("AnnotatedByUserId");
+
+                    b.HasOne("Annotations.Core.Entities.User", "CreatedBy")
+                        .WithMany()
+                        .HasForeignKey("CreatedByUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Annotations.Core.Entities.User", "ReviewedBy")
+                        .WithMany()
+                        .HasForeignKey("ReviewedByUserId");
+
+                    b.Navigation("AnnotatedBy");
+
+                    b.Navigation("CreatedBy");
+
+                    b.Navigation("ReviewedBy");
                 });
 
             modelBuilder.Entity("Annotations.Core.Entities.DatasetEntry", b =>

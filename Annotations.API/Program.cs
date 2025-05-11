@@ -1,6 +1,7 @@
 using System.Net.Http.Headers;
 using Annotations.API;
 using Annotations.API.Endpoints;
+using Annotations.API.Services.Datasets;
 using Annotations.API.Services.ImageAnnotation;
 using Annotations.API.Services.Images;
 using Annotations.API.Services.Users;
@@ -85,7 +86,11 @@ builder.Services.AddAzureClients(clientBuilder =>
 
 builder.Services.AddScoped<IImageService, ImageService>();
 builder.Services.AddTransient<IImageUploader, ImageUploader>();
+
+builder.Services.AddScoped<IDatasetService, DatasetService>();
+
 builder.Services.AddScoped<IAnnotationService, AnnotationService>();
+
 builder.Services.AddScoped<IUserService, UserService>();
 
 
@@ -124,8 +129,7 @@ app.UseHttpsRedirection();
 app.Run();
 
 
-
-
+/*
 // Helper to initialize a database within developer environment.
 void InitializeTempDatabase()
 {
@@ -140,10 +144,10 @@ void InitializeTempDatabase()
     }); 
     //this is only for testing/showcasing
     
-    /*
+    
     Due to the hard-coding of database elements below, we override code from ImageEndpoints
     image-upload-functionality, that adds an image to the dataset.
-    */  
+    
     context.Add(new Dataset//different images compared to the other 5 datasets
     {
         Id = 1,
@@ -166,5 +170,6 @@ void InitializeTempDatabase()
     
     context.SaveChanges();
 }
+*/
 
 

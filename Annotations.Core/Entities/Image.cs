@@ -29,9 +29,14 @@ public class Image
 	public string Category { get; set; } = string.Empty;
 
     /// <summary>
-    /// List of dataset IDs this image belongs to.
+    /// List of datasets that this image belongs to. This is used to group images into datasets for easier management.
     /// </summary>
-    public List<int> DatasetsIds { get; set; } = [];
+    public List<Dataset> Datasets { get; set; } = [];
+
+    /// <summary>
+    /// List of dataset entries that belong to this dataset.
+    /// </summary>
+    public List<DatasetEntry> Entries { get; set; } = [];
 
     /// <summary>
     /// Timestamp of when the image was uploaded. This is used to track when the image was added to the system.

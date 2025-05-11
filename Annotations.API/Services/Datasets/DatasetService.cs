@@ -54,13 +54,8 @@ public class DatasetService : IDatasetService
     public async Task<ICollection<DatasetModel>> GetDatasetOverview()
     {
         return await _dbContext.Datasets
-            .Select(ds => new DatasetModel
-            { 
-                Id = ds.Id,
-                Category = ds.Category,
-                AnnotatedBy = ToUserModel(ds.AnnotatedBy),
-                ReviewedBy = ToUserModel(ds.ReviewedBy),
-            })
+            .Include(ds => ds.CreatedBy)
+            .Select(ds => ToDatasetModel(ds))
             .ToListAsync();
     }
 
@@ -71,16 +66,8 @@ public class DatasetService : IDatasetService
         return await _dbContext.Datasets
             .Where(ds => ds.Id == datasetId)
             .Include(ds => ds.Entries)
-            .Select(ds => new DatasetModel
-            {
-                Id = ds.Id,
-                ImageIds = ds.Entries
-                    .Select(e => e.ImageId)
-                    .ToList(),
-                Category = ds.Category,
-                AnnotatedBy = ToUserModel(ds.AnnotatedBy),
-                ReviewedBy = ToUserModel(ds.ReviewedBy),
-            })
+            .Include(ds => ds.CreatedBy)
+            .Select(ds => ToDatasetModel(ds))
             .SingleOrDefaultAsync();
     }
 
@@ -90,6 +77,7 @@ public class DatasetService : IDatasetService
     {
         var dataset = await _dbContext.Datasets
             .Include(ds => ds.Entries)
+            .Include(ds => ds.CreatedBy)
             .SingleOrDefaultAsync(ds => ds.Id == datasetId);
 
         if (dataset == default(Dataset)) return new ModifyDatasetResult
@@ -111,7 +99,7 @@ public class DatasetService : IDatasetService
         if (images.Count != imageIds.Length) return new ModifyDatasetResult
         {
             StatusCode = (int)HttpStatusCode.NotFound,
-            Error = "Some images not found"
+            Error = "Some images not found or duplicates in sequence"
         };
 
         var confirmed = new List<Image>();
@@ -121,11 +109,6 @@ public class DatasetService : IDatasetService
             {
                 StatusCode = (int)HttpStatusCode.NotFound,
                 Error = $"Image {image.Id} is marked as deleted"
-            };
-            if (confirmed.Contains(image)) return new ModifyDatasetResult
-            {
-                StatusCode = (int)HttpStatusCode.Conflict,
-                Error = $"Image {image.Id} is in the image sequence more than once"
             };
             confirmed.Add(image);
         }
@@ -151,16 +134,7 @@ public class DatasetService : IDatasetService
         return new ModifyDatasetResult
         {
             StatusCode = (int)HttpStatusCode.OK,
-            Dataset = new DatasetModel
-            {
-                Id = dataset.Id,
-                ImageIds = dataset.Entries
-                    .Select(e => e.ImageId)
-                    .ToList(),
-                Category = dataset.Category,
-                AnnotatedBy = ToUserModel(dataset.AnnotatedBy),
-                ReviewedBy = ToUserModel(dataset.ReviewedBy),
-            }
+            Dataset = ToDatasetModel(dataset),
         };
     }
 
@@ -175,6 +149,26 @@ public class DatasetService : IDatasetService
         return new UserModel
         {
             UserName = user.UserName,
+        };
+    }
+
+
+
+    private static DatasetModel ToDatasetModel(Dataset dataset)
+    {
+        return new DatasetModel
+        {
+            Id = dataset.Id,
+            ImageIds = dataset.Entries
+                .Select(e => e.ImageId)
+                .ToList(),
+            Title = dataset.Title,
+            Description = dataset.Description,
+            Category = dataset.Category,
+            CreatedAt = dataset.CreatedAt,
+            CreatedBy = ToUserModel(dataset.CreatedBy),
+            AnnotatedBy = ToUserModel(dataset.AnnotatedBy),
+            ReviewedBy = ToUserModel(dataset.ReviewedBy),
         };
     }
 }

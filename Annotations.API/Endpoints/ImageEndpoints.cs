@@ -45,7 +45,7 @@ public static class ImageEndpoints
     /// <returns></returns>
     private static async Task<ImageUploaderResult> UploadImageHandler(
         IFormFile       image, 
-        string?         category,
+        string          category,
         ClaimsPrincipal claimsPrincipal,
         HttpContext     httpContext,
         [FromServices] IImageUploader uploader,
@@ -57,6 +57,7 @@ public static class ImageEndpoints
         uploader.ContentType      = image.ContentType;
         uploader.InputStream      = image.OpenReadStream();
         uploader.UploadedBy       = user;
+        uploader.Category         = category;
 
         var uploaderResult = await uploader.StoreAsync();
 

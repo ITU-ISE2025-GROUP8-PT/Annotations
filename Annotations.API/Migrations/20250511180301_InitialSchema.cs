@@ -162,17 +162,16 @@ namespace Annotations.API.Migrations
                 name: "DatasetEntry",
                 columns: table => new
                 {
+                    DatasetId = table.Column<int>(type: "INTEGER", nullable: false),
                     ImageId = table.Column<int>(type: "INTEGER", nullable: false),
-                    DatasetsId = table.Column<int>(type: "INTEGER", nullable: false),
-                    ImageSeriesId = table.Column<int>(type: "INTEGER", nullable: false),
                     OrderNumber = table.Column<int>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_DatasetEntry", x => new { x.DatasetsId, x.ImageId });
+                    table.PrimaryKey("PK_DatasetEntry", x => new { x.DatasetId, x.ImageId });
                     table.ForeignKey(
-                        name: "FK_DatasetEntry_Datasets_DatasetsId",
-                        column: x => x.DatasetsId,
+                        name: "FK_DatasetEntry_Datasets_DatasetId",
+                        column: x => x.DatasetId,
                         principalTable: "Datasets",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);

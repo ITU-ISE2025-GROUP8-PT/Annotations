@@ -105,11 +105,15 @@ using (var scope = app.Services.CreateScope())
     context.Database.Migrate();
 }
 
+
 UserEndpoints.MapEndpoints(app.MapGroup("/users").RequireAuthorization());
 AnnotationEndpoints.MapEndpoints(app.MapGroup("/images/annotations").RequireAuthorization());
 ImageEndpoints.MapEndpoints(app.MapGroup("/images").RequireAuthorization());
+DatasetEndpoints.MapEndpoints(app.MapGroup("/datasets").RequireAuthorization());
 
-app.MapGet("/error", () => "Dette er en 400-599 eller værre");
+
+app.MapGet("/error", () => "Exception raised in API");
+
 
 // Development/Debugging middleware.
 if (app.Environment.IsDevelopment())

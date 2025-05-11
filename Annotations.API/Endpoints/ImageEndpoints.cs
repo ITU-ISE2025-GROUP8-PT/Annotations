@@ -21,9 +21,9 @@ public static class ImageEndpoints
         
         pathBuilder.MapPost("/upload", UploadImageHandler);
         
-        pathBuilder.MapGet("/{imageId}", RetrieveImageHandler);
+        pathBuilder.MapGet("/get/{imageId}", GetImageHandler);
 
-        pathBuilder.MapDelete("/{imageId}", DeleteImageHandler);
+        pathBuilder.MapDelete("/delete/{imageId}", DeleteImageHandler);
 
         pathBuilder.MapGet("/filter/{category}", FilterImagesHandler);
 
@@ -105,22 +105,16 @@ public static class ImageEndpoints
     /// </summary>
     /// <param name="imageId"></param>
     /// <param name="_imageService"> An image service instance. </param>
-    /// <returns> A JSON string (if the image exists). Otherwise an error message. </returns>
-    private static async Task<string> RetrieveImageHandler(
-        [FromRoute] string imageId, 
+    /// <returns> Image downloadable as stream. </returns>
+    private static async Task<IResult> GetImageHandler(
+        [FromRoute] string imageId,
+        HttpContext httpContext,
         [FromServices] IImageService _imageService)
-    {
-        //insert password restrictions here 🐿️
-        
-        var getImageResult = await _imageService.GetImage(imageId);
+    {    
+        var getImageResult = await _imageService.GetImageAsync(imageId);
 
-        if (getImageResult.Success)
-        {
-            return getImageResult.image; 
-        }
-        
-        Console.WriteLine("Cannot retrieve image because it doesn't exist");
-        return "Cannot retrieve image because it doesn't exist";
+        httpContext.Response.StatusCode = getImageResult.StatusCode;
+        return Results.Stream(getImageResult.Stream, contentType: getImageResult.ContentType, fileDownloadName: imageId);
     }
 
 
@@ -189,10 +183,10 @@ public static class ImageEndpoints
                 foreach (int ids in datasetModel.ImageIds)
                 {
                     Console.WriteLine(ids);
-                    var getImageResult = await _imageService.GetImage(ids.ToString());
-                    if (getImageResult.Success)
+                    var getImageResult = await _imageService.GetImageAsync(ids.ToString());
+                    if (getImageResult.StatusCode == 200)
                     {
-                        collection.Add(getImageResult.image);
+                        collection.Add($"Image ID: {ids}");
                     }
                     else
                     {

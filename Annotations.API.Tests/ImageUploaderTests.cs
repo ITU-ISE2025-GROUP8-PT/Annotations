@@ -251,9 +251,9 @@ public class ImageUploaderTests
 
         // 2. Mock Azure Storage
         var mockStore = new MockAzureBlobStorageClientFactory(
-            expectedName: "Default",
+            expectedName:          "Default",
             expectedContainerName: "images",
-            expectedBlobName: "1");
+            expectedBlobName:      "1");
 
 
 
@@ -272,42 +272,42 @@ public class ImageUploaderTests
             await Assert.ThrowsAsync<ArgumentNullException>(imageUploader.StoreAsync);
         }
     }
-}
 
 
 
 
 
-/// <summary>
-/// Class to arrange the mock Azure Storage client factory.
-/// </summary>
-sealed class MockAzureBlobStorageClientFactory
-{
-    public Mock<IAzureClientFactory<BlobServiceClient>> MockBlobServiceClientFactory { get; } = new();
-
-    public MockAzureBlobStorageClientFactory(
-        string expectedName, 
-        string expectedContainerName,
-        string expectedBlobName)
+    /// <summary>
+    /// Class to arrange the mock Azure Storage client factory.
+    /// </summary>
+    private sealed class MockAzureBlobStorageClientFactory
     {
-        var mockBlobServiceClient = new Mock<BlobServiceClient>();
-        var mockBlobContainerClient = new Mock<BlobContainerClient>();
-        var mockBlobClient = new Mock<BlobClient>();
+        public Mock<IAzureClientFactory<BlobServiceClient>> MockBlobServiceClientFactory { get; } = new();
 
-        MockBlobServiceClientFactory
-            .Setup(x => x.CreateClient(It.Is<string>(s => s.Equals(expectedName))))
-            .Returns(mockBlobServiceClient.Object);
+        public MockAzureBlobStorageClientFactory(
+            string expectedName,
+            string expectedContainerName,
+            string expectedBlobName)
+        {
+            var mockBlobServiceClient = new Mock<BlobServiceClient>();
+            var mockBlobContainerClient = new Mock<BlobContainerClient>();
+            var mockBlobClient = new Mock<BlobClient>();
 
-        mockBlobServiceClient.
-            Setup(x => x.GetBlobContainerClient(It.Is<string>(s => s.Equals(expectedContainerName))))
-            .Returns(mockBlobContainerClient.Object);
+            MockBlobServiceClientFactory
+                .Setup(x => x.CreateClient(It.Is<string>(s => s.Equals(expectedName))))
+                .Returns(mockBlobServiceClient.Object);
 
-        mockBlobContainerClient
-            .Setup(x => x.GetBlobClient(It.Is<string>(s => s.Equals(expectedBlobName))))
-            .Returns(mockBlobClient.Object);
+            mockBlobServiceClient.
+                Setup(x => x.GetBlobContainerClient(It.Is<string>(s => s.Equals(expectedContainerName))))
+                .Returns(mockBlobContainerClient.Object);
 
-        mockBlobClient
-            .Setup(x => x.Exists(default))
-            .Returns(Azure.Response.FromValue(false, Mock.Of<Azure.Response>()));
+            mockBlobContainerClient
+                .Setup(x => x.GetBlobClient(It.Is<string>(s => s.Equals(expectedBlobName))))
+                .Returns(mockBlobClient.Object);
+
+            mockBlobClient
+                .Setup(x => x.Exists(default))
+                .Returns(Azure.Response.FromValue(false, Mock.Of<Azure.Response>()));
+        }
     }
 }

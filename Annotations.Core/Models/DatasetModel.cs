@@ -12,7 +12,7 @@ public class DatasetModel
     /// <summary>
     /// List of image IDs that belong to this dataset.
     /// </summary>
-    public required List<int> ImageIds{ get; set; }
+    public List<int> ImageIds { get; set; } = [];
 
     /// <summary>
     /// Category of the dataset. This is a string that can be used to group datasets.

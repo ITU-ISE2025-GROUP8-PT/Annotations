@@ -17,7 +17,6 @@ namespace Annotations.API.Migrations
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    ImageIds = table.Column<string>(type: "TEXT", nullable: false),
                     Category = table.Column<string>(type: "TEXT", nullable: false),
                     AnnotatedBy = table.Column<int>(type: "INTEGER", nullable: false),
                     ReviewedBy = table.Column<int>(type: "INTEGER", nullable: false)
@@ -64,7 +63,6 @@ namespace Annotations.API.Migrations
                     Title = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false),
                     Description = table.Column<string>(type: "TEXT", maxLength: 1000, nullable: false),
                     Category = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false),
-                    DatasetsIds = table.Column<string>(type: "TEXT", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
                     UploadedByUserId = table.Column<string>(type: "TEXT", nullable: true),
                     IsDeleted = table.Column<bool>(type: "INTEGER", nullable: false)
@@ -140,6 +138,32 @@ namespace Annotations.API.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "DatasetEntry",
+                columns: table => new
+                {
+                    ImageId = table.Column<int>(type: "INTEGER", nullable: false),
+                    DatasetsId = table.Column<int>(type: "INTEGER", nullable: false),
+                    ImageSeriesId = table.Column<int>(type: "INTEGER", nullable: false),
+                    OrderNumber = table.Column<int>(type: "INTEGER", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_DatasetEntry", x => new { x.DatasetsId, x.ImageId });
+                    table.ForeignKey(
+                        name: "FK_DatasetEntry_Datasets_DatasetsId",
+                        column: x => x.DatasetsId,
+                        principalTable: "Datasets",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_DatasetEntry_Images_ImageId",
+                        column: x => x.ImageId,
+                        principalTable: "Images",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "VesselSegment",
                 columns: table => new
                 {
@@ -194,6 +218,11 @@ namespace Annotations.API.Migrations
                 column: "VesselAnnotationId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_DatasetEntry_ImageId",
+                table: "DatasetEntry",
+                column: "ImageId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Images_UploadedByUserId",
                 table: "Images",
                 column: "UploadedByUserId");
@@ -226,10 +255,13 @@ namespace Annotations.API.Migrations
                 name: "Annotation");
 
             migrationBuilder.DropTable(
-                name: "Datasets");
+                name: "DatasetEntry");
 
             migrationBuilder.DropTable(
                 name: "VesselSegment");
+
+            migrationBuilder.DropTable(
+                name: "Datasets");
 
             migrationBuilder.DropTable(
                 name: "Images");

@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Annotations.API.Migrations
 {
     [DbContext(typeof(AnnotationsDbContext))]
-    [Migration("20250510190307_InitialSchema")]
+    [Migration("20250511121714_InitialSchema")]
     partial class InitialSchema
     {
         /// <inheritdoc />
@@ -65,16 +65,33 @@ namespace Annotations.API.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.PrimitiveCollection<string>("ImageIds")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
                     b.Property<int>("ReviewedBy")
                         .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
 
                     b.ToTable("Datasets");
+                });
+
+            modelBuilder.Entity("Annotations.Core.Entities.DatasetEntry", b =>
+                {
+                    b.Property<int>("DatasetsId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("ImageId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("ImageSeriesId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("OrderNumber")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("DatasetsId", "ImageId");
+
+                    b.HasIndex("ImageId");
+
+                    b.ToTable("DatasetEntry");
                 });
 
             modelBuilder.Entity("Annotations.Core.Entities.Image", b =>
@@ -89,10 +106,6 @@ namespace Annotations.API.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("TEXT");
-
-                    b.PrimitiveCollection<string>("DatasetsIds")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Description")
@@ -242,6 +255,21 @@ namespace Annotations.API.Migrations
                     b.Navigation("AnnotationTree");
                 });
 
+            modelBuilder.Entity("Annotations.Core.Entities.DatasetEntry", b =>
+                {
+                    b.HasOne("Annotations.Core.Entities.Dataset", null)
+                        .WithMany("Entries")
+                        .HasForeignKey("DatasetsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Annotations.Core.Entities.Image", null)
+                        .WithMany("Entries")
+                        .HasForeignKey("ImageId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Annotations.Core.Entities.Image", b =>
                 {
                     b.HasOne("Annotations.Core.Entities.User", "UploadedBy")
@@ -279,6 +307,16 @@ namespace Annotations.API.Migrations
                     b.Navigation("EndPoint");
 
                     b.Navigation("StartPoint");
+                });
+
+            modelBuilder.Entity("Annotations.Core.Entities.Dataset", b =>
+                {
+                    b.Navigation("Entries");
+                });
+
+            modelBuilder.Entity("Annotations.Core.Entities.Image", b =>
+                {
+                    b.Navigation("Entries");
                 });
 
             modelBuilder.Entity("Annotations.Core.VesselObjects.VesselAnnotation", b =>

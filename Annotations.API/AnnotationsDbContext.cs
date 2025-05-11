@@ -46,9 +46,14 @@ public class AnnotationsDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder builder)
 	{
 		base.OnModelCreating(builder);
-		
-		//Foreign key setup between AnnotationType and UserId
-		builder.Entity<Annotation>()
+
+        builder.Entity<Dataset>()
+            .HasMany<Image>(ds => ds.Images)
+            .WithMany(img => img.Datasets)
+            .UsingEntity<DatasetEntry>();
+
+        //Foreign key setup between AnnotationType and UserId
+        builder.Entity<Annotation>()
 			.HasOne<User>()
 			.WithMany()
 			.HasForeignKey(u => u.UserId);

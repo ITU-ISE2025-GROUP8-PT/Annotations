@@ -66,11 +66,13 @@ public class DatasetService : IDatasetService
     {
         return await _dbContext.Datasets
             .Where(ds => ds.Id == datasetId)
-            .Include(ds => ds.ImageIds)
+            .Include(ds => ds.Entries)
             .Select(ds => new DatasetModel
             {
                 Id = ds.Id,
-                ImageIds = ds.ImageIds,
+                ImageIds = ds.Entries
+                    .Select(e => e.ImageId)
+                    .ToList(),
                 Category = ds.Category,
                 AnnotatedBy = ds.AnnotatedBy,
                 ReviewedBy = ds.ReviewedBy,

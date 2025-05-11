@@ -82,20 +82,13 @@ public static class ImageEndpoints
     /// Deletes an image.
     /// </summary>
     /// <param name="imageId"> Image UID. </param>
-    /// <param name="_imageService"> An image service instance. </param>
+    /// <param name="imageService"> An image service instance. </param>
     /// <returns> The status code of deleting the image. </returns>
     private static async Task<IResult> DeleteImageHandler(
-        string imageId, 
-        [FromServices] IImageService _imageService)
+        [FromRoute] string imageId, 
+        [FromServices] IImageService imageService)
     {
-        bool deleting = await _imageService.DeleteImage(imageId);
-        if (deleting)
-        {
-            return Results.StatusCode(204);
-        }
-            
-        Console.WriteLine("Cannot delete image because it doesn't exist");
-        return Results.StatusCode(404);
+        return Results.StatusCode((int) await imageService.DeleteImageAsync(imageId));
     }
 
 
@@ -104,14 +97,14 @@ public static class ImageEndpoints
     /// Retrieves an image based on the provided imageid.
     /// </summary>
     /// <param name="imageId"></param>
-    /// <param name="_imageService"> An image service instance. </param>
+    /// <param name="imageService"> An image service instance. </param>
     /// <returns> Image downloadable as stream. </returns>
     private static async Task<IResult> GetImageHandler(
         [FromRoute] string imageId,
         HttpContext httpContext,
-        [FromServices] IImageService _imageService)
+        [FromServices] IImageService imageService)
     {    
-        var getImageResult = await _imageService.GetImageAsync(imageId);
+        var getImageResult = await imageService.GetImageAsync(imageId);
 
         httpContext.Response.StatusCode = getImageResult.StatusCode;
         return Results.Stream(getImageResult.Stream, contentType: getImageResult.ContentType, fileDownloadName: imageId);
@@ -122,14 +115,14 @@ public static class ImageEndpoints
     /// Finds and returns all images within a certain category.
     /// </summary>
     /// <param name="category"></param>
-    /// <param name="_imageService"> An image service instance. </param>
+    /// <param name="imageService"> An image service instance. </param>
     /// <returns> An array of images as JSON string with the wanted category. </returns>
     private static async Task<string[]> FilterImagesHandler(
         string category, 
-        [FromServices] IImageService _imageService)
+        [FromServices] IImageService imageService)
     {
 
-        HashSet<string> collection = await _imageService.Filter(category);
+        HashSet<string> collection = await imageService.Filter(category);
 
         if (collection.Count() == 0)
         {
@@ -147,13 +140,13 @@ public static class ImageEndpoints
     /// Retrieves all existing datasets. 
     /// </summary>
     /// <param name="context"> Annotations database context containing the datasets. </param>
-    /// <param name="_imageService"> An image service instance. </param>
+    /// <param name="imageService"> An image service instance. </param>
     /// <returns> An array of all existing DatasetModels. </returns>
     private static async Task<DatasetModel[]> RetrieveAllDatasetHandler(
         AnnotationsDbContext context, 
-        [FromServices] IImageService _imageService)
+        [FromServices] IImageService imageService)
     {
-        return await _imageService.GetAllDatasets();
+        return await imageService.GetAllDatasets();
 
     }
 
@@ -164,16 +157,16 @@ public static class ImageEndpoints
     /// </summary>
     /// <param name="datasetId"> ID of the desired dataset. </param>
     /// <param name="context"> Annotations database context containing the datasets. </param>
-    /// <param name="_imageService"> An image service instance. </param>
+    /// <param name="imageService"> An image service instance. </param>
     /// <returns> A string array of the needed images as a JSON string. </returns>
     private static async Task<string[]> RetrieveImagesFromDatasetHandler(
         string datasetId, 
         AnnotationsDbContext context, 
-        [FromServices] IImageService _imageService)
+        [FromServices] IImageService imageService)
     {
          //TODO: almost identical code as "/filter/{category}" - remove the code duplication
 
-            var datasetModel = await _imageService.GetDataset(datasetId);
+            var datasetModel = await imageService.GetDataset(datasetId);
             
             HashSet<string> collection = new HashSet<string>();
 
@@ -183,7 +176,7 @@ public static class ImageEndpoints
                 foreach (int ids in datasetModel.ImageIds)
                 {
                     Console.WriteLine(ids);
-                    var getImageResult = await _imageService.GetImageAsync(ids.ToString());
+                    var getImageResult = await imageService.GetImageAsync(ids.ToString());
                     if (getImageResult.StatusCode == 200)
                     {
                         collection.Add($"Image ID: {ids}");

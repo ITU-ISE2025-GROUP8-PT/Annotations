@@ -7,7 +7,17 @@ public class DatasetModel
     /// <summary>
     /// Unique identifier for the dataset.
     /// </summary>
-    public int Id { get; set; } // Not required, as it will be set by the database.
+    public int Id { get; set; } = -1;
+
+    /// <summary>
+    /// Title of the dataset. This is a short description that will be displayed to the user.
+    /// </summary>
+    public string Title { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Description of the dataset. This is a longer description that provides more details about the dataset.
+    /// </summary>
+    public string Description { get; set; } = string.Empty;
 
     /// <summary>
     /// List of image IDs that belong to this dataset.
@@ -19,7 +29,17 @@ public class DatasetModel
     /// </summary>
     public string Category { get; set; } = string.Empty;
 
-    public UserModel? AnnotatedBy { get; set; } // Change to be user data entity.
+    /// <summary>
+    /// User who created the dataset. This is used to track who added the dataset to the system.
+    /// </summary>
+    public UserModel? CreatedBy { get; set; }
+
+    /// <summary>
+    /// Timestamp of when the dataset was created. This is used to track when the dataset was added to the system.
+    /// </summary>
+    public DateTime? CreatedAt { get; set; }
+
+    public UserModel? AnnotatedBy { get; set; }
  
-    public UserModel? ReviewedBy { get; set; } // Change to be user data entity.
+    public UserModel? ReviewedBy { get; set; }
 }

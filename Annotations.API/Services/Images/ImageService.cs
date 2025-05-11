@@ -40,7 +40,7 @@ public interface IImageService
 
     Task<DatasetModel[]> GetAllDatasets();
 
-    Task<bool> DeleteImage(string imageId);
+    Task<HttpStatusCode> DeleteImageAsync(string imageId);
 }
 
 
@@ -81,7 +81,7 @@ public class ImageService: IImageService
 {
     private static string[] _arrayOfFileExtension = {"png", "jpg", "jpeg"};
     private readonly IAzureClientFactory<BlobServiceClient> _clientFactory;
-    private readonly AnnotationsDbContext _DbContext;
+    private readonly AnnotationsDbContext _dbContext;
     private readonly BlobContainerClient _containerClient;
 
     
@@ -93,7 +93,7 @@ public class ImageService: IImageService
     public ImageService(IAzureClientFactory<BlobServiceClient> clientFactory , AnnotationsDbContext context)
     {
         _clientFactory = clientFactory;
-        _DbContext = context;
+        _dbContext = context;
         var blobServiceClient = _clientFactory.CreateClient("Default");
         _containerClient = blobServiceClient.GetBlobContainerClient("images");
     }
@@ -161,7 +161,7 @@ public class ImageService: IImageService
     /// <param name="thisImage"></param>
     private async Task AddImagesToDatasets(ImageModel thisImage)
     {
-        var neededDataset = _DbContext.Datasets.Select(Dataset => Dataset)
+        var neededDataset = _dbContext.Datasets.Select(Dataset => Dataset)
             .Where(Dataset =>
                 Dataset.Id == 1 || Dataset.Id == 2); //TODO dont do this - this is hardcoded for testing
 
@@ -169,7 +169,7 @@ public class ImageService: IImageService
 
         {
             dataset.ImageIds.Add(thisImage.Id); //adds images to the datasets
-            await _DbContext.SaveChangesAsync();
+            await _dbContext.SaveChangesAsync();
         }
     }
     
@@ -305,7 +305,7 @@ public class ImageService: IImageService
     /// <exception cref="Exception"></exception>
     public async Task<DatasetModel> GetDataset(string datasetId)
     {
-        var datasets = _DbContext.Datasets
+        var datasets = _dbContext.Datasets
             .Select(u => new DatasetModel()
             {
                 Id = u.Id,
@@ -334,22 +334,22 @@ public class ImageService: IImageService
     /// <returns>Returns image as JSON string if exists, otherwise empty string is returned</returns>
     public async Task<GetImageResult> GetImageAsync(string imageId)
     {
-        var cts = new CancellationTokenSource(5000);
+        var cts = new CancellationTokenSource(10000);
         
         var blob = _containerClient.GetBlobClient(imageId);
 
-        if (!blob.Exists()) return new GetImageResult
+        if (!blob.Exists(cts.Token)) return new GetImageResult
         {
             StatusCode = (int)HttpStatusCode.NotFound,
             Error = "Image not found"
         };
 
-        var properties = await blob.GetPropertiesAsync();
+        var properties = await blob.GetPropertiesAsync(cancellationToken: cts.Token);
 
         return new GetImageResult
         {
             StatusCode = (int)HttpStatusCode.OK,
-            Stream = await blob.OpenReadAsync(),
+            Stream = await blob.OpenReadAsync(cancellationToken: cts.Token),
             ContentType = properties.Value.ContentType
         };
     }
@@ -363,7 +363,7 @@ public class ImageService: IImageService
     public async Task<DatasetModel[]> GetAllDatasets()
     {
         //Datasets from DBContext are transformed to DatasetModels
-        var datasets = await _DbContext.Datasets
+        var datasets = await _dbContext.Datasets
             .Select(u => new DatasetModel()
             {
                 Id = u.Id,
@@ -385,22 +385,23 @@ public class ImageService: IImageService
     /// If it succeeds, then it deletes the image
     /// </summary>
     /// <param name="imageId"></param>
-    /// <returns>A boolean indicating whether the image was deleted or not</returns>
-    public async Task<bool> DeleteImage(string imageId)
+    /// <returns> An http status code indicating whether the image was deleted or not </returns>
+    public async Task<HttpStatusCode> DeleteImageAsync(string imageId)
     {
-        var cts = new CancellationTokenSource(5000);
+        var imageData = await _dbContext.Images
+            .Where(data => $"{data.Id}" == imageId)
+            .SingleOrDefaultAsync();
+
+        var cts = new CancellationTokenSource(10000);
         
-        BlobClient blobClient = _containerClient.GetBlobClient(imageId + ".json");
-        if (!blobClient.Exists(cts.Token).ToString().Contains("404"))
+        BlobClient blobClient = _containerClient.GetBlobClient(imageId);
+        var blobDeleteResult = await blobClient.DeleteIfExistsAsync(DeleteSnapshotsOption.IncludeSnapshots, cancellationToken: cts.Token);
+
+        if (imageData != default(Image))
         {
-            /*A snapshot is a read-only version of a blob that's taken at a point in time.
-            As of right now, we do not make snapshots of blobs, but it is still possible to manually create.*/
-            await blobClient.DeleteAsync(snapshotsOption: DeleteSnapshotsOption.IncludeSnapshots);
-            Console.WriteLine("image deleted successfully");
-            return true;
+            imageData.IsDeleted = true;
         }
 
-        return false;
+        return blobDeleteResult ? HttpStatusCode.NoContent : HttpStatusCode.NotFound;
     }
-    
 }

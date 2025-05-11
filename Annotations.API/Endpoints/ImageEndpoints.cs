@@ -107,7 +107,7 @@ public static class ImageEndpoints
         var getImageResult = await imageService.GetImageAsync(imageId);
 
         httpContext.Response.StatusCode = getImageResult.StatusCode;
-        return Results.Stream(getImageResult.Stream, contentType: getImageResult.ContentType, fileDownloadName: imageId);
+        return Results.Stream(getImageResult.Stream, contentType: getImageResult.ContentType);
     }
 
 

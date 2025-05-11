@@ -33,6 +33,11 @@ public interface IImageUploader
     /// </summary>
     User? UploadedBy { get; set; }
 
+    /// <summary>
+    /// Category of the image. This is a string that can be used to group images.
+    /// </summary>
+    string Category { get; set; }
+
 
 
     /// <summary>
@@ -81,6 +86,7 @@ public class ImageUploader : IImageUploader
     public string ContentType { get; set; } = string.Empty;
     public Stream? InputStream { get; set; }
     public User? UploadedBy { get; set; }
+    public string Category { get; set; } = string.Empty;
 
 
     private readonly AnnotationsDbContext _dbContext;
@@ -151,6 +157,13 @@ public class ImageUploader : IImageUploader
                 Error = "Filename is missing"
             };
 
+        if (Category == string.Empty)
+            return new ImageUploaderResult
+            {
+                StatusCode = (int)HttpStatusCode.BadRequest,
+                Error = "No category assigned"
+            };
+
         if (!_validMediaTypes.Contains(ContentType))
             return new ImageUploaderResult
             {
@@ -212,6 +225,7 @@ public class ImageUploader : IImageUploader
         {
             CreatedAt = DateTime.UtcNow,
             UploadedBy = UploadedBy,
+            Category = Category,
         };
 
         await _dbContext.AddAsync(imageEntity);

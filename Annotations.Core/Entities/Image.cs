@@ -25,8 +25,9 @@ public class Image
     /// <summary>
     /// Category of the image. This is a string that can be used to group images.
     /// </summary>
+    [Required]
 	[StringLength(100)]
-	public string Category { get; set; } = string.Empty;
+	public required string Category { get; set; }
 
     /// <summary>
     /// List of datasets that this image belongs to. This is used to group images into datasets for easier management.

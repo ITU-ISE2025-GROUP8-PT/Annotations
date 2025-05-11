@@ -88,6 +88,7 @@ builder.Services.AddScoped<IImageService, ImageService>();
 builder.Services.AddTransient<IImageUploader, ImageUploader>();
 
 builder.Services.AddScoped<IDatasetService, DatasetService>();
+builder.Services.AddTransient<IDatasetBuilder, DatasetBuilder>();
 
 builder.Services.AddScoped<IAnnotationService, AnnotationService>();
 

@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Annotations.API.Migrations
 {
     [DbContext(typeof(AnnotationsDbContext))]
-    [Migration("20250511180301_InitialSchema")]
+    [Migration("20250511192214_InitialSchema")]
     partial class InitialSchema
     {
         /// <inheritdoc />

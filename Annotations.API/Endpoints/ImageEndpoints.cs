@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using Annotations.API.Services.Datasets;
 using Annotations.API.Services.Images;
 using Annotations.API.Services.Users;
 using Annotations.Core.Models;
@@ -29,7 +30,7 @@ public static class ImageEndpoints
 
         pathBuilder.MapGet("/datasets", RetrieveAllDatasetHandler);
 
-        pathBuilder.MapGet("/datasets/{datasetId}", RetrieveImagesFromDatasetHandler);
+        pathBuilder.MapGet("/datasets/{datasetId}", RetrieveSingleDatasetHandler);
         
         pathBuilder.MapGet("/exception",
             () =>
@@ -111,27 +112,18 @@ public static class ImageEndpoints
     }
 
 
+
     /// <summary>
     /// Finds and returns all images within a certain category.
     /// </summary>
     /// <param name="category"></param>
     /// <param name="imageService"> An image service instance. </param>
     /// <returns> An array of images as JSON string with the wanted category. </returns>
-    private static async Task<string[]> FilterImagesHandler(
-        string category, 
-        [FromServices] IImageService imageService)
+    private static async Task<ICollection<ImageModel>> FilterImagesHandler(
+        [FromRoute] string category,
+        [FromServices] IDatasetService datasetService)
     {
-
-        HashSet<string> collection = await imageService.Filter(category);
-
-        if (collection.Count() == 0)
-        {
-            Console.WriteLine("No pictures have this category");
-            //TODO return proper error code
-            //return Results.StatusCode(404);
-        }
-        
-        return collection.ToArray();
+        return await datasetService.Filter(category);
     }
 
 
@@ -141,13 +133,11 @@ public static class ImageEndpoints
     /// </summary>
     /// <param name="context"> Annotations database context containing the datasets. </param>
     /// <param name="imageService"> An image service instance. </param>
-    /// <returns> An array of all existing DatasetModels. </returns>
-    private static async Task<DatasetModel[]> RetrieveAllDatasetHandler(
-        AnnotationsDbContext context, 
-        [FromServices] IImageService imageService)
+    /// <returns> A collection of all existing DatasetModels. </returns>
+    private static async Task<ICollection<DatasetModel>> RetrieveAllDatasetHandler(
+        [FromServices] IDatasetService datasetService)
     {
-        return await imageService.GetAllDatasets();
-
+        return await datasetService.GetDatasetOverview();
     }
 
 
@@ -159,38 +149,13 @@ public static class ImageEndpoints
     /// <param name="context"> Annotations database context containing the datasets. </param>
     /// <param name="imageService"> An image service instance. </param>
     /// <returns> A string array of the needed images as a JSON string. </returns>
-    private static async Task<string[]> RetrieveImagesFromDatasetHandler(
-        string datasetId, 
-        AnnotationsDbContext context, 
-        [FromServices] IImageService imageService)
+    private static async Task<IResult> RetrieveSingleDatasetHandler(
+        [FromRoute] int datasetId, 
+        [FromServices] IDatasetService datasetService)
     {
-         //TODO: almost identical code as "/filter/{category}" - remove the code duplication
-
-            var datasetModel = await imageService.GetDataset(datasetId);
-            
-            HashSet<string> collection = new HashSet<string>();
-
-            //guaranteed to only be one dataset in "datasets", so this is constant time. 
-            //there is a better way of doing this
-            
-                foreach (int ids in datasetModel.ImageIds)
-                {
-                    Console.WriteLine(ids);
-                    var getImageResult = await imageService.GetImageAsync(ids.ToString());
-                    if (getImageResult.StatusCode == 200)
-                    {
-                        collection.Add($"Image ID: {ids}");
-                    }
-                    else
-                    {
-                        Console.WriteLine("Cannot retrieve image because it doesn't exist");
-                        //needed proper error handling here
-                        //an actual error should be returned (e.g. status code 404)
-                        break;
-                    }
-                }
-            
-            return collection.ToArray();
-            
+        var datasetModel = await datasetService.GetSingleDataset(datasetId);
+        return datasetModel != null
+            ? Results.Ok(datasetModel)
+            : Results.NotFound();
     }
 }

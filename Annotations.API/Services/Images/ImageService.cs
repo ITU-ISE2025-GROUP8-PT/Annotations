@@ -32,13 +32,7 @@ public record ImageData(ImageModel Image, string JSONString);
 /// </summary>
 public interface IImageService
 {
-    Task<HashSet<string>> Filter(string category);
-
-    Task<DatasetModel> GetDataset(string datasetId);
-
     Task<GetImageResult> GetImageAsync(string imageId);
-
-    Task<DatasetModel[]> GetAllDatasets();
 
     Task<HttpStatusCode> DeleteImageAsync(string imageId);
 }
@@ -79,9 +73,8 @@ public sealed class GetImageResult
 
 public class ImageService: IImageService
 {
-    private static string[] _arrayOfFileExtension = {"png", "jpg", "jpeg"};
-    private readonly IAzureClientFactory<BlobServiceClient> _clientFactory;
     private readonly AnnotationsDbContext _dbContext;
+    private readonly IAzureClientFactory<BlobServiceClient> _clientFactory;
     private readonly BlobContainerClient _containerClient;
 
     
@@ -132,7 +125,7 @@ public class ImageService: IImageService
         return new ValidationResponse(false, "File is not a valid image.");
         
     }
-    */
+    
 
     
     
@@ -198,7 +191,7 @@ public class ImageService: IImageService
     }
     
     
-    /*
+    
     /// <summary>
     /// Uploads a JSON file containing the image to the blobstorage with the given id
     /// </summary>
@@ -228,11 +221,11 @@ public class ImageService: IImageService
                 await UploadAsJSON(id, JSONString);
             }
     }
-    */
+    
 
     
     
-    /*
+    
     /// <summary>
     /// Currently, it just prints out an error message in terminal
     /// In the future when error handling is properly implemented, here is where it would be 
@@ -243,7 +236,7 @@ public class ImageService: IImageService
         Console.WriteLine("rejecting image");
         Console.WriteLine(response.Message);
     }
-    */
+    
 
     
     
@@ -267,6 +260,7 @@ public class ImageService: IImageService
         return new(imageObject, JSONString);
     }
 
+    
     
     
     /// <summary>
@@ -295,9 +289,11 @@ public class ImageService: IImageService
         return collection;
 
     }
+    */
     
     
 
+    /*
     /// <summary>
     /// Gets a Dataset object from the DbContext using a id 
     /// </summary>
@@ -325,6 +321,7 @@ public class ImageService: IImageService
 
         return datasetModel;
     }
+    */
 
     
     
@@ -357,6 +354,7 @@ public class ImageService: IImageService
     
     
     
+    /*
     /// <summary>
     /// Retrieves all existing datasets in the dbContext
     /// </summary>
@@ -378,6 +376,7 @@ public class ImageService: IImageService
         //DatasetModel list is converted to Array for sending to Blazor front-end
         return datasets.ToArray();
     }
+    */
     
     
 

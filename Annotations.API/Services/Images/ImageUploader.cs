@@ -90,6 +90,9 @@ public class ImageUploader : IImageUploader
     private bool storeAsyncCalled;
 
 
+
+
+
     public ImageUploader(
         AnnotationsDbContext dbContext,
         IAzureClientFactory<BlobServiceClient> clientFactory)
@@ -99,11 +102,14 @@ public class ImageUploader : IImageUploader
     }
 
 
+
+
+
     public async Task<ImageUploaderResult> StoreAsync()
     {
         if (storeAsyncCalled)
         {
-            throw new InvalidOperationException("Operation was already started.");
+            throw new InvalidOperationException("StoreAsync can only be called once.");
         }
         storeAsyncCalled = true;
 
@@ -133,6 +139,9 @@ public class ImageUploader : IImageUploader
     }
 
 
+
+
+
     private ImageUploaderResult? ValidateInputProperties()
     {
         if (OriginalFilename == string.Empty)
@@ -157,6 +166,9 @@ public class ImageUploader : IImageUploader
     }
 
 
+
+
+
     private async Task UploadToStorage(int imageId)
     {
         if (ContentType == string.Empty) throw new InvalidOperationException("Media type cannot be empty");
@@ -179,11 +191,17 @@ public class ImageUploader : IImageUploader
     }
 
 
+
+
+
     private async Task DeleteDbEntryOnFailure(Image image)
     {
         _dbContext.Images.Remove(image);
         await _dbContext.SaveChangesAsync();
     }
+
+
+
 
 
     private async Task<Image> AddEntryToDatabase()

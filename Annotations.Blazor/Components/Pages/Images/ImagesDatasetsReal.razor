@@ -73,8 +73,8 @@
                     Datasets.Add(new Dataset(datasetmodel.Id,
                     datasetmodel.ImageIds,
                     datasetmodel.Category,
-                    datasetmodel.AnnotatedBy,
-                    datasetmodel.ReviewedBy));
+                    /*datasetmodel.AnnotatedBy*/ -1,
+                    /*datasetmodel.ReviewedBy*/ -1)); // Temporarily disabled in order to build project. 11-05-2025 18:15
                 }
             }
             @* If there is an error response, the error is updated to true *@

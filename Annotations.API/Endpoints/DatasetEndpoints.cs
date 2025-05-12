@@ -59,7 +59,7 @@ public class DatasetEndpoints
     private static async Task<ICollection<DatasetModel>> RetrieveAllDatasetHandler(
         [FromServices] IDatasetService datasetService)
     {
-        return await datasetService.GetDatasetOverview();
+        return await datasetService.GetDatasetOverviewAsync();
     }
 
 
@@ -75,7 +75,7 @@ public class DatasetEndpoints
         [FromRoute] int datasetId,
         [FromServices] IDatasetService datasetService)
     {
-        var datasetModel = await datasetService.GetSingleDataset(datasetId);
+        var datasetModel = await datasetService.GetDatasetByIdAsync(datasetId);
         return datasetModel != null
             ? Results.Ok(datasetModel)
             : Results.NotFound();

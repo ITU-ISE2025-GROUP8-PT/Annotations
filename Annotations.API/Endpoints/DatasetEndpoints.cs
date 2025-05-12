@@ -45,7 +45,7 @@ public class DatasetEndpoints
         [FromRoute] string category,
         [FromServices] IDatasetService datasetService)
     {
-        return await datasetService.Filter(category);
+        return await datasetService.GetFilteredImageSetAsync(category);
     }
 
 

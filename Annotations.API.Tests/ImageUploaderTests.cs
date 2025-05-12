@@ -282,6 +282,62 @@ public class ImageUploaderTests
 
 
 
+    [Fact]
+    public async Task OnNoCategory_BadRequest()
+    {
+        // Arrange
+
+        // 1. Database context
+        var connection = new SqliteConnection("DataSource=:memory:");
+        connection.Open();
+
+        var options = new DbContextOptionsBuilder<AnnotationsDbContext>()
+            .UseSqlite(connection)
+            .Options;
+
+        var testUser = new User { UserId = "1", UserName = "Test User" };
+
+        using (var context = new AnnotationsDbContext(options))
+        {
+            context.Database.EnsureCreated();
+            context.Add(testUser);
+            context.SaveChanges();
+        }
+
+        // 2. Mock Azure Storage
+        var mockStore = new MockAzureBlobStorageClientFactory(
+            expectedName: "Default",
+            expectedContainerName: "images",
+            expectedBlobName: "1");
+
+
+        // Act
+        ImageUploaderResult uploadResult;
+
+        using (var context = new AnnotationsDbContext(options))
+        {
+            var imageUploader = new ImageUploader(context, mockStore.MockBlobServiceClientFactory.Object)
+            {
+                OriginalFilename = "test.jpg",
+                ContentType = "image/jpeg",
+                InputStream = new MemoryStream([0x01, 0x02, 0x03]),
+                UploadedBy = context.Users.Where(u => u.UserId == "1").Single(),
+                Category = ""
+            };
+            uploadResult = await imageUploader.StoreAsync();
+        }
+
+
+        // Assert
+        Assert.Equal(400, uploadResult.StatusCode);
+        Assert.Equal(-1, uploadResult.ImageId);
+        Assert.NotEqual(string.Empty, uploadResult.Error);
+    }
+
+
+
+
+
     /// <summary>
     /// Class to arrange the mock Azure Storage client factory.
     /// </summary>

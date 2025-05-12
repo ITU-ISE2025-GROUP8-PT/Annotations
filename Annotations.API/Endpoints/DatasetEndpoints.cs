@@ -1,5 +1,6 @@
 ﻿using System.Security.Claims;
 using Annotations.API.Services.Datasets;
+using Annotations.API.Services.Images;
 using Annotations.API.Services.Users;
 using Annotations.Core.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -26,6 +27,8 @@ public class DatasetEndpoints
         pathBuilder.MapGet("/get/{datasetId}", RetrieveSingleDatasetHandler);
 
         pathBuilder.MapPost("/create", CreateDatasetHandler);
+
+        pathBuilder.MapDelete("/delete/{datasetId}", DeleteDatasetHandler);
 
         pathBuilder.MapPut("/set-images/{datasetId}", SetImagesHandler);
     }
@@ -108,6 +111,15 @@ public class DatasetEndpoints
 
         httpContext.Response.StatusCode = result.StatusCode;
         return result;
+    }
+
+
+
+    private static async Task<IResult> DeleteDatasetHandler(
+        [FromRoute] int datasetId,
+        [FromServices] IDatasetService datasetService)
+    {
+        return Results.StatusCode((int)await datasetService.DeleteDatasetAsync(datasetId));
     }
 
 

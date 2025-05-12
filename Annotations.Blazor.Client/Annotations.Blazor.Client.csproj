@@ -16,8 +16,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Folder Include="Layout\" />
-	  <Folder Include="Pages\" />
 	  <Folder Include="wwwroot\" />
 	</ItemGroup>
 

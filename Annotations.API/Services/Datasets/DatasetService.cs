@@ -11,9 +11,9 @@ public interface IDatasetService
 {
     Task<ICollection<ImageModel>> Filter(string category);
 
-    Task<DatasetModel?> GetSingleDataset(int datasetId);
+    Task<DatasetModel?> GetDatasetByIdAsync(int datasetId);
 
-    Task<ICollection<DatasetModel>> GetDatasetOverview();
+    Task<ICollection<DatasetModel>> GetDatasetOverviewAsync();
 
     Task<HttpStatusCode> DeleteDatasetAsync(int datasetId);
 
@@ -53,7 +53,7 @@ public class DatasetService : IDatasetService
 
 
 
-    public async Task<ICollection<DatasetModel>> GetDatasetOverview()
+    public async Task<ICollection<DatasetModel>> GetDatasetOverviewAsync()
     {
         return await _dbContext.Datasets
             .Include(ds => ds.CreatedBy)
@@ -63,7 +63,7 @@ public class DatasetService : IDatasetService
 
 
 
-    public async Task<DatasetModel?> GetSingleDataset(int datasetId)
+    public async Task<DatasetModel?> GetDatasetByIdAsync(int datasetId)
     {
         return await _dbContext.Datasets
             .Where(ds => ds.Id == datasetId)

@@ -7,16 +7,44 @@ using Microsoft.EntityFrameworkCore;
 namespace Annotations.API.Services.Datasets;
 
 
+/// <summary>
+/// Defines a scoped service for dataset information stored in the backend API database.
+/// </summary>
 public interface IDatasetService
 {
+    /// <summary>
+    /// Retrieves all images within a certain category.
+    /// </summary>
+    /// <param name="category"></param>
+    /// <returns></returns>
     Task<ICollection<ImageModel>> GetFilteredImageSetAsync(string category);
 
+    /// <summary>
+    /// Retrieves a single dataset by ID. Includes all image entries in the dataset.
+    /// </summary>
+    /// <param name="datasetId"></param>
+    /// <returns></returns>
     Task<DatasetModel?> GetDatasetByIdAsync(int datasetId);
 
+    /// <summary>
+    /// Retrieves all existing datasets. Will not include images.
+    /// </summary>
+    /// <returns></returns>
     Task<ICollection<DatasetModel>> GetDatasetOverviewAsync();
 
+    /// <summary>
+    /// Deletes a dataset by ID. Marks it as deleted in the database.
+    /// </summary>
+    /// <param name="datasetId"></param>
+    /// <returns></returns>
     Task<HttpStatusCode> DeleteDatasetAsync(int datasetId);
 
+    /// <summary>
+    /// Sets the images for a dataset. This will replace all existing images in the dataset with the provided image IDs.
+    /// </summary>
+    /// <param name="datasetId"></param>
+    /// <param name="imageIds"></param>
+    /// <returns></returns>
     Task<ModifyDatasetResult> SetImagesAsync(int datasetId, int[] imageIds);
 }
 
@@ -24,12 +52,18 @@ public interface IDatasetService
 
 
 
+/// <summary>
+/// Implementation of the IDatasetService interface.
+/// </summary>
 public class DatasetService : IDatasetService
 {
     private readonly AnnotationsDbContext _dbContext;
 
 
-
+    /// <summary>
+    /// Constructor of the service class.
+    /// </summary>
+    /// <param name="context"></param>
     public DatasetService(AnnotationsDbContext context)
     {
         _dbContext = context;
@@ -37,6 +71,13 @@ public class DatasetService : IDatasetService
 
 
 
+
+
+    /// <summary>
+    /// Retrieves all images within a certain category.
+    /// </summary>
+    /// <param name="category"></param>
+    /// <returns></returns>
     public async Task<ICollection<ImageModel>> GetFilteredImageSetAsync(string category)
     {
         return await _dbContext.Images
@@ -53,6 +94,12 @@ public class DatasetService : IDatasetService
 
 
 
+
+
+    /// <summary>
+    /// Retrieves all existing datasets. Will not include images.
+    /// </summary>
+    /// <returns></returns>
     public async Task<ICollection<DatasetModel>> GetDatasetOverviewAsync()
     {
         return await _dbContext.Datasets
@@ -63,6 +110,13 @@ public class DatasetService : IDatasetService
 
 
 
+
+
+    /// <summary>
+    /// Retrieves a single dataset by ID. Includes all image entries in the dataset.
+    /// </summary>
+    /// <param name="datasetId"></param>
+    /// <returns></returns>
     public async Task<DatasetModel?> GetDatasetByIdAsync(int datasetId)
     {
         return await _dbContext.Datasets
@@ -75,6 +129,13 @@ public class DatasetService : IDatasetService
 
 
 
+
+
+    /// <summary>
+    /// Deletes a dataset by ID. Marks it as deleted in the database.
+    /// </summary>
+    /// <param name="datasetId"></param>
+    /// <returns></returns>
     public async Task<HttpStatusCode> DeleteDatasetAsync(int datasetId)
     {
         var dataset = await _dbContext.Datasets
@@ -93,6 +154,14 @@ public class DatasetService : IDatasetService
 
 
 
+
+
+    /// <summary>
+    /// Sets the images for a dataset. This will replace all existing images in the dataset with the provided image IDs.
+    /// </summary>
+    /// <param name="datasetId"></param>
+    /// <param name="imageIds"></param>
+    /// <returns></returns>
     public async Task<ModifyDatasetResult> SetImagesAsync(int datasetId, int[] imageIds)
     {
         var dataset = await _dbContext.Datasets

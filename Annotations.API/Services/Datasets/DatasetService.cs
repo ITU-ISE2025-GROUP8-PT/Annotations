@@ -15,6 +15,8 @@ public interface IDatasetService
 
     Task<ICollection<DatasetModel>> GetDatasetOverview();
 
+    Task<HttpStatusCode> DeleteDataset(int datasetId);
+
     Task<ModifyDatasetResult> SetImagesAsync(int datasetId, int[] imageIds);
 }
 
@@ -38,7 +40,7 @@ public class DatasetService : IDatasetService
     public async Task<ICollection<ImageModel>> Filter(string category)
     {
         return await _dbContext.Images
-            .Where(img => img.Category == category)
+            .Where(img => img.Category == category && !img.IsDeleted)
             .Select(img => new ImageModel
             {
                 Id = img.Id,
@@ -73,6 +75,24 @@ public class DatasetService : IDatasetService
 
 
 
+    public async Task<HttpStatusCode> DeleteDataset(int datasetId)
+    {
+        var dataset = await _dbContext.Datasets
+            .SingleOrDefaultAsync(ds => ds.Id == datasetId);
+
+        if (dataset == default(Dataset)) return HttpStatusCode.NotFound;
+        if (dataset.IsDeleted)           return HttpStatusCode.NotFound;
+
+        dataset.IsDeleted = true;
+
+        _dbContext.Update(dataset);
+        await _dbContext.SaveChangesAsync();
+
+        return HttpStatusCode.OK;
+    }
+
+
+
     public async Task<ModifyDatasetResult> SetImagesAsync(int datasetId, int[] imageIds)
     {
         var dataset = await _dbContext.Datasets
@@ -93,7 +113,7 @@ public class DatasetService : IDatasetService
         };
 
         var images = await _dbContext.Images
-            .Where(e => imageIds.Contains(e.Id))
+            .Where(e => imageIds.Contains(e.Id) && !e.IsDeleted)
             .ToListAsync();
 
         if (images.Count != imageIds.Length) return new ModifyDatasetResult

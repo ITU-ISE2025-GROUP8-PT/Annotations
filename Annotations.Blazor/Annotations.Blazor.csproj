@@ -8,10 +8,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+	<ProjectReference Include="..\Annotations.Blazor.Client\Annotations.Blazor.Client.csproj" />
+	<PackageReference Include="Microsoft.Extensions.ServiceDiscovery.Yarp" Version="8.0.1" />
     <PackageReference Include="MatBlazor" Version="2.10.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="8.0.14" />
     <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="8.0.14" />
-	  <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="8.0.0" />
+	<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="8.0.0" />
     <PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" Version="8.6.1" />
     <PackageReference Include="Microsoft.IdentityModel.Protocols.OpenIdConnect" Version="8.6.1" />
   </ItemGroup>

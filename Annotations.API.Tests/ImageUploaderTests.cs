@@ -43,6 +43,7 @@ public class ImageUploaderTests
         using (var context = new AnnotationsDbContext(options))
         {
             context.Database.EnsureCreated();
+
             for (int i = 1; i < 4; i++) {
                 context.Add(new Image 
                 {
@@ -52,6 +53,7 @@ public class ImageUploaderTests
                     UploadedBy = testUser,
                 });
             }
+
             context.SaveChanges();
         }
 
@@ -324,6 +326,7 @@ public class ImageUploaderTests
                 UploadedBy = context.Users.Where(u => u.UserId == "1").Single(),
                 Category = ""
             };
+
             uploadResult = await imageUploader.StoreAsync();
         }
 

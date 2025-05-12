@@ -51,7 +51,7 @@ public static class ImageEndpoints
         [FromServices] IImageUploader uploader,
         [FromServices] IUserService userService)
     {
-        var user = await userService.TryFindUserAsync(claimsPrincipal) ?? await userService.CreateUser(claimsPrincipal);
+        var user = await userService.TryFindUserAsync(claimsPrincipal) ?? await userService.CreateUserAsync(claimsPrincipal);
 
         uploader.OriginalFilename = image.FileName;
         uploader.ContentType      = image.ContentType;
@@ -74,7 +74,7 @@ public static class ImageEndpoints
     /// <param name="imageService"> An image service instance. </param>
     /// <returns> The status code of deleting the image. </returns>
     private static async Task<IResult> DeleteImageHandler(
-        [FromRoute] string imageId, 
+        [FromRoute] int imageId, 
         [FromServices] IImageService imageService)
     {
         return Results.StatusCode((int) await imageService.DeleteImageAsync(imageId));
@@ -89,7 +89,7 @@ public static class ImageEndpoints
     /// <param name="imageService"> An image service instance. </param>
     /// <returns> Image downloadable as stream. </returns>
     private static async Task<IResult> GetImageHandler(
-        [FromRoute] string imageId,
+        [FromRoute] int imageId,
         HttpContext httpContext,
         [FromServices] IImageService imageService)
     {    

@@ -100,51 +100,40 @@ public class DatasetService : IDatasetService
             .Include(ds => ds.CreatedBy)
             .SingleOrDefaultAsync(ds => ds.Id == datasetId);
 
-        if (dataset == default(Dataset)) return new ModifyDatasetResult
-        {
-            StatusCode = (int)HttpStatusCode.NotFound,
-            Error = "Dataset not found"
-        };
 
-        if (dataset.IsDeleted) return new ModifyDatasetResult
-        {
-            StatusCode = (int)HttpStatusCode.NotFound,
-            Error = $"Dataset {dataset.Id} is marked as deleted"
-        };
 
-        if (imageIds.Distinct().Count() != imageIds.Length) return new ModifyDatasetResult
+        if (dataset == default(Dataset))
         {
-            StatusCode = (int)HttpStatusCode.BadRequest,
-            Error = "Duplicate image IDs provided"
-        };
+            return DatasetNotFoundResult();
+        }
+        if (dataset.IsDeleted)
+        {
+            return DatasetMarkedAsDeletedResult(dataset);
+        }
+        if (imageIds.Distinct().Count() != imageIds.Length)
+        {
+            return DuplicateImageIdsResult();
+        }
+
+
 
         var images = await _dbContext.Images
             .Where(e => imageIds.Contains(e.Id) && !e.IsDeleted)
             .ToListAsync();
 
-        if (images.Count != imageIds.Length) return new ModifyDatasetResult
+        if (images.Count != imageIds.Length)
         {
-            StatusCode = (int)HttpStatusCode.NotFound,
-            Error = "Some images not found or duplicates in sequence"
-        };
-
-        var confirmed = new List<Image>();
-        foreach (var image in images)
-        {
-            if (image.IsDeleted) return new ModifyDatasetResult
-            {
-                StatusCode = (int)HttpStatusCode.NotFound,
-                Error = $"Image {image.Id} is marked as deleted"
-            };
-            confirmed.Add(image);
+            return MissingImagesResult();
         }
 
+
+
         var newEntries = new List<DatasetEntry>();
-        for (int i = 0; i < confirmed.Count; i++)
+        for (int i = 0; i < images.Count; i++)
         {
             var entry = new DatasetEntry
             {
-                ImageId = confirmed[i].Id,
+                ImageId = images[i].Id,
                 DatasetId = datasetId,
                 OrderNumber = i,
             };
@@ -166,6 +155,46 @@ public class DatasetService : IDatasetService
 
 
 
+    private static ModifyDatasetResult MissingImagesResult()
+    {
+        return new ModifyDatasetResult
+        {
+            StatusCode = (int)HttpStatusCode.NotFound,
+            Error = "Some images not found."
+        };
+    }
+
+    private static ModifyDatasetResult DuplicateImageIdsResult()
+    {
+        return new ModifyDatasetResult
+        {
+            StatusCode = (int)HttpStatusCode.BadRequest,
+            Error = "Duplicate image IDs provided"
+        };
+    }
+
+    private static ModifyDatasetResult DatasetMarkedAsDeletedResult(Dataset dataset)
+    {
+        return new ModifyDatasetResult
+        {
+            StatusCode = (int)HttpStatusCode.NotFound,
+            Error = $"Dataset {dataset.Id} is marked as deleted"
+        };
+    }
+
+    private static ModifyDatasetResult DatasetNotFoundResult()
+    {
+        return new ModifyDatasetResult
+        {
+            StatusCode = (int)HttpStatusCode.NotFound,
+            Error = "Dataset not found"
+        };
+    }
+
+
+
+
+
     private static UserModel? ToUserModel(User? user)
     {
         if (user == null)
@@ -177,6 +206,8 @@ public class DatasetService : IDatasetService
             UserName = user.UserName,
         };
     }
+
+
 
 
 

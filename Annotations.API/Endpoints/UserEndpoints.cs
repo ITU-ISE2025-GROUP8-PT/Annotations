@@ -33,6 +33,6 @@ public static class UserEndpoints
         AnnotationsDbContext context,
         [FromServices] IUserService _userService)
     {
-        return await _userService.GetUsers();
+        return await _userService.GetUsersAsync();
     }
 }

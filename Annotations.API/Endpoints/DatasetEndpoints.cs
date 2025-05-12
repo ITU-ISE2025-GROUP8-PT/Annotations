@@ -101,7 +101,7 @@ public class DatasetEndpoints
         [FromServices] IDatasetBuilder datasetBuilder,
         [FromServices] IUserService userService)
     {
-        var user = await userService.TryFindUserAsync(claimsPrincipal) ?? await userService.CreateUser(claimsPrincipal);
+        var user = await userService.TryFindUserAsync(claimsPrincipal) ?? await userService.CreateUserAsync(claimsPrincipal);
 
         datasetBuilder.Title = title;
         datasetBuilder.CreatedBy = user;

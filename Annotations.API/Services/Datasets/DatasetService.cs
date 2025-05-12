@@ -15,7 +15,7 @@ public interface IDatasetService
 
     Task<ICollection<DatasetModel>> GetDatasetOverview();
 
-    Task<HttpStatusCode> DeleteDataset(int datasetId);
+    Task<HttpStatusCode> DeleteDatasetAsync(int datasetId);
 
     Task<ModifyDatasetResult> SetImagesAsync(int datasetId, int[] imageIds);
 }
@@ -75,7 +75,7 @@ public class DatasetService : IDatasetService
 
 
 
-    public async Task<HttpStatusCode> DeleteDataset(int datasetId)
+    public async Task<HttpStatusCode> DeleteDatasetAsync(int datasetId)
     {
         var dataset = await _dbContext.Datasets
             .SingleOrDefaultAsync(ds => ds.Id == datasetId);

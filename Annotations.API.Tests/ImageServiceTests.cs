@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -20,7 +21,7 @@ namespace Annotations.API.Tests;
 public class ImageServiceTests
 {
     [Fact]
-    public async Task OnValidRequest_CanGetImage()
+    public async Task GetImageAsync_OnValidRequest_ReturnsImage()
     {
         // Arrange
 
@@ -52,7 +53,7 @@ public class ImageServiceTests
         using (var context = new AnnotationsDbContext(options))
         {
             var imageService = new ImageService(mockStore.MockBlobServiceClientFactory.Object, context);
-            result = await imageService.GetImageAsync("1");
+            result = await imageService.GetImageAsync(1);
         }
 
         // Assert
@@ -64,7 +65,7 @@ public class ImageServiceTests
 
 
     [Fact]
-    public async Task OnImageNotFound_ReturnsNotFoundResponse()
+    public async Task GetImageAsync_OnImageNotFound_ReturnsNotFoundResponse()
     {
         // Arrange
 
@@ -96,12 +97,112 @@ public class ImageServiceTests
         using (var context = new AnnotationsDbContext(options))
         {
             var imageService = new ImageService(mockStore.MockBlobServiceClientFactory.Object, context);
-            result = await imageService.GetImageAsync("1");
+            result = await imageService.GetImageAsync(1);
         }
 
 
         // Assert
         Assert.Equal(404, result.StatusCode);
+    }
+
+
+
+
+
+    [Fact]
+    public async Task DeleteImageAsync_OnValidRequest_ReturnsNoContent()
+    {
+        // Arrange
+
+        // 1. Database context
+        var connection = new SqliteConnection("DataSource=:memory:");
+        connection.Open();
+
+        var options = new DbContextOptionsBuilder<AnnotationsDbContext>()
+            .UseSqlite(connection)
+            .Options;
+
+        using (var context = new AnnotationsDbContext(options))
+        {
+            context.Database.EnsureCreated();
+            context.Add(new Image
+            {
+                Id = 1,
+                Category = "Test",
+                CreatedAt = DateTime.UtcNow,
+                UploadedBy = new User { UserId = "1", UserName = "Test User" },
+            });
+            context.SaveChanges();
+        }
+
+        // 2. Mock Azure Storage
+        var mockStore = new MockAzureBlobStorageClientFactory(
+            expectedName: "Default",
+            expectedContainerName: "images",
+            expectedBlobName: "1",
+            expectedExists: true);
+
+        // Act
+        HttpStatusCode result;
+
+        using (var context = new AnnotationsDbContext(options))
+        {
+            var imageService = new ImageService(mockStore.MockBlobServiceClientFactory.Object, context);
+            result = await imageService.DeleteImageAsync(1);
+        }
+
+        // Assert
+        Assert.Equal(HttpStatusCode.NoContent, result);
+    }
+
+
+
+
+
+    [Fact]
+    public async Task DeleteImageAsync_OnImageNotFound_ReturnsNotFound()
+    {
+        // Arrange
+
+        // 1. Database context
+        var connection = new SqliteConnection("DataSource=:memory:");
+        connection.Open();
+
+        var options = new DbContextOptionsBuilder<AnnotationsDbContext>()
+            .UseSqlite(connection)
+            .Options;
+
+        using (var context = new AnnotationsDbContext(options))
+        {
+            context.Database.EnsureCreated();
+            context.Add(new Image
+            {
+                Id = 1,
+                Category = "Test",
+                CreatedAt = DateTime.UtcNow,
+                UploadedBy = new User { UserId = "1", UserName = "Test User" },
+            });
+            context.SaveChanges();
+        }
+
+        // 2. Mock Azure Storage
+        var mockStore = new MockAzureBlobStorageClientFactory(
+            expectedName: "Default",
+            expectedContainerName: "images",
+            expectedBlobName: "1",
+            expectedExists: false);
+
+        // Act
+        HttpStatusCode result;
+
+        using (var context = new AnnotationsDbContext(options))
+        {
+            var imageService = new ImageService(mockStore.MockBlobServiceClientFactory.Object, context);
+            result = await imageService.DeleteImageAsync(1);
+        }
+
+        // Assert
+        Assert.Equal(HttpStatusCode.NotFound, result);
     }
 
 
@@ -140,6 +241,13 @@ public class ImageServiceTests
             mockBlobClient
                 .Setup(x => x.Exists(It.IsAny<CancellationToken>()))
                 .Returns(Azure.Response.FromValue(expectedExists, Mock.Of<Azure.Response>()));
+
+            mockBlobClient
+                .Setup(x => x.DeleteIfExistsAsync(
+                    It.IsAny<DeleteSnapshotsOption>(), 
+                    It.IsAny<BlobRequestConditions>(), 
+                    It.IsAny<CancellationToken>()))
+                .Returns(Task.FromResult(Azure.Response.FromValue(expectedExists, Mock.Of<Azure.Response>())));
 
             mockBlobClient
                 .Setup(x => x.OpenReadAsync(It.IsAny<BlobOpenReadOptions>(), It.IsAny<CancellationToken>()))

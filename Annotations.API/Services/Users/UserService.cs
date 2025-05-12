@@ -15,7 +15,7 @@ public interface IUserService
     /// <summary>
     /// Retrieves data on all users. 
     /// </summary>
-    Task<List<UserModel>> GetUsers();
+    Task<List<UserModel>> GetUsersAsync();
 
     /// <summary>
     /// Tries to find the user in the database by their claims principal.
@@ -25,7 +25,7 @@ public interface IUserService
     /// <summary>
     /// Creates a new user in the database based on their claims principal.
     /// </summary>
-    Task<User> CreateUser(ClaimsPrincipal claimsPrincipal);
+    Task<User> CreateUserAsync(ClaimsPrincipal claimsPrincipal);
 }
 
 
@@ -54,7 +54,7 @@ public class UserService : IUserService
     /// <returns></returns>
     /// <exception cref="InvalidOperationException"></exception>
     /// <exception cref="ArgumentNullException"></exception>
-    public async Task<User> CreateUser(ClaimsPrincipal claimsPrincipal)
+    public async Task<User> CreateUserAsync(ClaimsPrincipal claimsPrincipal)
     {
         if (await TryFindUserAsync(claimsPrincipal) != null)
         {
@@ -93,7 +93,7 @@ public class UserService : IUserService
     /// Retrieves data on all users. 
     /// </summary>
     /// <returns> A list of all AdminUserModel. </returns>
-    public async Task<List<UserModel>> GetUsers()
+    public async Task<List<UserModel>> GetUsersAsync()
     {
         var users = await _context.Users
             .Select(u => new UserModel

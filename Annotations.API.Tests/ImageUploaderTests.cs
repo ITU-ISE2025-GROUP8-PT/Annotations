@@ -47,6 +47,7 @@ public class ImageUploaderTests
                 context.Add(new Image 
                 {
                     Id = i,
+                    Category = "Test",
                     CreatedAt = DateTime.UtcNow,
                     UploadedBy = testUser,
                 });
@@ -72,7 +73,8 @@ public class ImageUploaderTests
                 OriginalFilename = "test.jpg",
                 ContentType = "image/jpeg",
                 InputStream = new MemoryStream([0x01, 0x02, 0x03]),
-                UploadedBy = context.Users.Where(u => u.UserId == "1").Single()
+                UploadedBy = context.Users.Where(u => u.UserId == "1").Single(),
+                Category = "Test"
             };
 
             uploadResult = await imageUploader.StoreAsync();
@@ -136,7 +138,8 @@ public class ImageUploaderTests
                 OriginalFilename = "test.txt",
                 ContentType = "text/plain",
                 InputStream = new MemoryStream(UTF8Encoding.UTF8.GetBytes("Hello World!")),
-                UploadedBy = context.Users.Where(u => u.UserId == "1").Single()
+                UploadedBy = context.Users.Where(u => u.UserId == "1").Single(),
+                Category = "Test"
             };
 
             uploadResult = await imageUploader.StoreAsync();
@@ -200,7 +203,8 @@ public class ImageUploaderTests
                 OriginalFilename = "",
                 ContentType = "image/jpeg",
                 InputStream = new MemoryStream([0x01, 0x02, 0x03]),
-                UploadedBy = context.Users.Where(u => u.UserId == "1").Single()
+                UploadedBy = context.Users.Where(u => u.UserId == "1").Single(),
+                Category = "Test"
             };
 
             uploadResult = await imageUploader.StoreAsync();
@@ -265,7 +269,8 @@ public class ImageUploaderTests
                 OriginalFilename = "test.jpg",
                 ContentType = "image/jpeg",
                 InputStream = new MemoryStream([0x01, 0x02, 0x03]),
-                UploadedBy = null
+                UploadedBy = null,
+                Category = "Test"
             };
 
             // Assert Throws

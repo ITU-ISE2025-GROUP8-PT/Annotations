@@ -32,9 +32,9 @@ public record ImageData(ImageModel Image, string JSONString);
 /// </summary>
 public interface IImageService
 {
-    Task<GetImageResult> GetImageAsync(string imageId);
+    Task<GetImageResult> GetImageAsync(int imageId);
 
-    Task<HttpStatusCode> DeleteImageAsync(string imageId);
+    Task<HttpStatusCode> DeleteImageAsync(int imageId);
 }
 
 
@@ -330,11 +330,11 @@ public class ImageService: IImageService
     /// </summary>
     /// <param name="imageId"></param>
     /// <returns>Returns image as JSON string if exists, otherwise empty string is returned</returns>
-    public async Task<GetImageResult> GetImageAsync(string imageId)
+    public async Task<GetImageResult> GetImageAsync(int imageId)
     {
         var cts = new CancellationTokenSource(10000);
         
-        var blob = _containerClient.GetBlobClient(imageId);
+        var blob = _containerClient.GetBlobClient($"{imageId}");
 
         if (!blob.Exists(cts.Token)) return new GetImageResult
         {
@@ -386,15 +386,14 @@ public class ImageService: IImageService
     /// </summary>
     /// <param name="imageId"></param>
     /// <returns> An http status code indicating whether the image was deleted or not </returns>
-    public async Task<HttpStatusCode> DeleteImageAsync(string imageId)
+    public async Task<HttpStatusCode> DeleteImageAsync(int imageId)
     {
         var imageData = await _dbContext.Images
-            .Where(data => $"{data.Id}" == imageId)
-            .SingleOrDefaultAsync();
+            .SingleOrDefaultAsync(data => data.Id == imageId);
 
         var cts = new CancellationTokenSource(10000);
         
-        BlobClient blobClient = _containerClient.GetBlobClient(imageId);
+        BlobClient blobClient = _containerClient.GetBlobClient($"{imageId}");
         var blobDeleteResult = await blobClient.DeleteIfExistsAsync(DeleteSnapshotsOption.IncludeSnapshots, cancellationToken: cts.Token);
 
         if (imageData != default(Image))

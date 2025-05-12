@@ -9,7 +9,7 @@ namespace Annotations.API.Services.Datasets;
 
 public interface IDatasetService
 {
-    Task<ICollection<ImageModel>> Filter(string category);
+    Task<ICollection<ImageModel>> GetFilteredImageSetAsync(string category);
 
     Task<DatasetModel?> GetDatasetByIdAsync(int datasetId);
 
@@ -37,7 +37,7 @@ public class DatasetService : IDatasetService
 
 
 
-    public async Task<ICollection<ImageModel>> Filter(string category)
+    public async Task<ICollection<ImageModel>> GetFilteredImageSetAsync(string category)
     {
         return await _dbContext.Images
             .Where(img => img.Category == category && !img.IsDeleted)
@@ -88,7 +88,7 @@ public class DatasetService : IDatasetService
         _dbContext.Update(dataset);
         await _dbContext.SaveChangesAsync();
 
-        return HttpStatusCode.OK;
+        return HttpStatusCode.NoContent;
     }
 
 
@@ -110,6 +110,12 @@ public class DatasetService : IDatasetService
         {
             StatusCode = (int)HttpStatusCode.NotFound,
             Error = $"Dataset {dataset.Id} is marked as deleted"
+        };
+
+        if (imageIds.Distinct().Count() != imageIds.Length) return new ModifyDatasetResult
+        {
+            StatusCode = (int)HttpStatusCode.BadRequest,
+            Error = "Duplicate image IDs provided"
         };
 
         var images = await _dbContext.Images
@@ -153,7 +159,7 @@ public class DatasetService : IDatasetService
 
         return new ModifyDatasetResult
         {
-            StatusCode = (int)HttpStatusCode.OK,
+            StatusCode = (int)HttpStatusCode.Created,
             Dataset = ToDatasetModel(dataset),
         };
     }

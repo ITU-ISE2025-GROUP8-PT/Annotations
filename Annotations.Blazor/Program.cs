@@ -6,7 +6,6 @@
 using Annotations.Blazor;
 using Annotations.Blazor.Components;
 using Annotations.Blazor.Extensions;
-using Annotations.Blazor.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Components.Authorization;

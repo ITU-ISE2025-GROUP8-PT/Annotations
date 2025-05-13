@@ -1,7 +1,6 @@
 ﻿@page "/"
 @implements IDisposable
 @inject NavigationManager Navigation
-@rendermode InteractiveServer
 @namespace Home 
 
 <PageTitle>Home</PageTitle>
@@ -44,9 +43,3 @@
 
     public void Dispose() => Navigation.LocationChanged -= HandleLocationChanged;
 }
-
-            
-
-
-
-

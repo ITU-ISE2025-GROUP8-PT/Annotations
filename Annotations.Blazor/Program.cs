@@ -83,8 +83,13 @@ app.MapForwarder("/api/{**remainder}", "https://localhost:7250/", transformBuild
         var accessToken = await transformContext.HttpContext.GetTokenAsync("access_token");
         transformContext.ProxyRequest.Headers.Authorization = new("Bearer", accessToken);
 
-        var remainder = transformContext.HttpContext.Request.RouteValues["remainder"]?.ToString() ?? string.Empty;
-        transformContext.ProxyRequest.RequestUri = new Uri($"https://localhost:7250/{remainder}");
+        // Preserve the original request path
+        var requestPath = transformContext.HttpContext.Request.RouteValues["remainder"]?.ToString() ?? string.Empty;
+
+        // Preserve query string parameters
+        var queryString = transformContext.HttpContext.Request.QueryString.Value ?? string.Empty;
+
+        transformContext.ProxyRequest.RequestUri = new Uri($"https://localhost:7250/{requestPath}{queryString}");
     });
 }).RequireAuthorization();
 

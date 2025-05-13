@@ -1,11 +1,11 @@
-@rendermode InteractiveServer
 @page "/images/annotations"
+@using Microsoft.AspNetCore.Authorization
 @using System.Text.Json
-@using global::Annotations.Blazor.Services
+@using Annotations.Core.Models
+@using global::Annotations.Blazor.Client.Services
 @using Home
 @implements IDisposable
 @inject NavigationManager Navigation
-@inject IAPIServices IapiServices
 @attribute [Authorize(Roles = "Administrator, Manager, AnnotationsUser")]
 
 

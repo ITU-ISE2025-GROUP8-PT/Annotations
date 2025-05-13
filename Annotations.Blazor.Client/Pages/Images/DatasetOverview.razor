@@ -1,9 +1,6 @@
 @page "/images/datasets"
-@using global::Annotations.Blazor.Services
-@rendermode InteractiveServer
+@using Microsoft.AspNetCore.Authorization
 @inject IHttpClientFactory ClientFactory
-@inject IHttpContextAccessor httpContextAccessor
-@inject IAPIServices IapiServices
 @attribute [Authorize(Roles = "Administrator, Manager")]
 
 <div style=" display: flex; flex-direction:row;">

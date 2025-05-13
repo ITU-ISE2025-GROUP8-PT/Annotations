@@ -10,7 +10,7 @@ namespace Annotations.Blazor.Client.Services;
 /// </summary>
 public interface IDatasetAccessor
 {
-    Task<IEnumerable<DatasetModel>> GetDatasetOverviewAsync();
+    Task<IList<DatasetModel>> GetDatasetOverviewAsync();
 
     Task<DatasetModel?> GetDatasetAsync(string datasetId);
 }
@@ -22,10 +22,12 @@ public interface IDatasetAccessor
 /// <param name="httpClient"></param>
 internal sealed class DatasetAccessor(HttpClient httpClient) : IDatasetAccessor
 {
-    public async Task<IEnumerable<DatasetModel>> GetDatasetOverviewAsync()
+    public async Task<IList<DatasetModel>> GetDatasetOverviewAsync()
     {
-        return await httpClient.GetFromJsonAsync<IEnumerable<DatasetModel>>("api/datasets/overview") ?? [];
+        return await httpClient.GetFromJsonAsync<IList<DatasetModel>>("api/datasets/overview") ?? [];
     }
+
+
 
     Task<DatasetModel?> IDatasetAccessor.GetDatasetAsync(string datasetId) =>
         httpClient.GetFromJsonAsync<DatasetModel?>($"api/datasets/get/{datasetId}");

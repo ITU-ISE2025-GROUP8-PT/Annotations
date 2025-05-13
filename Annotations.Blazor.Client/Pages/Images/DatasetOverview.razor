@@ -14,14 +14,14 @@
 </div>
 
 
-@if (_error)
+@if (error)
 {
     <p>Der opstod desværre en fejl. Prøv igen, eller kontakt din system administrator hvis problemet forsætter.</p>
 }
 
 
 <MatThemeProvider Theme="_theme">
-    <MatTable Items="Datasets" class="table-formatting">
+    <MatTable Items="datasets" class="table-formatting">
         <MatTableHeader>
             <th>Dataset ID</th>
             <th>No. of Images</th>
@@ -51,8 +51,8 @@
 
 
 @code{
-    public IList<DatasetModel> Datasets = [];
-    private bool _error;
+    private IList<DatasetModel> datasets = [];
+    private bool error;
     
     private MatTheme _theme = new MatTheme()
     {
@@ -61,10 +61,10 @@
 
     protected override async Task OnInitializedAsync()
     {
-		Datasets = await DatasetAccessor.GetDatasetOverviewAsync();
-		if (Datasets.Count() == 0)
+		datasets = await DatasetAccessor.GetDatasetOverviewAsync();
+		if (datasets.Count() == 0)
 		{
-			_error = true;
+			error = true;
 		}
     }
 }

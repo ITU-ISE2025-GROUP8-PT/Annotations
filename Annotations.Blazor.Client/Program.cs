@@ -21,4 +21,10 @@ builder.Services.AddHttpClient<IApiTestAccessor, ApiTestAccessor>(httpClient =>
 });
 
 
+builder.Services.AddHttpClient<IDatasetAccessor, DatasetAccessor>(httpClient =>
+{
+    httpClient.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress);
+});
+
+
 await builder.Build().RunAsync();

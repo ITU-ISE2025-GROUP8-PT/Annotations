@@ -1,17 +1,16 @@
 @page "/images/datasets/{datasetId}/"
+@using Annotations.Core.Models
 @using Microsoft.AspNetCore.Authorization
+@using global::Annotations.Blazor.Client.Services
+@inject IDatasetAccessor DatasetAccessor
 @attribute [Authorize(Roles = "Administrator, Manager")]
 
 
-@if (_errorExist)
+@if (error)
 {
-    <Error/>
+    <p>Der opstod desværre en fejl. Prøv igen, eller kontakt din system administrator hvis problemet forsætter.</p>
 }
 @* This will show on screen in a milisecond before imgs load. Should it be "Loading..."? *@
-else if (Images.Length == 0)
-{
-    <p><em>Please wait a few seconds. If no images load, this dataset is empty.</em></p>
-} 
 else
 {
     @* To make both lines on the same row *@
@@ -21,12 +20,12 @@ else
     </div>
 
     <div class="container DivToScroll" >
-    @* Virtualize is a special loop that loops OverscanCount data - here the imgs received from API *@
+        @* Virtualize is a special loop that loops OverscanCount data - here the imgs received from API *@
         <Virtualize ItemsProvider="@LoadImages" OverscanCount="15">
             @* OverscanCount must always be divisible by 3! As we have 3 imgs per line
             It represents the number of images loaded before and after current position *@
             <ItemContent>
-                <img class="displayImages" src="@GetImageSource(@context.Base64Data)" alt="@context.AltText" />
+                <img class="displayImages" src="/api/images/get/@context" alt="Image with ID @context" />
             </ItemContent>
         </Virtualize> 
     </div> 
@@ -35,65 +34,27 @@ else
 @code
 {
     [Parameter] public string datasetId { get; set; } = "";
-    @* All images from API is turned into a local datatype class (see further down) *@
-    private ImageModelWeb[] Images = Array.Empty<ImageModelWeb>();
-    private bool _errorExist;
-    
+
+    private DatasetModel? dataset;
+    private bool error;
+
     protected override async Task OnInitializedAsync()
     {
-        var response = await IapiServices.CreateGetResponse( $"/images/datasets/{datasetId}");
+        dataset = await DatasetAccessor.GetDatasetAsync(datasetId);
 
-            try
-            {
-                @* string array of JSON files of the images as strings *@
-                string[] answer = await response.Content.ReadFromJsonAsync<string[]>() ?? throw new NoNullAllowedException();
-
-                @* initialize array for storing images to be shown on the webpage *@
-                Images = new ImageModelWeb[answer.Length];
-
-                for (int i = 0; i < answer.Length; i++)
-                {
-                    var imageObject = System.Text.Json.JsonSerializer.Deserialize<ImageModel>(answer[i]);
-                    ArgumentNullException.ThrowIfNull(imageObject);
-                    await Task.Yield();
-                    var imageData = imageObject.ImageData;
-
-                    @* Adding Base64 data and alt text as local ImageModel type to array *@
-                    Images[i] = new ImageModelWeb(Convert.ToBase64String(imageData), imageObject.Description);
-                }
-            }
-            catch
-            {
-                @* Handles if nothing being retrieved *@
-                Images = new ImageModelWeb[1];
-                Images[0] = new ImageModelWeb("", response.StatusCode.ToString());
-                _errorExist = true;
-            }
-    }
-
-    @* local datatype class for images *@
-    public class ImageModelWeb 
-    {
-        public string Base64Data {get; set;}
-        public string AltText {get; set;}
-        
-        public ImageModelWeb (string base64DataInput, string altTextInput) {
-            Base64Data = base64DataInput;
-            AltText = altTextInput;
+        if (dataset == null)
+        {
+            error = true;
         }
     }
 
-    @* Define an item provider - IEnumerable of items to iterate over for Virtualize 
-        Code inspired by: https://toxigon.com/implementing-lazy-loading-in-blazor *@
-    private async ValueTask<ItemsProviderResult<ImageModelWeb>> LoadImages(ItemsProviderRequest request)
+    private async ValueTask<ItemsProviderResult<int>> LoadImages(ItemsProviderRequest request)
     {
         await Task.Yield();
-         return new ItemsProviderResult<ImageModelWeb>(Images, Images.Length);
-    } 
-
-    @* Converts the image base64 string into an url the website can render as an image. *@
-    public string GetImageSource(string base64)
-    {
-        return $"data:image;base64,{base64}";
+        if (dataset == null)
+        {
+            return new ItemsProviderResult<int>([], 0);
+        }
+        return new ItemsProviderResult<int>(dataset.ImageIds, dataset.ImageIds.Count);
     }
 }

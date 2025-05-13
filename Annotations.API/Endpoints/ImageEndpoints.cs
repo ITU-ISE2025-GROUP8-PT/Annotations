@@ -25,11 +25,6 @@ public static class ImageEndpoints
         pathBuilder.MapGet("/get/{imageId}", GetImageHandler);
 
         pathBuilder.MapDelete("/delete/{imageId}", DeleteImageHandler);
-
-        pathBuilder.MapGet("/APITest", () =>
-        {
-            return new string[] { "1", "2", "3", "Dette er en prøve" };
-        });
     }
 
 

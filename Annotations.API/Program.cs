@@ -107,10 +107,21 @@ using (var scope = app.Services.CreateScope())
 }
 
 
-UserEndpoints.MapEndpoints(app.MapGroup("/users").RequireAuthorization());
-AnnotationEndpoints.MapEndpoints(app.MapGroup("/images/annotations").RequireAuthorization());
-ImageEndpoints.MapEndpoints(app.MapGroup("/images").RequireAuthorization());
-DatasetEndpoints.MapEndpoints(app.MapGroup("/datasets").RequireAuthorization());
+UserEndpoints
+    .MapEndpoints(app.MapGroup("/users")
+    .RequireAuthorization());
+AnnotationEndpoints
+    .MapEndpoints(app.MapGroup("/images/annotations")
+    .RequireAuthorization());
+ImageEndpoints
+    .MapEndpoints(app.MapGroup("/images")
+    .RequireAuthorization());
+DatasetEndpoints
+    .MapEndpoints(app.MapGroup("/datasets")
+    .RequireAuthorization());
+TestingEndpoints
+    .MapEndpoints(app.MapGroup("/testing")
+    .RequireAuthorization());
 
 
 app.MapGet("/error", () => "Exception raised in API");

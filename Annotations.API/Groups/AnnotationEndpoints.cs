@@ -46,7 +46,7 @@ public static class AnnotationEndpoints
     /// </summary>
     /// <param name="annotationTree"> The model for one vessel tree. </param>
     /// <param name="_annotationService"> An annotation service instance. </param>
-    /// <returns> A result with status code 200 OK. </returns>
+    /// <returns> Status code 200 OK for success, status 500 "Internal Server Error" for failure. </returns>
     public static Task<IResult> SaveAnnotationHandler(VesselAnnotationModel annotationTree,
         [FromServices] IAnnotationService _annotationService)
     {
@@ -64,6 +64,12 @@ public static class AnnotationEndpoints
     
     
     
+    /// <summary>
+    /// Call upon the Annotation Service to retrieve a specific annotation tree.
+    /// </summary>
+    /// <param name="annotationId"> Id of the annotation tree to retrieve. </param>
+    /// <param name="_annotationService"> An instance of the Annotation Service class. </param>
+    /// <returns> The retrieved annotation tree. </returns>
     public static async Task<Annotation> RetrieveAnnotationHandler([FromRoute] int annotationId,
         [FromServices] IAnnotationService _annotationService)
     {

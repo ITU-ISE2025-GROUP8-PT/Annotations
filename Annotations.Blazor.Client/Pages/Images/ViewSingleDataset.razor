@@ -1,7 +1,5 @@
-@rendermode InteractiveServer
 @page "/images/datasets/{datasetId}/"
-@using global::Annotations.Blazor.Services
-@inject IAPIServices IapiServices
+@using Microsoft.AspNetCore.Authorization
 @attribute [Authorize(Roles = "Administrator, Manager")]
 
 

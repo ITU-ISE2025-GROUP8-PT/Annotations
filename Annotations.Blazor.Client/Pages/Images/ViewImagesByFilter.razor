@@ -1,8 +1,6 @@
 @page "/images/filter/{category}"
-@using global::Annotations.Blazor.Services
+@using Microsoft.AspNetCore.Authorization
 @inject IHttpClientFactory ClientFactory
-@inject IHttpContextAccessor httpContextAccessor
-@inject IAPIServices IapiServices
 @attribute [Authorize(Roles = "Administrator, Manager")]
 
 @if (_errorExist)

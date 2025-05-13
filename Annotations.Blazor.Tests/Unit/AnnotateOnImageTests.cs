@@ -1,9 +1,5 @@
-﻿/* Temporarily disabled to build client version. May 13th, 2025 RonoITU */
-
-/*
-using System.Net.Http;
-using Annotations.Blazor.Components.Pages.Annotations;
-using Annotations.Blazor.Services;
+﻿using Annotations.Blazor.Client.Services;
+using Annotations.Blazor.Client.Pages.AnnotationTools;
 using Microsoft.AspNetCore.Http;
 
 
@@ -20,7 +16,7 @@ public class AnnotateOnImageTests : TestContext
         var authContext = this.AddTestAuthorization();
         authContext.SetAuthorized("", AuthorizationState.Unauthorized); // fakes authorized state for a fake user
         
-        Services.AddSingleton<IAPIServices, APIServices>();
+        Services.AddSingleton<IAnnotationDataAccessor, AnnotationDataAccessor>();
         Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
         Services.AddHttpClient();
         
@@ -40,7 +36,7 @@ public class AnnotateOnImageTests : TestContext
         var authContext = this.AddTestAuthorization();
         authContext.SetAuthorized("FAKE USER TEST"); // fakes authorized state for a fake user
         
-        Services.AddSingleton<IAPIServices, APIServices>();
+        Services.AddSingleton<IAnnotationDataAccessor, AnnotationDataAccessor>();
         Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
         Services.AddHttpClient();
         
@@ -51,4 +47,3 @@ public class AnnotateOnImageTests : TestContext
         annotatePage.Find("img").MarkupMatches("<img src=\"img/billede1.png\" alt=\"Profile Picture\" class=\"MatOverwriteProfilePic\">");
     }
 }
-*/

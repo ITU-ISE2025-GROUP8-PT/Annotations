@@ -22,7 +22,7 @@ public interface IDatasetAccessor
 /// This service is used to access the dataset API.
 /// </summary>
 /// <param name="httpClient"></param>
-internal sealed class DatasetAccessor(HttpClient httpClient) : IDatasetAccessor
+public sealed class DatasetAccessor(HttpClient httpClient) : IDatasetAccessor
 {
     public async Task<IList<DatasetModel>> GetDatasetOverviewAsync()
     {

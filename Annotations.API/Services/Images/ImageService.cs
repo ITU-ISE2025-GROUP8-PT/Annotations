@@ -1,7 +1,6 @@
 using System.Net;
 using Annotations.Core.Entities;
 using Annotations.Core.Models;
-using Azure;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using Microsoft.EntityFrameworkCore;

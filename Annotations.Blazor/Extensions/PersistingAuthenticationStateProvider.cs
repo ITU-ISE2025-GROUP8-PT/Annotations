@@ -3,10 +3,10 @@
  * Provided by Microsoft Corporation under the MIT license.
  */
 
+using Annotations.Blazor.Client;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Web;
-using Annotations.Blazor.Client;
 
 namespace Annotations.Blazor.Extensions;
 

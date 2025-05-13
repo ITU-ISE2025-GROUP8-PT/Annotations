@@ -1,5 +1,5 @@
-﻿using Annotations.Core.Entities;
-using System.Security.Claims;
+﻿using System.Security.Claims;
+using Annotations.Core.Entities;
 using Annotations.Core.Models;
 using Microsoft.EntityFrameworkCore;
 

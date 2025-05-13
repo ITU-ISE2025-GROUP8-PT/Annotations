@@ -1,5 +1,5 @@
-﻿using Annotations.Blazor.Client.Services;
-using Annotations.Blazor.Client.Pages.AnnotationTools;
+﻿using Annotations.Blazor.Client.Pages.AnnotationTools;
+using Annotations.Blazor.Client.Services;
 using Microsoft.AspNetCore.Http;
 
 

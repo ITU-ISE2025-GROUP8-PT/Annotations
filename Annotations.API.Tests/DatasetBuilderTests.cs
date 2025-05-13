@@ -1,12 +1,11 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
+using Annotations.API.Services.Datasets;
+using Annotations.Core.Entities;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
-using Annotations.Core.Entities;
-using Annotations.API.Services.Datasets;
-using System.Net;
-using System.Linq;
 
 namespace Annotations.API.Tests;
 

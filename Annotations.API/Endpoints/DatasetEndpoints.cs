@@ -1,6 +1,5 @@
 ﻿using System.Security.Claims;
 using Annotations.API.Services.Datasets;
-using Annotations.API.Services.Images;
 using Annotations.API.Services.Users;
 using Annotations.Core.Models;
 using Microsoft.AspNetCore.Mvc;

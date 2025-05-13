@@ -3,10 +3,10 @@
  * Provided by Microsoft Corporation under the MIT license.
 */
 
+using Annotations.Blazor;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
-using Annotations.Blazor;
 
 namespace Microsoft.Extensions.DependencyInjection;
 

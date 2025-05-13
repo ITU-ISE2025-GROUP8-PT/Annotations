@@ -1,6 +1,5 @@
 using Annotations.Core.Entities;
 using Annotations.Core.VesselObjects;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace Annotations.API;

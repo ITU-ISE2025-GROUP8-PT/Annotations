@@ -1,6 +1,4 @@
-﻿using System.Collections;
-
-namespace Annotations.Core.Models;
+﻿namespace Annotations.Core.Models;
 
 public class DatasetModel
 {

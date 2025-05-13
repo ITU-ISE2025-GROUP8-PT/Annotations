@@ -1,12 +1,9 @@
-using System.Net.Http.Headers;
 using Annotations.API;
 using Annotations.API.Endpoints;
 using Annotations.API.Services.Datasets;
 using Annotations.API.Services.ImageAnnotation;
 using Annotations.API.Services.Images;
 using Annotations.API.Services.Users;
-using Annotations.Core.Entities;
-using Annotations.Core.VesselObjects;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Data.Sqlite;

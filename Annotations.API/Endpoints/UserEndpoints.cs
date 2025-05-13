@@ -18,7 +18,6 @@ public static class UserEndpoints
         pathBuilder.RequireAuthorization().DisableAntiforgery(); 
         
         pathBuilder.MapGet("/users", GetAllUsers);
- 
     }
 
 

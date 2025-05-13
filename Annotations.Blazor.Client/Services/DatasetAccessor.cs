@@ -13,6 +13,8 @@ public interface IDatasetAccessor
     Task<IList<DatasetModel>> GetDatasetOverviewAsync();
 
     Task<DatasetModel?> GetDatasetAsync(string datasetId);
+
+    Task<DatasetModel?> GetImagesByCategoryAsync(string category);
 }
 
 
@@ -29,6 +31,11 @@ internal sealed class DatasetAccessor(HttpClient httpClient) : IDatasetAccessor
 
 
 
-    Task<DatasetModel?> IDatasetAccessor.GetDatasetAsync(string datasetId) =>
+    public Task<DatasetModel?> GetDatasetAsync(string datasetId) =>
         httpClient.GetFromJsonAsync<DatasetModel?>($"api/datasets/get/{datasetId}");
+
+
+
+    public Task<DatasetModel?> GetImagesByCategoryAsync(string category) =>
+        httpClient.GetFromJsonAsync<DatasetModel?>($"api/datasets/filter/{category}");
 }

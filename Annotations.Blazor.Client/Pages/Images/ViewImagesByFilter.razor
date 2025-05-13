@@ -9,7 +9,7 @@
 {
     <p>Der opstod desværre en fejl. Prøv igen, eller kontakt din system administrator hvis problemet forsætter.</p>
 }
-else 
+else
 {
     @* In-line stylecheet to make both lines appear on the same row *@
     <div style=" display: flex; flex-direction:row;">
@@ -22,10 +22,10 @@ else
 
         
     <div class="container DivToScroll">
-        @for (int i = 0; i < dataset!.ImageIds.Count; i++)
+        @for (int i = 0; i < images.Count; i++)
         {
             @* src is a URL - it's converted from a string of the byte array *@
-            <img class="displayImages" alt="Image with ID @dataset.ImageIds[i]" src="/api/images/get/@dataset.ImageIds[i]" />
+            <img class="displayImages" src="/api/images/get/@images[i].Id" alt="Image with ID @images[i].Id" />
         }
     </div>
 }
@@ -34,16 +34,11 @@ else
 {
     [Parameter] public string category { get; set; } = "";
 
-    private DatasetModel? dataset;
+    private IList<ImageModel> images = [];
     private bool error;
 
     protected override async Task OnInitializedAsync()
     {
-        dataset = await DatasetAccessor.GetImagesByCategoryAsync(category);
-
-		if (dataset == null)
-		{
-			error = true;
-		}
+        images = await DatasetAccessor.GetImagesByCategoryAsync(category);
     }
 }

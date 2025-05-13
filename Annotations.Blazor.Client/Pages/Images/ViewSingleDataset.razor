@@ -11,7 +11,7 @@
     <p>Der opstod desværre en fejl. Prøv igen, eller kontakt din system administrator hvis problemet forsætter.</p>
 }
 @* This will show on screen in a milisecond before imgs load. Should it be "Loading..."? *@
-else
+else if (dataset != null)
 {
     @* To make both lines on the same row *@
     <div style=" display: flex; flex-direction:row;">
@@ -21,14 +21,14 @@ else
 
     <div class="container DivToScroll" >
         @* Virtualize is a special loop that loops OverscanCount data - here the imgs received from API *@
-        <Virtualize ItemsProvider="@LoadImages" OverscanCount="15">
+        <Virtualize Items="@dataset.ImageIds" OverscanCount="3">
             @* OverscanCount must always be divisible by 3! As we have 3 imgs per line
             It represents the number of images loaded before and after current position *@
             <ItemContent>
-                <img class="displayImages" src="/api/images/get/@context" alt="Image with ID @context" />
+                <img class="displayImages" src="@($"/api/images/get/{context}")" alt="Image with ID @context" />
             </ItemContent>
         </Virtualize> 
-    </div> 
+    </div>
 }
 
 @code
@@ -46,15 +46,5 @@ else
         {
             error = true;
         }
-    }
-
-    private async ValueTask<ItemsProviderResult<int>> LoadImages(ItemsProviderRequest request)
-    {
-        await Task.Yield();
-        if (dataset == null)
-        {
-            return new ItemsProviderResult<int>([], 0);
-        }
-        return new ItemsProviderResult<int>(dataset.ImageIds, dataset.ImageIds.Count);
     }
 }

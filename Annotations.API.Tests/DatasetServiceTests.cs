@@ -498,6 +498,7 @@ public class DatasetServiceTests
         // Assert
         Assert.Equal(201, result.StatusCode);
         Assert.Equal(3, result.Dataset.ImageIds.Count);
+        Assert.Equal(3, result.Dataset.ImageCount);
     }
 
 

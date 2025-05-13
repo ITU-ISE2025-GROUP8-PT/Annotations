@@ -20,6 +20,11 @@ public class DatasetModel
     public string Description { get; set; } = string.Empty;
 
     /// <summary>
+    /// The number of images in the dataset. This is used to track how many images are in the dataset.
+    /// </summary>
+    public int ImageCount { get; set; } = 0;
+
+    /// <summary>
     /// List of image IDs that belong to this dataset.
     /// </summary>
     public List<int> ImageIds { get; set; } = [];

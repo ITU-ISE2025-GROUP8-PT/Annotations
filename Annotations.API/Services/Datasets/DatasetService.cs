@@ -209,6 +209,7 @@ public class DatasetService : IDatasetService
             newEntries.Add(entry);
         }
 
+        dataset.ImageCount = newEntries.Count;
         dataset.Entries = newEntries;
 
         _dbContext.Update(dataset);
@@ -285,6 +286,7 @@ public class DatasetService : IDatasetService
         return new DatasetModel
         {
             Id = dataset.Id,
+            ImageCount = dataset.ImageCount,
             ImageIds = dataset.Entries
                 .Select(e => e.ImageId)
                 .ToList(),

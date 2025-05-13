@@ -27,4 +27,10 @@ builder.Services.AddHttpClient<IDatasetAccessor, DatasetAccessor>(httpClient =>
 });
 
 
+builder.Services.AddHttpClient<IAnnotationDataAccessor, AnnotationDataAccessor>(httpClient =>
+{
+    httpClient.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress);
+});
+
+
 await builder.Build().RunAsync();

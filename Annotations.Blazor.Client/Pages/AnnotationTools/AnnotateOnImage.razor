@@ -5,6 +5,7 @@
 @using global::Annotations.Blazor.Client.Services
 @using Home
 @implements IDisposable
+@inject IAnnotationDataAccessor dataAccessor
 @inject NavigationManager Navigation
 @attribute [Authorize(Roles = "Administrator, Manager, AnnotationsUser")]
 
@@ -369,16 +370,10 @@
     {
         try
         {
-            var response = await IapiServices.CreateGetResponse($"/images/annotations?imagePath={Uri.EscapeDataString(imagePath)}");
-            if (response.IsSuccessStatusCode)
+            var response = await dataAccessor.GetAnnotationsForImageAsync(imagePath);
+            if (response.IsSuccess)
             {
-                var options = new JsonSerializerOptions
-                {
-                    PropertyNameCaseInsensitive = true
-                };
-            
-                var content = await response.Content.ReadAsStringAsync();
-                _savedVessels = JsonSerializer.Deserialize<List<VesselAnnotationModel>>(content, options);
+				_savedVessels = response.Annotations;
                 PrecomputeAnnotations();
                 StateHasChanged();
             }
@@ -547,9 +542,9 @@
     {
         vessel.ImagePath = _currentImagePath;
 
-        var response = await IapiServices.CreatePostRequest($"/images/annotations/save", vessel); 
-        
-        if (!response.IsSuccessStatusCode)
+        var response = await dataAccessor.PostAnnotationsForImageAsync($"/images/annotations/save", vessel);
+
+        if ((int)response >= 400)
         {
             //TODO: Better error handling here
             Console.WriteLine("Error with post request for Annotation");

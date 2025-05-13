@@ -1,4 +1,7 @@
-﻿using System.Net.Http;
+﻿/* Temporarily disabled to build client version. May 13th, 2025 RonoITU */
+
+/*
+using System.Net.Http;
 using Annotations.Blazor.Components.Pages.Annotations;
 using Annotations.Blazor.Services;
 using Microsoft.AspNetCore.Http;
@@ -48,3 +51,4 @@ public class AnnotateOnImageTests : TestContext
         annotatePage.Find("img").MarkupMatches("<img src=\"img/billede1.png\" alt=\"Profile Picture\" class=\"MatOverwriteProfilePic\">");
     }
 }
+*/

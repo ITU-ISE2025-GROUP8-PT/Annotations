@@ -1,9 +1,9 @@
 @implements IDisposable
 @inject NavigationManager Navigation
-@rendermode InteractiveServer
 @page "/home/{userid}"
 @attribute [Authorize(Roles = "Administrator, Manager, AnnotationsUser")]
 @namespace Home
+@using Microsoft.AspNetCore.Authorization
 
 <style>
     .mat-layout-grid-cell{

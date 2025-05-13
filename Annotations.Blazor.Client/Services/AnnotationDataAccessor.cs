@@ -14,7 +14,7 @@ public interface IAnnotationDataAccessor
 }
 
 
-internal sealed class AnnotationDataAccessor(HttpClient httpClient) : IAnnotationDataAccessor
+public sealed class AnnotationDataAccessor(HttpClient httpClient) : IAnnotationDataAccessor
 {
     public async Task<GetAnnotationsResult> GetAnnotationsForImageAsync(string imageId)
     {

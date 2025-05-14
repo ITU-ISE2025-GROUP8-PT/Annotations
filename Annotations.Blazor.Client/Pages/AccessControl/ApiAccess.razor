@@ -1,0 +1,38 @@
+﻿@page "/ApiAccess"
+@using Microsoft.AspNetCore.Authorization
+@using global::Annotations.Blazor.Client.Services
+@inject IApiTestAccessor TestAccessor
+@attribute [Authorize(Roles = "Administrator")]
+
+<PageTitle>Api Access Test</PageTitle>
+
+
+<h1>API Access Test</h1>
+
+
+<img src="/api/images/get/1" style="width:16em;margin-bottom:1em;" />
+
+
+@if (story == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <ul>
+        @foreach (var word in story)
+        {
+            <li>@word</li>
+        }
+    </ul>
+}
+
+
+@code {
+    private IEnumerable<string>? story;
+
+    protected override async Task OnInitializedAsync()
+    {
+		story = await TestAccessor.TryMeAsync();
+    }
+}

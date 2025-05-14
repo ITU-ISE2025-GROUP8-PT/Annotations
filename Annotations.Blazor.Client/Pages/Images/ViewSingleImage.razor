@@ -1,0 +1,30 @@
+@page "/images/{imageId}"
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize(Roles = "Administrator, Manager, AnnotationsUser")]
+
+
+@if (_imageLoaded)
+{
+    <div class="container DivToScroll">
+        <img class="displaySoloImage"
+             src="/api/images/get/@imageId"
+             alt="Image with ID @imageId"
+             onerror="HandleErrorLoadingImage" />
+    </div>
+}
+else
+{
+    <p><em>No image found for @imageId</em></p>
+}
+
+
+@code{
+    private bool _imageLoaded = true;
+    [Parameter] public string imageId { get; set; } = "";
+
+	private void HandleErrorLoadingImage()
+	{
+        _imageLoaded = false;
+		StateHasChanged();
+	}
+}

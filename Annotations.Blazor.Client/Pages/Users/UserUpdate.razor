@@ -1,0 +1,3 @@
+@page "/users/{userid}"
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize(Roles = "Administrator, Manager")]

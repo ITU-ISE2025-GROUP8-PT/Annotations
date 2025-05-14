@@ -1,0 +1,50 @@
+@page "/images/datasets/{datasetId}/"
+@using Annotations.Core.Models
+@using Microsoft.AspNetCore.Authorization
+@using global::Annotations.Blazor.Client.Services
+@inject IDatasetAccessor DatasetAccessor
+@attribute [Authorize(Roles = "Administrator, Manager")]
+
+
+@if (error)
+{
+    <p>Der opstod desværre en fejl. Prøv igen, eller kontakt din system administrator hvis problemet forsætter.</p>
+}
+@* This will show on screen in a milisecond before imgs load. Should it be "Loading..."? *@
+else if (dataset != null)
+{
+    @* To make both lines on the same row *@
+    <div style=" display: flex; flex-direction:row;">
+        <span style="padding:2%; font-weight: bold; width: 90%; font-size: 215%">Dataset @datasetId</span>
+        <button class="filterButton">Filter by...</button>
+    </div>
+
+    <div class="container DivToScroll" >
+        @* Virtualize is a special loop that loops OverscanCount data - here the imgs received from API *@
+        <Virtualize Items="@dataset.ImageIds" OverscanCount="3">
+            @* OverscanCount must always be divisible by 3! As we have 3 imgs per line
+            It represents the number of images loaded before and after current position *@
+            <ItemContent>
+                <img class="displayImages" src="@($"/api/images/get/{context}")" alt="Image with ID @context" />
+            </ItemContent>
+        </Virtualize> 
+    </div>
+}
+
+@code
+{
+    [Parameter] public string datasetId { get; set; } = "";
+
+    private DatasetModel? dataset;
+    private bool error;
+
+    protected override async Task OnInitializedAsync()
+    {
+        dataset = await DatasetAccessor.GetDatasetAsync(datasetId);
+
+        if (dataset == null)
+        {
+            error = true;
+        }
+    }
+}

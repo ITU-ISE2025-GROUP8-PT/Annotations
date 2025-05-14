@@ -1,0 +1,3 @@
+@page "/annotations/{annotationid}/review"
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize(Roles = "Administrator, Manager, AnnotationsUser")]

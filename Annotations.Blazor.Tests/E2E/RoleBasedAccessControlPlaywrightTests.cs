@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
-using Microsoft.Playwright.Xunit;
 using Microsoft.Playwright;
+using Microsoft.Playwright.Xunit;
 
 namespace Annotations.Blazor.Tests.E2E;
 

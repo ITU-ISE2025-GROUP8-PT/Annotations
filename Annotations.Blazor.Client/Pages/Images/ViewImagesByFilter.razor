@@ -1,0 +1,39 @@
+@page "/images/filter/{category}"
+@using Annotations.Core.Models
+@using Microsoft.AspNetCore.Authorization
+@using global::Annotations.Blazor.Client.Services
+@inject IDatasetAccessor DatasetAccessor
+@attribute [Authorize(Roles = "Administrator, Manager")]
+
+
+
+@* In-line stylecheet to make both lines appear on the same row *@
+<div style=" display: flex; flex-direction:row;">
+   
+    @* width is mainly for the placement of the filter button *@
+    <span style="padding:2%; font-weight: bold; width: 90%; font-size: 215%">Images of category "@category"</span>
+    <button class="filterButton">Filter by...</button>
+
+</div>
+
+        
+<div class="container DivToScroll">
+    @for (int i = 0; i < images.Count; i++)
+    {
+        @* src is a URL - it's converted from a string of the byte array *@
+        <img class="displayImages" src="/api/images/get/@images[i].Id" alt="Image with ID @images[i].Id" />
+    }
+</div>
+
+
+@code
+{
+    [Parameter] public string category { get; set; } = "";
+
+    private IList<ImageModel> images = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        images = await DatasetAccessor.GetImagesByCategoryAsync(category);
+    }
+}

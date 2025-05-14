@@ -1,5 +1,3 @@
-using Annotations.Blazor.Components.Pages;
-
 namespace Annotations.Blazor.Tests.Unit;
 
 public class PersonalHomeTests : TestContext

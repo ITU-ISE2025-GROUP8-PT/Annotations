@@ -5,7 +5,7 @@ public class ImageModel
     /// <summary>
     /// Unique identifier for the image.
     /// </summary>
-    public int Id { get; set; } // Not required, as it will be set by the database.
+    public int Id { get; set; }
 
     /// <summary>
     /// Title of the image. This is a short description that will be displayed to the user.

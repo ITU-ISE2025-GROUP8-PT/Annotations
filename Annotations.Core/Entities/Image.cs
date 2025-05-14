@@ -8,7 +8,7 @@ public class Image
     /// Unique identifier for the image.
     /// </summary>
 	[Required]
-	public int Id { get; set; }
+	public int Id { get; set; } // Not required, as it will be set by the database.
 
     /// <summary>
     /// Title of the image. This is a short description that will be displayed to the user.

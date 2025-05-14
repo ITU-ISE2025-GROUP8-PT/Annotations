@@ -5,7 +5,7 @@ public class DatasetModel
     /// <summary>
     /// Unique identifier for the dataset.
     /// </summary>
-    public int Id { get; set; } = -1;
+    public int Id { get; set; }
 
     /// <summary>
     /// Title of the dataset. This is a short description that will be displayed to the user.

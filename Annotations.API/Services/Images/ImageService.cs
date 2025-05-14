@@ -11,22 +11,6 @@ namespace Annotations.API.Services.Images;
 
 
 /// <summary>
-/// The response given after validating image.
-/// </summary>
-/// <param name="Success"> A boolean returning true if the image is validated. </param>
-/// <param name="Message"> Message containing a success or the specific error message. </param>
-public record ValidationResponse(bool Success, string Message);
-
-/// <summary>
-/// Returns the needed data for the image. 
-/// </summary>
-/// <param name="Image"> The image model. </param>
-/// <param name="JSONString"> JSONString representing the JSON file. </param>
-public record ImageData(ImageModel Image, string JSONString);
-
-
-
-/// <summary>
 /// Defines a service for accessing images.
 /// </summary>
 public interface IImageService
@@ -70,6 +54,9 @@ public sealed class GetImageResult
 
 
 
+/// <summary>
+/// Implements service for accessing images using Entity Framework Core and Azure Storage.
+/// </summary>
 public class ImageService: IImageService
 {
     private readonly AnnotationsDbContext _dbContext;
@@ -99,7 +86,7 @@ public class ImageService: IImageService
     /// Attempts to retrieves an image based on id
     /// </summary>
     /// <param name="imageId"></param>
-    /// <returns>Returns image as JSON string if exists, otherwise empty string is returned</returns>
+    /// <returns> Returns an image result with an open stream of the image. </returns>
     public async Task<GetImageResult> GetImageAsync(int imageId)
     {
         var cts = new CancellationTokenSource(10000);

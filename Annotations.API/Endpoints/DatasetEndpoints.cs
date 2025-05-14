@@ -4,9 +4,13 @@ using Annotations.API.Services.Users;
 using Annotations.Core.Models;
 using Microsoft.AspNetCore.Mvc;
 
+
 namespace Annotations.API.Endpoints;
 
 
+/// <summary>
+/// Endpoints for datasets. Collections of images.
+/// </summary>
 public class DatasetEndpoints
 {
     /// <summary>
@@ -34,6 +38,9 @@ public class DatasetEndpoints
 
 
 
+
+
+
     /// <summary>
     /// Finds and returns all images within a certain category.
     /// </summary>
@@ -49,6 +56,8 @@ public class DatasetEndpoints
 
 
 
+
+
     /// <summary>
     /// Retrieves all existing datasets. 
     /// </summary>
@@ -60,6 +69,8 @@ public class DatasetEndpoints
     {
         return await datasetService.GetDatasetOverviewAsync();
     }
+
+
 
 
 
@@ -79,6 +90,8 @@ public class DatasetEndpoints
             ? Results.Ok(datasetModel)
             : Results.NotFound();
     }
+
+
 
 
 
@@ -114,12 +127,16 @@ public class DatasetEndpoints
 
 
 
+
+
     private static async Task<IResult> DeleteDatasetHandler(
         [FromRoute] int datasetId,
         [FromServices] IDatasetService datasetService)
     {
         return Results.StatusCode((int)await datasetService.DeleteDatasetAsync(datasetId));
     }
+
+
 
 
 

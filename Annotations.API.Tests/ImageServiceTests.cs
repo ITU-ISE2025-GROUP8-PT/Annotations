@@ -18,6 +18,10 @@ namespace Annotations.API.Tests;
 
 public class ImageServiceTests
 {
+    /// <summary>
+    /// Tests the GetImageAsync method of the ImageService class.
+    /// </summary>
+    /// <returns></returns>
     [Fact]
     public async Task GetImageAsync_OnValidRequest_ReturnsImage()
     {
@@ -62,6 +66,10 @@ public class ImageServiceTests
 
 
 
+    /// <summary>
+    /// Tests the GetImageAsync method of the ImageService class when the image is not found.
+    /// </summary>
+    /// <returns></returns>
     [Fact]
     public async Task GetImageAsync_OnImageNotFound_ReturnsNotFoundResponse()
     {
@@ -107,6 +115,10 @@ public class ImageServiceTests
 
 
 
+    /// <summary>
+    /// Tests the DeleteImageAsync method of the ImageService class.
+    /// </summary>
+    /// <returns></returns>
     [Fact]
     public async Task DeleteImageAsync_OnValidRequest_ReturnsNoContent()
     {
@@ -157,6 +169,10 @@ public class ImageServiceTests
 
 
 
+    /// <summary>
+    /// Tests the DeleteImageAsync method of the ImageService class when the image is not found.
+    /// </summary>
+    /// <returns></returns>
     [Fact]
     public async Task DeleteImageAsync_OnImageNotFound_ReturnsNotFound()
     {

@@ -38,8 +38,6 @@ public interface IImageUploader
     /// </summary>
     string Category { get; set; }
 
-
-
     /// <summary>
     /// <para>Stores the image in the application data stores.</para>
     /// <para>This task can be executed once per instance. Fields must be correctly set.
@@ -48,6 +46,8 @@ public interface IImageUploader
     /// <returns></returns>
     Task<ImageUploaderResult> StoreAsync();
 }
+
+
 
 
 
@@ -74,8 +74,10 @@ public sealed class ImageUploaderResult
 
 
 
+
+
 /// <summary>
-/// Implementation of IImageUploader service for Annotations using <c>AnnotationsDbContext</c> and Azure Storage.
+/// Implementation of IImageUploader service for Annotations using Entity Framework Core and Azure Storage.
 /// </summary>
 public class ImageUploader : IImageUploader
 {
@@ -111,6 +113,11 @@ public class ImageUploader : IImageUploader
 
 
 
+    /// <summary>
+    /// Stores the image in the application data stores.
+    /// </summary>
+    /// <returns></returns>
+    /// <exception cref="InvalidOperationException"></exception>
     public async Task<ImageUploaderResult> StoreAsync()
     {
         if (storeAsyncCalled)

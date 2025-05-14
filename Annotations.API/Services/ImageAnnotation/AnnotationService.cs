@@ -13,8 +13,11 @@ namespace Annotations.API.Services.ImageAnnotation;
 public interface IAnnotationService
 {
     public Task<bool> SaveAnnotationToDatabase(VesselAnnotationModel annotationTree);
+
     public Task<Annotation> GetAnnotationFromId(int annotationId);
 }
+
+
 
 
 

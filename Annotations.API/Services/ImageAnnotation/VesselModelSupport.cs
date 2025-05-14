@@ -34,6 +34,8 @@ public static class VesselModelSupport
     }
 
     
+
+
     
     /// <summary>
     /// Conversion from VesselSegmentModel to VesselSegment entity, for saving in the database.
@@ -58,6 +60,8 @@ public static class VesselModelSupport
 
         return segmentList;
     }
+
+
 
 
 
@@ -89,6 +93,8 @@ public static class VesselModelSupport
 
 
 
+
+
     /// <summary>
     /// Helper function for converting VesselPoint to VesselPointModel.
     /// </summary>
@@ -100,6 +106,8 @@ public static class VesselModelSupport
             Y = vp.Y,
             IsVisible = vp.IsVisible
         };
+
+
 
 
 

@@ -6,6 +6,10 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Annotations.API.Endpoints;
 
+
+/// <summary>
+/// Endpoints for images, and image metadata.
+/// </summary>
 public static class ImageEndpoints
 {
     /// <summary>
@@ -24,6 +28,8 @@ public static class ImageEndpoints
 
         pathBuilder.MapDelete("/delete/{imageId}", DeleteImageHandler);
     }
+
+
 
 
 
@@ -60,6 +66,8 @@ public static class ImageEndpoints
 
 
 
+
+
     /// <summary>
     /// Deletes an image.
     /// </summary>
@@ -72,6 +80,8 @@ public static class ImageEndpoints
     {
         return Results.StatusCode((int) await imageService.DeleteImageAsync(imageId));
     }
+
+
 
 
 

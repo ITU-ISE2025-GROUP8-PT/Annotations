@@ -25,8 +25,6 @@ public interface IDatasetBuilder
     /// </summary>
     string Category { get; set; }
 
-
-
     /// <summary>
     /// Creates a new dataset in the database and returns the result.
     /// </summary>
@@ -70,6 +68,11 @@ public class DatasetBuilder : IDatasetBuilder
 
 
 
+    /// <summary>
+    /// Creates a new dataset in the database and returns the result.
+    /// </summary>
+    /// <returns></returns>
+    /// <exception cref="InvalidOperationException"></exception>
     public async Task<ModifyDatasetResult> BuildAsync()
     {
         if (buildAsyncCalled)

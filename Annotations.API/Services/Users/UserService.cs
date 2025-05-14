@@ -30,10 +30,14 @@ public interface IUserService
 
 
 
+
+
+/// <summary>
+/// Implements a service for user information stored in the backend API database.
+/// </summary>
 public class UserService : IUserService
 {
     private readonly AnnotationsDbContext _context;
-
 
 
     /// <summary>
@@ -44,6 +48,8 @@ public class UserService : IUserService
     {
         _context = context;
     }
+
+
 
 
 
@@ -75,6 +81,8 @@ public class UserService : IUserService
 
 
 
+
+
     /// <summary>
     /// Tries to find the user in the database by their claims principal.
     /// </summary>
@@ -86,6 +94,8 @@ public class UserService : IUserService
             .Where(user => user.UserId == claimsPrincipal.FindFirstValue(ClaimTypes.NameIdentifier))
             .SingleOrDefaultAsync();
     }
+
+
 
 
 

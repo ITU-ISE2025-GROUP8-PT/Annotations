@@ -5,6 +5,11 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Annotations.API.Endpoints;
 
+
+/// <summary>
+/// Endpoints for user information. In comparison to running a full identity service, 
+/// this simply works with user information provided by JWT tokens as they are encountered.
+/// </summary>
 public static class UserEndpoints
 {
     /// <summary>
@@ -19,6 +24,8 @@ public static class UserEndpoints
         
         pathBuilder.MapGet("/users", GetAllUsers);
     }
+
+
 
 
 

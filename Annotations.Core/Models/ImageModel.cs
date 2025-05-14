@@ -17,8 +17,6 @@ public class ImageModel
     /// </summary>
     public string Description { get; set; } = string.Empty;
 
-    public byte[] ImageData { get; set; } = [];
-
     /// <summary>
     /// Category of the image. This is a string that can be used to group images.
     /// </summary>

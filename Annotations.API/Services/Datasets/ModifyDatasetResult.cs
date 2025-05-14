@@ -1,7 +1,12 @@
 ﻿using Annotations.Core.Models;
 
+
 namespace Annotations.API.Services.Datasets;
 
+
+/// <summary>
+/// Result of modifying a dataset.
+/// </summary>
 public sealed class ModifyDatasetResult
 {
     /// <summary>

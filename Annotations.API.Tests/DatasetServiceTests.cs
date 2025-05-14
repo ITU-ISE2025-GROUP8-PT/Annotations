@@ -14,6 +14,10 @@ namespace Annotations.API.Tests;
 
 public class DatasetServiceTests
 {
+    /// <summary>
+    /// Tests the GetDatasetsAsync method to ensure it returns all datasets.
+    /// </summary>
+    /// <returns></returns>
     [Fact]
     public async Task GetDatasetsAsync_ReturnsAllDatasets()
     {
@@ -60,6 +64,10 @@ public class DatasetServiceTests
 
 
 
+    /// <summary>
+    /// Tests the GetDatasetByIdAsync method to ensure it returns a dataset by ID.
+    /// </summary>
+    /// <returns></returns>
     [Fact]
     public async Task GetDatasetByIdAsync_DatasetExists_ReturnsDataset()
     {
@@ -104,6 +112,10 @@ public class DatasetServiceTests
 
 
 
+    /// <summary>
+    /// Tests the GetDatasetByIdAsync method to ensure it returns null when the dataset does not exist.
+    /// </summary>
+    /// <returns></returns>
     [Fact]
     public async Task GetDatasetByIdAsync_DatasetDoesNotExist_ReturnsNull()
     {
@@ -147,6 +159,10 @@ public class DatasetServiceTests
 
 
 
+    /// <summary>
+    /// Tests the CreateDatasetAsync method to ensure it creates a new dataset.
+    /// </summary>
+    /// <returns></returns>
     [Fact]
     public async Task DeleteDatasetAsync_DatasetExists_DeletesDataset()
     {
@@ -190,6 +206,10 @@ public class DatasetServiceTests
 
 
 
+    /// <summary>
+    /// Tests the DeleteDatasetAsync method to ensure it returns NotFound when the dataset does not exist.
+    /// </summary>
+    /// <returns></returns>
     [Fact]
     public async Task DeleteDatasetAsync_DatasetDoesNotExist_ReturnsNotFound()
     {
@@ -233,6 +253,10 @@ public class DatasetServiceTests
 
 
 
+    /// <summary>
+    /// Tests the DeleteDatasetAsync method to ensure it returns NotFound when the dataset is marked as deleted.
+    /// </summary>
+    /// <returns></returns>
     [Fact]
     public async Task DeleteDatasetAsync_DatasetIsDeleted_ReturnsNotFound()
     {
@@ -276,6 +300,10 @@ public class DatasetServiceTests
 
 
 
+    /// <summary>
+    /// Tests the GetFilteredImageSetAsync method to ensure it returns filtered images.
+    /// </summary>
+    /// <returns></returns>
     [Fact]
     public async Task Filter_ImagesExist_ReturnsFilteredImages()
     {
@@ -322,6 +350,10 @@ public class DatasetServiceTests
 
 
 
+    /// <summary>
+    /// Tests the GetFilteredImageSetAsync method to ensure it returns an empty list when no images exist.
+    /// </summary>
+    /// <returns></returns>
     [Fact]
     public async Task Filter_ImagesDoNotExist_ReturnsEmptyList()
     {
@@ -366,6 +398,10 @@ public class DatasetServiceTests
 
 
 
+    /// <summary>
+    /// Tests the GetFilteredImageSetAsync method to ensure it returns filtered images when some images are marked as deleted.
+    /// </summary>
+    /// <returns></returns>
     [Fact]
     public async Task Filter_ImagesExistWithDeleted_ReturnsFilteredImages()
     {
@@ -412,6 +448,10 @@ public class DatasetServiceTests
 
 
 
+    /// <summary>
+    /// Tests the GetFilteredImageSetAsync method to ensure it returns an empty list when all images are marked as deleted.
+    /// </summary>
+    /// <returns></returns>
     [Fact]
     public async Task Filter_ImagesDoNotExistWithDeleted_ReturnsEmptyList()
     {
@@ -457,6 +497,10 @@ public class DatasetServiceTests
 
 
 
+    /// <summary>
+    /// Tests the SetImagesAsync method to ensure it sets images for a dataset.
+    /// </summary>
+    /// <returns></returns>
     [Fact]
     public async Task SetImagesAsync_ValidRequest_ImagesAreSet()
     {
@@ -505,6 +549,10 @@ public class DatasetServiceTests
 
 
 
+    /// <summary>
+    /// Tests the SetImagesAsync method to ensure it returns NotFound when the dataset does not exist.
+    /// </summary>
+    /// <returns></returns>
     [Fact]
     public async Task SetImagesAsync_DatasetDoesNotExist_ReturnsNotFound()
     {
@@ -551,6 +599,10 @@ public class DatasetServiceTests
 
 
 
+    /// <summary>
+    /// Tests the SetImagesAsync method to ensure it returns NotFound when the images do not exist.
+    /// </summary>
+    /// <returns></returns>
     [Fact]
     public async Task SetImagesAsync_ImagesDoNotExist_ReturnsNotFound()
     {
@@ -597,6 +649,10 @@ public class DatasetServiceTests
 
 
 
+    /// <summary>
+    /// Tests the SetImagesAsync method to ensure it returns NotFound when the images are marked as deleted.
+    /// </summary>
+    /// <returns></returns>
     [Fact]
     public async Task SetImagesAsync_ImagesAreDeleted_ReturnsNotFound()
     {
@@ -643,6 +699,10 @@ public class DatasetServiceTests
 
 
 
+    /// <summary>
+    /// Tests the SetImagesAsync method to ensure it returns BadRequest when there are duplicates in the image sequence.
+    /// </summary>
+    /// <returns></returns>
     [Fact]
     public async Task SetImagesAsync_DuplicatesInSequence_ReturnsBadRequest()
     {

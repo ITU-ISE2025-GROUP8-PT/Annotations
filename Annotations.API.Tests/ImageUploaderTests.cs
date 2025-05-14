@@ -284,6 +284,10 @@ public class ImageUploaderTests
 
 
 
+    /// <summary>
+    /// Test to see that it is not possible to upload an image without a category.
+    /// </summary>
+    /// <returns></returns>
     [Fact]
     public async Task OnNoCategory_BadRequest()
     {

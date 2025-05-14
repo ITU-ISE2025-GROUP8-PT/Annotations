@@ -43,9 +43,6 @@ builder.Services.AddRazorComponents()
 builder.Services.AddHttpForwarder();
 builder.Services.AddHttpContextAccessor();
 
-//builder.Services.AddHttpClient();
-//builder.Services.AddScoped<IAPIServices, APIServices>();
-
 
 
 var app = builder.Build();

@@ -15,6 +15,10 @@ namespace Annotations.API.Tests;
 
 public class UserServiceTests
 {
+    /// <summary>
+    /// Tests the GetUsersAsync method of the UserService class.
+    /// </summary>
+    /// <returns></returns>
     [Fact]
     public async Task GetUsersAsync_ReturnsAllUsers()
     {
@@ -53,6 +57,10 @@ public class UserServiceTests
 
 
 
+    /// <summary>
+    /// Tests the TryFindUserAsync method of the UserService class.
+    /// </summary>
+    /// <returns></returns>
     [Fact]
     public async Task TryFindUserAsync_UserExists_ReturnsUser()
     {
@@ -95,6 +103,10 @@ public class UserServiceTests
 
 
 
+    /// <summary>
+    /// Tests the TryFindUserAsync method of the UserService class when the user does not exist.
+    /// </summary>
+    /// <returns></returns>
     [Fact]
     public async Task TryFindUserAsync_UserDoesNotExist_ReturnsNull()
     {
@@ -135,6 +147,10 @@ public class UserServiceTests
 
 
 
+    /// <summary>
+    /// Tests the CreateUserAsync method of the UserService class.
+    /// </summary>
+    /// <returns></returns>
     [Fact]
     public async Task CreateUserAsync_UserDoesNotExist_CreatesUser()
     {
@@ -169,6 +185,10 @@ public class UserServiceTests
 
 
 
+    /// <summary>
+    /// Tests the CreateUserAsync method of the UserService class when the user already exists.
+    /// </summary>
+    /// <returns></returns>
     [Fact]
     public async Task CreateUserAsync_UserAlreadyExists_ThrowsInvalidOperationException()
     {

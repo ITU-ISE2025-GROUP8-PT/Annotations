@@ -11,6 +11,10 @@ namespace Annotations.API.Tests;
 
 public class DatasetBuilderTests
 {
+    /// <summary>
+    /// Test to check if the dataset builder can create a new dataset with valid parameters.
+    /// </summary>
+    /// <returns></returns>
     [Fact]
     public async Task OnValidRequest_CanBuildDataset()
     {
@@ -72,6 +76,10 @@ public class DatasetBuilderTests
 
 
 
+    /// <summary>
+    /// Test to check if the dataset builder throws an exception when no user is provided.
+    /// </summary>
+    /// <returns></returns>
     [Fact]
     public async Task OnNoUser_ThrowsException()
     {
@@ -102,6 +110,10 @@ public class DatasetBuilderTests
 
 
 
+    /// <summary>
+    /// Test to check if the dataset builder returns a bad request when no title is provided.
+    /// </summary>
+    /// <returns></returns>
     [Fact]
     public async Task OnNoTitle_BadRequest()
     {
@@ -139,6 +151,10 @@ public class DatasetBuilderTests
 
 
 
+    /// <summary>
+    /// Test to check if the dataset builder returns a bad request when no category is provided.
+    /// </summary>
+    /// <returns></returns>
     [Fact]
     public async Task OnNoCategory_BadRequest()
     {

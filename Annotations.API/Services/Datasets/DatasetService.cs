@@ -170,7 +170,7 @@ public class DatasetService : IDatasetService
             .SingleOrDefaultAsync(ds => ds.Id == datasetId);
 
 
-
+        // Validate basic properties of the request.
         if (dataset == default(Dataset))
         {
             return DatasetNotFoundResult();
@@ -185,7 +185,7 @@ public class DatasetService : IDatasetService
         }
 
 
-
+        // Obtain and validate image data.
         var images = await _dbContext.Images
             .Where(e => imageIds.Contains(e.Id) && !e.IsDeleted)
             .ToListAsync();
@@ -196,7 +196,7 @@ public class DatasetService : IDatasetService
         }
 
 
-
+        // Create new dataset entries.
         var newEntries = new List<DatasetEntry>();
         for (int i = 0; i < images.Count; i++)
         {
@@ -209,19 +209,23 @@ public class DatasetService : IDatasetService
             newEntries.Add(entry);
         }
 
+
+        // Replace existing entries with new ones.
         dataset.ImageCount = newEntries.Count;
         dataset.Entries = newEntries;
-
         _dbContext.Update(dataset);
-
         await _dbContext.SaveChangesAsync();
 
+
+        // Return the modified dataset.
         return new ModifyDatasetResult
         {
             StatusCode = (int)HttpStatusCode.Created,
             Dataset = ToDatasetModel(dataset),
         };
     }
+
+
 
 
 

@@ -7,6 +7,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Annotations.API.Endpoints;
 
+
+/// <summary>
+/// Endpoints for annotation data.
+/// </summary>
 public static class AnnotationEndpoints
 {
     /// <summary>
@@ -38,6 +42,8 @@ public static class AnnotationEndpoints
     
     
     
+
+
     /// <summary>
     /// When completed in the front end, a vessel annotation model, 
     /// containing its vessel points and segments, is retrieved via Post request.
@@ -62,6 +68,8 @@ public static class AnnotationEndpoints
         //and how to do error handling if tree has not been saved?
     }
     
+
+
     
     
     /// <summary>
@@ -78,6 +86,8 @@ public static class AnnotationEndpoints
     }
     
     
+
+
     
     /// <summary>
     /// The handler for retrieving all annotations from a specified image.

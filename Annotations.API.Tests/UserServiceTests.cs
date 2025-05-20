@@ -86,7 +86,7 @@ public class UserServiceTests
         }));
 
         // Act
-        User? result;
+        User result;
 
         using (var context = new AnnotationsDbContext(options))
         {
@@ -132,7 +132,7 @@ public class UserServiceTests
         }));
 
         // Act
-        User? result;
+        User result;
 
         using (var context = new AnnotationsDbContext(options))
         {

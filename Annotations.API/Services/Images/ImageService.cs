@@ -15,9 +15,33 @@ namespace Annotations.API.Services.Images;
 /// </summary>
 public interface IImageService
 {
+    /// <summary>
+    /// Retrieves an image based on its ID. This will return a result including a file stream.
+    /// </summary>
+    /// <param name="imageId"></param>
+    /// <returns></returns>
     Task<GetImageResult> GetImageAsync(int imageId);
 
+    /// <summary>
+    /// Deletes an image based on its ID. This will mark the image as deleted in the database and remove it from Azure Storage.
+    /// </summary>
+    /// <param name="imageId"></param>
+    /// <returns></returns>
     Task<HttpStatusCode> DeleteImageAsync(int imageId);
+
+    /// <summary>
+    /// Retrieves the metadata of an image based on its ID. This will return a model with the image's details.
+    /// </summary>
+    /// <param name="imageId"></param>
+    /// <returns></returns>
+    Task<ImageModel?> GetMetadataAsync(int imageId);
+
+    /// <summary>
+    /// Retrieves all images within a certain category.
+    /// </summary>
+    /// <param name="category"></param>
+    /// <returns></returns>
+    Task<ICollection<ImageModel>> GetImagesByCategoryAsync(string category);
 }
 
 
@@ -77,13 +101,13 @@ public class ImageService: IImageService
         var blobServiceClient = _clientFactory.CreateClient("Default");
         _containerClient = blobServiceClient.GetBlobContainerClient("images");
     }
-    
-    
-    
 
-    
+
+
+
+
     /// <summary>
-    /// Attempts to retrieves an image based on id
+    /// Retrieves an image based on its ID. This will return a result including a file stream.
     /// </summary>
     /// <param name="imageId"></param>
     /// <returns> Returns an image result with an open stream of the image. </returns>
@@ -135,5 +159,52 @@ public class ImageService: IImageService
         }
 
         return blobDeleteResult ? HttpStatusCode.NoContent : HttpStatusCode.NotFound;
+    }
+
+
+
+
+
+    /// <summary>
+    /// Retrieves the metadata of an image based on its ID. This will return a model with the image's details.
+    /// </summary>
+    /// <param name="imageId"></param>
+    /// <returns></returns>
+    public async Task<ImageModel?> GetMetadataAsync(int imageId)
+    {
+        var image = await _dbContext.Images
+            .Where(img => img.Id == imageId && !img.IsDeleted)
+            .Select(img => new ImageModel
+            {
+                Id = img.Id,
+                Title = img.Title,
+                Description = img.Description,
+                Category = img.Category,
+            })
+            .SingleOrDefaultAsync();
+        return image;
+    }
+
+
+
+
+
+    /// <summary>
+    /// Retrieves all images within a certain category.
+    /// </summary>
+    /// <param name="category"></param>
+    /// <returns></returns>
+    public async Task<ICollection<ImageModel>> GetImagesByCategoryAsync(string category)
+    {
+        return await _dbContext.Images
+            .Where(img => img.Category == category && !img.IsDeleted)
+            .Select(img => new ImageModel
+            {
+                Id = img.Id,
+                Title = img.Title,
+                Description = img.Description,
+                Category = img.Category,
+            })
+            .ToListAsync();
     }
 }

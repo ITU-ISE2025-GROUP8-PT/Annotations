@@ -1,10 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using Annotations.API.Services.Datasets;
 using Annotations.API.Services.Images;
 using Annotations.Core.Entities;
+using Annotations.Core.Models;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using Microsoft.Data.Sqlite;
@@ -271,5 +274,226 @@ public class ImageServiceTests
                 .Setup(x => x.GetPropertiesAsync(It.IsAny<BlobRequestConditions>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult(Azure.Response.FromValue(new BlobProperties(), Mock.Of<Azure.Response>())));
         }
+    }
+
+
+
+
+
+    /// <summary>
+    /// Tests the GetFilteredImageSetAsync method to ensure it returns filtered images.
+    /// </summary>
+    /// <returns></returns>
+    [Fact]
+    public async Task Filter_ImagesExist_ReturnsFilteredImages()
+    {
+        // Arrange
+        var connection = new SqliteConnection("DataSource=:memory:");
+        connection.Open();
+
+        var options = new DbContextOptionsBuilder<AnnotationsDbContext>()
+            .UseSqlite(connection)
+            .Options;
+
+        var testUser = new User
+        {
+            UserId = "1",
+            UserName = "Test User"
+        };
+
+        using (var context = new AnnotationsDbContext(options))
+        {
+            context.Database.EnsureCreated();
+            context.Images.Add(new Image { Id = 1, Title = "Image1", Category = "Include", CreatedAt = DateTime.UtcNow, UploadedBy = testUser });
+            context.Images.Add(new Image { Id = 2, Title = "Image2", Category = "Include", CreatedAt = DateTime.UtcNow, UploadedBy = testUser });
+            context.Images.Add(new Image { Id = 3, Title = "Image3", Category = "Exclude", CreatedAt = DateTime.UtcNow, UploadedBy = testUser });
+            context.Images.Add(new Image { Id = 4, Title = "Image4", Category = "Exclude", CreatedAt = DateTime.UtcNow, UploadedBy = testUser });
+            context.SaveChanges();
+        }
+
+        var mockStore = new MockAzureBlobStorageClientFactory(
+            expectedName: "Default",
+            expectedContainerName: "images",
+            expectedBlobName: "1",
+            expectedExists: false);
+
+
+        // Act
+        ICollection<ImageModel> result;
+
+        using (var context = new AnnotationsDbContext(options))
+        {
+            var imageService = new ImageService(mockStore.MockBlobServiceClientFactory.Object, context);
+            result = await imageService.GetImagesByCategoryAsync("Include");
+        }
+
+
+        // Assert
+        Assert.Equal(2, result.Count);
+    }
+
+
+
+
+
+    /// <summary>
+    /// Tests the GetFilteredImageSetAsync method to ensure it returns an empty list when no images exist.
+    /// </summary>
+    /// <returns></returns>
+    [Fact]
+    public async Task Filter_ImagesDoNotExist_ReturnsEmptyList()
+    {
+        // Arrange
+        var connection = new SqliteConnection("DataSource=:memory:");
+        connection.Open();
+
+        var options = new DbContextOptionsBuilder<AnnotationsDbContext>()
+            .UseSqlite(connection)
+            .Options;
+
+        var testUser = new User
+        {
+            UserId = "1",
+            UserName = "Test User"
+        };
+
+        using (var context = new AnnotationsDbContext(options))
+        {
+            context.Database.EnsureCreated();
+            context.Images.Add(new Image { Id = 1, Title = "Image1", Category = "Exclude", CreatedAt = DateTime.UtcNow, UploadedBy = testUser });
+            context.Images.Add(new Image { Id = 2, Title = "Image2", Category = "Exclude", CreatedAt = DateTime.UtcNow, UploadedBy = testUser });
+            context.SaveChanges();
+        }
+
+        var mockStore = new MockAzureBlobStorageClientFactory(
+            expectedName: "Default",
+            expectedContainerName: "images",
+            expectedBlobName: "1",
+            expectedExists: false);
+
+
+        // Act
+        ICollection<ImageModel> result;
+
+        using (var context = new AnnotationsDbContext(options))
+        {
+            var imageService = new ImageService(mockStore.MockBlobServiceClientFactory.Object, context);
+            result = await imageService.GetImagesByCategoryAsync("Include");
+        }
+
+
+        // Assert
+        Assert.Empty(result);
+    }
+
+
+
+
+
+    /// <summary>
+    /// Tests that the GetFilteredImageSetAsync method only returns images from the category that are not marked as deleted. 
+    /// </summary>
+    /// <returns></returns>
+    [Fact]
+    public async Task Filter_ImagesExistWithDeleted_ReturnsFilteredImages()
+    {
+        // Arrange
+        var connection = new SqliteConnection("DataSource=:memory:");
+        connection.Open();
+
+        var options = new DbContextOptionsBuilder<AnnotationsDbContext>()
+            .UseSqlite(connection)
+            .Options;
+
+        var testUser = new User
+        {
+            UserId = "1",
+            UserName = "Test User"
+        };
+
+        using (var context = new AnnotationsDbContext(options))
+        {
+            context.Database.EnsureCreated();
+            context.Images.Add(new Image { Id = 1, Title = "Image1", Category = "Include", CreatedAt = DateTime.UtcNow, UploadedBy = testUser });
+            context.Images.Add(new Image { Id = 2, Title = "Image2", Category = "Include", CreatedAt = DateTime.UtcNow, UploadedBy = testUser });
+            context.Images.Add(new Image { Id = 3, Title = "Image3", Category = "Include", CreatedAt = DateTime.UtcNow, UploadedBy = testUser, IsDeleted = true });
+            context.Images.Add(new Image { Id = 4, Title = "Image4", Category = "Include", CreatedAt = DateTime.UtcNow, UploadedBy = testUser, IsDeleted = true });
+            context.SaveChanges();
+        }
+
+        var mockStore = new MockAzureBlobStorageClientFactory(
+            expectedName: "Default",
+            expectedContainerName: "images",
+            expectedBlobName: "1",
+            expectedExists: false);
+
+
+        // Act
+        ICollection<ImageModel> result;
+
+        using (var context = new AnnotationsDbContext(options))
+        {
+            var imageService = new ImageService(mockStore.MockBlobServiceClientFactory.Object, context);
+            result = await imageService.GetImagesByCategoryAsync("Include");
+        }
+
+
+        // Assert
+        Assert.Equal(2, result.Count);
+    }
+
+
+
+
+
+    /// <summary>
+    /// Tests the GetFilteredImageSetAsync method to ensure it returns an empty list when all images are marked as deleted.
+    /// </summary>
+    /// <returns></returns>
+    [Fact]
+    public async Task Filter_ImagesDoNotExistWithDeleted_ReturnsEmptyList()
+    {
+        // Arrange
+        var connection = new SqliteConnection("DataSource=:memory:");
+        connection.Open();
+
+        var options = new DbContextOptionsBuilder<AnnotationsDbContext>()
+            .UseSqlite(connection)
+            .Options;
+
+        var testUser = new User
+        {
+            UserId = "1",
+            UserName = "Test User"
+        };
+
+        using (var context = new AnnotationsDbContext(options))
+        {
+            context.Database.EnsureCreated();
+            context.Images.Add(new Image { Id = 1, Title = "Image1", Category = "Exclude", CreatedAt = DateTime.UtcNow, UploadedBy = testUser });
+            context.Images.Add(new Image { Id = 2, Title = "Image2", Category = "Exclude", CreatedAt = DateTime.UtcNow, UploadedBy = testUser });
+            context.Images.Add(new Image { Id = 3, Title = "Image3", Category = "Include", CreatedAt = DateTime.UtcNow, UploadedBy = testUser, IsDeleted = true });
+            context.Images.Add(new Image { Id = 4, Title = "Image4", Category = "Include", CreatedAt = DateTime.UtcNow, UploadedBy = testUser, IsDeleted = true });
+            context.SaveChanges();
+        }
+
+        var mockStore = new MockAzureBlobStorageClientFactory(
+            expectedName: "Default",
+            expectedContainerName: "images",
+            expectedBlobName: "1",
+            expectedExists: false);
+
+
+        // Act
+        ICollection<ImageModel> result;
+        using (var context = new AnnotationsDbContext(options))
+        {
+            var imageService = new ImageService(mockStore.MockBlobServiceClientFactory.Object, context);
+            result = await imageService.GetImagesByCategoryAsync("Include");
+        }
+
+
+        // Assert
+        Assert.Empty(result);
     }
 }

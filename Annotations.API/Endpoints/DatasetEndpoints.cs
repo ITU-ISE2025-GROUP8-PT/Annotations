@@ -23,8 +23,6 @@ public class DatasetEndpoints
         // Anti-forgery measures are covered in the front-end, and by the JWT token protection. 
         pathBuilder.RequireAuthorization().DisableAntiforgery();
 
-        pathBuilder.MapGet("/filter/{category}", FilterImagesHandler);
-
         pathBuilder.MapGet("/overview", RetrieveAllDatasetsHandler);
 
         pathBuilder.MapGet("/get/{datasetId}", RetrieveSingleDatasetHandler);
@@ -34,24 +32,6 @@ public class DatasetEndpoints
         pathBuilder.MapDelete("/delete/{datasetId}", DeleteDatasetHandler);
 
         pathBuilder.MapPut("/set-images/{datasetId}", SetImagesHandler);
-    }
-
-
-
-
-
-
-    /// <summary>
-    /// Finds and returns all images within a certain category.
-    /// </summary>
-    /// <param name="category"></param>
-    /// <param name="imageService"> An image service instance. </param>
-    /// <returns> An array of images as JSON string with the wanted category. </returns>
-    private static async Task<ICollection<ImageModel>> FilterImagesHandler(
-        [FromRoute] string category,
-        [FromServices] IDatasetService datasetService)
-    {
-        return await datasetService.GetFilteredImageSetAsync(category);
     }
 
 

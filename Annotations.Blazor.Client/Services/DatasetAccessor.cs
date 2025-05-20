@@ -53,6 +53,6 @@ public sealed class DatasetAccessor(HttpClient httpClient) : IDatasetAccessor
 
     public async Task<IList<ImageModel>> GetImagesByCategoryAsync(string category)
     {
-        return await httpClient.GetFromJsonAsync<IList<ImageModel>>($"api/datasets/filter/{category}") ?? [];
+        return await httpClient.GetFromJsonAsync<IList<ImageModel>>($"api/images/filter/{category}") ?? [];
     }
 }

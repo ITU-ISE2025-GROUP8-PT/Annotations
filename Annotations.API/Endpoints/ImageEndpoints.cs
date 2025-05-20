@@ -1,6 +1,8 @@
 using System.Security.Claims;
+using Annotations.API.Services.Datasets;
 using Annotations.API.Services.Images;
 using Annotations.API.Services.Users;
+using Annotations.Core.Models;
 using Microsoft.AspNetCore.Mvc;
 
 
@@ -27,6 +29,10 @@ public static class ImageEndpoints
         pathBuilder.MapGet("/get/{imageId}", GetImageHandler);
 
         pathBuilder.MapDelete("/delete/{imageId}", DeleteImageHandler);
+
+        pathBuilder.MapGet("/get-metadata/{imageId}", GetMetaDataHandler);
+
+        pathBuilder.MapGet("/filter/{category}", FilterImagesHandler);
     }
 
 
@@ -100,5 +106,42 @@ public static class ImageEndpoints
 
         httpContext.Response.StatusCode = getImageResult.StatusCode;
         return Results.Stream(getImageResult.Stream, contentType: getImageResult.ContentType);
+    }
+
+
+
+
+
+    /// <summary>
+    /// Retrieves the metadata of an image based on the provided imageid.
+    /// </summary>
+    /// <param name="imageId"></param>
+    /// <param name="imageService"></param>
+    /// <returns></returns>
+    private static async Task<IResult> GetMetaDataHandler(
+        [FromRoute] int imageId,
+        [FromServices] IImageService imageService)
+    {
+        var imageModel = await imageService.GetMetadataAsync(imageId);
+        return imageModel != null
+            ? Results.Ok(imageModel)
+            : Results.NotFound();
+    }
+
+
+
+
+
+    /// <summary>
+    /// Finds and returns all images within a certain category.
+    /// </summary>
+    /// <param name="category"></param>
+    /// <param name="imageService"> An image service instance. </param>
+    /// <returns> An array of images as JSON string with the wanted category. </returns>
+    private static async Task<ICollection<ImageModel>> FilterImagesHandler(
+        [FromRoute] string category,
+        [FromServices] IImageService imageService)
+    {
+        return await imageService.GetImagesByCategoryAsync(category);
     }
 }

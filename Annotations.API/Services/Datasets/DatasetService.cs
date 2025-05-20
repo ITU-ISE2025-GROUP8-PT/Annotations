@@ -13,13 +13,6 @@ namespace Annotations.API.Services.Datasets;
 public interface IDatasetService
 {
     /// <summary>
-    /// Retrieves all images within a certain category.
-    /// </summary>
-    /// <param name="category"></param>
-    /// <returns></returns>
-    Task<ICollection<ImageModel>> GetFilteredImageSetAsync(string category);
-
-    /// <summary>
     /// Retrieves a single dataset by ID. Includes all image entries in the dataset.
     /// </summary>
     /// <param name="datasetId"></param>
@@ -67,29 +60,6 @@ public class DatasetService : IDatasetService
     public DatasetService(AnnotationsDbContext context)
     {
         _dbContext = context;
-    }
-
-
-
-
-
-    /// <summary>
-    /// Retrieves all images within a certain category.
-    /// </summary>
-    /// <param name="category"></param>
-    /// <returns></returns>
-    public async Task<ICollection<ImageModel>> GetFilteredImageSetAsync(string category)
-    {
-        return await _dbContext.Images
-            .Where(img => img.Category == category && !img.IsDeleted)
-            .Select(img => new ImageModel
-            {
-                Id = img.Id,
-                Title = img.Title,
-                Description = img.Description,
-                Category = img.Category,
-            })
-            .ToListAsync();
     }
 
 

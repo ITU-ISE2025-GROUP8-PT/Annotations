@@ -10,12 +10,27 @@ namespace Annotations.Blazor.Client.Services;
 /// </summary>
 public interface IDatasetAccessor
 {
+    /// <summary>
+    /// Retrieves an overview of all datasets. This will not include images.
+    /// </summary>
+    /// <returns></returns>
     Task<IList<DatasetModel>> GetDatasetOverviewAsync();
 
+    /// <summary>
+    /// Retrieves a single dataset by ID. This will include all image entries in the dataset.
+    /// </summary>
+    /// <param name="datasetId"></param>
+    /// <returns></returns>
     Task<DatasetModel?> GetDatasetAsync(string datasetId);
 
+    /// <summary>
+    /// Retrieves all images within a certain category. This will return a list of image models.
+    /// </summary>
+    /// <param name="category"></param>
+    /// <returns></returns>
     Task<IList<ImageModel>> GetImagesByCategoryAsync(string category);
 }
+
 
 
 /// <summary>

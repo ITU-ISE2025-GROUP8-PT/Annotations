@@ -155,6 +155,12 @@ public class ImageUploader : IImageUploader
 
 
 
+    /// <summary>
+    /// Validates that the input properties are set correctly.
+    /// If any of the properties are not set correctly, a suitable error message is returned.
+    /// </summary>
+    /// <returns></returns>
+    /// <exception cref="ArgumentNullException"></exception>
     private ImageUploaderResult? ValidateInputProperties()
     {
         if (OriginalFilename == string.Empty)
@@ -189,6 +195,12 @@ public class ImageUploader : IImageUploader
 
 
 
+    /// <summary>
+    /// Uploads the image to the Azure Blob Storage.
+    /// </summary>
+    /// <param name="imageId"></param>
+    /// <returns></returns>
+    /// <exception cref="InvalidOperationException"></exception>
     private async Task UploadToStorage(int imageId)
     {
         if (ContentType == string.Empty) throw new InvalidOperationException("Media type cannot be empty");
@@ -214,6 +226,11 @@ public class ImageUploader : IImageUploader
 
 
 
+    /// <summary>
+    /// Deletes the database entry. This is done if the upload to Azure Blob Storage fails.
+    /// </summary>
+    /// <param name="image"></param>
+    /// <returns></returns>
     private async Task DeleteDbEntryOnFailure(Image image)
     {
         _dbContext.Images.Remove(image);
@@ -224,6 +241,11 @@ public class ImageUploader : IImageUploader
 
 
 
+    /// <summary>
+    /// Creates a new image entry in the database.
+    /// </summary>
+    /// <returns></returns>
+    /// <exception cref="NullReferenceException"></exception>
     private async Task<Image> AddEntryToDatabase()
     {
         if (UploadedBy == null) throw new NullReferenceException(nameof(UploadedBy));

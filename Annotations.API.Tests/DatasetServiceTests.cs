@@ -160,7 +160,7 @@ public class DatasetServiceTests
 
 
     /// <summary>
-    /// Tests the CreateDatasetAsync method to ensure it creates a new dataset.
+    /// Tests the DeleteDatasetAsync method to ensure it deletes a given dataset. 
     /// </summary>
     /// <returns></returns>
     [Fact]
@@ -399,7 +399,7 @@ public class DatasetServiceTests
 
 
     /// <summary>
-    /// Tests the GetFilteredImageSetAsync method to ensure it returns filtered images when some images are marked as deleted.
+    /// Tests that the GetFilteredImageSetAsync method only returns images from the category that are not marked as deleted. 
     /// </summary>
     /// <returns></returns>
     [Fact]
@@ -474,8 +474,8 @@ public class DatasetServiceTests
             context.Database.EnsureCreated();
             context.Images.Add(new Image { Id = 1, Title = "Image1", Category = "Exclude", CreatedAt = DateTime.UtcNow, UploadedBy = testUser });
             context.Images.Add(new Image { Id = 2, Title = "Image2", Category = "Exclude", CreatedAt = DateTime.UtcNow, UploadedBy = testUser });
-            context.Images.Add(new Image { Id = 3, Title = "Image3", Category = "Exclude", CreatedAt = DateTime.UtcNow, UploadedBy = testUser, IsDeleted = true });
-            context.Images.Add(new Image { Id = 4, Title = "Image4", Category = "Exclude", CreatedAt = DateTime.UtcNow, UploadedBy = testUser, IsDeleted = true });
+            context.Images.Add(new Image { Id = 3, Title = "Image3", Category = "Include", CreatedAt = DateTime.UtcNow, UploadedBy = testUser, IsDeleted = true });
+            context.Images.Add(new Image { Id = 4, Title = "Image4", Category = "Include", CreatedAt = DateTime.UtcNow, UploadedBy = testUser, IsDeleted = true });
             context.SaveChanges();
         }
 

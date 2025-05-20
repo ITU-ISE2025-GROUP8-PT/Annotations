@@ -9,6 +9,10 @@ namespace Annotations.Blazor.Client.Services;
 /// </summary>
 public interface IApiTestAccessor
 {
+    /// <summary>
+    /// Tests the API by calling the "tryme" endpoint.
+    /// </summary>
+    /// <returns></returns>
     Task<IEnumerable<string>> TryMeAsync();
 }
 

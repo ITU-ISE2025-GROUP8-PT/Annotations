@@ -25,7 +25,7 @@ public class DatasetEndpoints
 
         pathBuilder.MapGet("/filter/{category}", FilterImagesHandler);
 
-        pathBuilder.MapGet("/overview", RetrieveAllDatasetHandler);
+        pathBuilder.MapGet("/overview", RetrieveAllDatasetsHandler);
 
         pathBuilder.MapGet("/get/{datasetId}", RetrieveSingleDatasetHandler);
 
@@ -64,7 +64,7 @@ public class DatasetEndpoints
     /// <param name="context"> Annotations database context containing the datasets. </param>
     /// <param name="imageService"> An image service instance. </param>
     /// <returns> A collection of all existing DatasetModels. </returns>
-    private static async Task<ICollection<DatasetModel>> RetrieveAllDatasetHandler(
+    private static async Task<ICollection<DatasetModel>> RetrieveAllDatasetsHandler(
         [FromServices] IDatasetService datasetService)
     {
         return await datasetService.GetDatasetOverviewAsync();

@@ -6,14 +6,33 @@ using Annotations.Core.Models;
 namespace Annotations.Blazor.Client.Services;
 
 
+/// <summary>
+/// Defines the contract for the annotation data accessor service.
+/// </summary>
 public interface IAnnotationDataAccessor
 {
+    /// <summary>
+    /// Retrieves all annotations for a given image. This will return a list of vessel annotations.
+    /// </summary>
+    /// <param name="imageId"></param>
+    /// <returns></returns>
     Task<GetAnnotationsResult> GetAnnotationsForImageAsync(string imageId);
 
+    /// <summary>
+    /// Posts a vessel annotation for a given image. This will save the annotation to the backend API.
+    /// </summary>
+    /// <param name="imageId"></param>
+    /// <param name="vessel"></param>
+    /// <returns></returns>
     Task<HttpStatusCode> PostAnnotationsForImageAsync(string imageId, VesselAnnotationModel vessel);
 }
 
 
+
+/// <summary>
+/// This service is used to access the annotation data.
+/// </summary>
+/// <param name="httpClient"></param>
 public sealed class AnnotationDataAccessor(HttpClient httpClient) : IAnnotationDataAccessor
 {
     public async Task<GetAnnotationsResult> GetAnnotationsForImageAsync(string imageId)

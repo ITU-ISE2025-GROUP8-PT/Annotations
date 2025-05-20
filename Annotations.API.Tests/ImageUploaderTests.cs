@@ -23,7 +23,8 @@ public class ImageUploaderTests
     /// Initially, the database is created in memory and populated with 3 Image entries.
     /// This means that the next image will be assigned ID 4.
     /// 
-    /// Refer to Andrew Lock page 909 for more information on dbContext and in memory database.
+    /// Refer to Andrew Lock "ASP.NET Core in Action" page 909 for more information 
+    /// on dbContext and in memory database when used in testing.
     /// </summary>
     [Fact]
     public async Task OnValidRequest_CanUploadImage()
@@ -225,10 +226,7 @@ public class ImageUploaderTests
 
 
     /// <summary>
-    /// Test to see that it is not possible to upload an image without a user.
-    /// <br />
-    /// Note that this is a server side error.
-    /// An unauthorized user should get access to an endpoint where this is used. 
+    /// Test to see that it is not possible to upload an image without setting a user.
     /// </summary>
     /// <returns></returns>
     [Fact]

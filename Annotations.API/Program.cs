@@ -12,7 +12,9 @@ using Microsoft.Extensions.Azure;
 using Microsoft.Net.Http.Headers;
 using Microsoft.OpenApi.Models;
 
+
 var builder = WebApplication.CreateBuilder(args);
+
 
 // General services.
 builder.Services.AddEndpointsApiExplorer();
@@ -36,7 +38,9 @@ builder.Services.AddSwaggerGen(options =>
         {{security, Array.Empty<string>()}});
 });
 
+
 builder.Services.AddControllers();
+
 
 // This singleton pattern allows in-memory SQLite to work correctly.
 // From: https://www.answeroverflow.com/m/1071789602316238919
@@ -47,11 +51,13 @@ builder.Services.AddSingleton(_ =>
     return connection;
 });
 
+
 builder.Services.AddDbContext<AnnotationsDbContext>((serviceProvider, options) =>
 {
     var connection = serviceProvider.GetRequiredService<SqliteConnection>();
     options.UseSqlite(connection);
 });
+
 
 // Add services to the container.
 // NOTE: Both services expect the authorization header to contain "Bearer " + <the token>.
@@ -62,6 +68,7 @@ builder.Services.AddAuthentication("AnnotationsBearer")
         jwtOptions.Authority = builder.Configuration["authentication:jwt:authority"] ?? throw new InvalidOperationException("JWT Authority not found");
         jwtOptions.Audience = builder.Configuration["authentication:jwt:audience"] ?? throw new InvalidOperationException("JWT Audience not found");
     });
+
 
 // https://learn.microsoft.com/en-us/aspnet/core/security/authorization/limitingidentitybyscheme?view=aspnetcore-8.0
 builder.Services.AddAuthorization(options =>
@@ -74,12 +81,14 @@ builder.Services.AddAuthorization(options =>
     options.DefaultPolicy = defaultAuthorizationPolicyBuilder.Build();
 });
 
+
 builder.Services.AddAzureClients(clientBuilder =>
 {
     clientBuilder.AddBlobServiceClient(builder.Configuration["AzureStorageConnection"]!);
     clientBuilder.AddQueueServiceClient(builder.Configuration["AzureStorageConnection"]!);
     clientBuilder.AddTableServiceClient(builder.Configuration["AzureStorageConnection"]!);
 });
+
 
 builder.Services.AddScoped<IImageService, ImageService>();
 builder.Services.AddTransient<IImageUploader, ImageUploader>();
@@ -129,8 +138,8 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
-    //InitializeTempDatabase();
 }
+
 
 // Middleware pipeline.
 app.UseExceptionHandler("/error");

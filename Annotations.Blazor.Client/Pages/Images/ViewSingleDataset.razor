@@ -19,17 +19,23 @@ else if (dataset != null)
     <div class="container DivToScroll" >
         @* Virtualize is a special loop that loops OverscanCount data - here the imgs received from API *@
         <Virtualize Items="@idGroups" OverscanCount="1">
-            @* OverscanCount must always be divisible by 3! As we have 3 imgs per line
-            It represents the number of images loaded before and after current position *@
             <ItemContent>
                 <p class="imageRowContainer">
-					@* Loop through the 3 images in the current group *@
-					@foreach (var id in context)
-					{
-                        <div class="imageOnRowContainer">
-                            <img class="imageInContainer" src="@($"/api/images/get/{id}")" alt="Image with ID @id" />
-                        </div>
-					}
+                    @* Loads up to 3 images per row *@
+                    @foreach (var id in context)
+                    {
+                        @* If the image ID is -1, we don't want to display anything *@
+                        if (id == -1)
+                        {
+                            <div class="imageOnRowContainer" />
+                        }
+                        else
+                        {
+                            <div class="imageOnRowContainer">
+                                <img class="imageInContainer" src="@($"/api/images/get/{id}")" alt="Image with ID @id" />
+                            </div>
+                        }
+                    }
                 </p>
             </ItemContent>
         </Virtualize>
@@ -53,6 +59,11 @@ else if (dataset != null)
         {
             error = true;
             return;
+        }
+
+        for (int i = 0; i < 3 && dataset.ImageIds.Count % 3 != 0; i++)
+        {
+			dataset.ImageIds.Add(-1);
         }
 
         for (int i = 0; i < dataset.ImageIds.Count; i += 3)

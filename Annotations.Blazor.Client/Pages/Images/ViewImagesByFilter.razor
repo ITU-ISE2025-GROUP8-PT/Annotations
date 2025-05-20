@@ -9,20 +9,37 @@
 
 @* In-line stylecheet to make both lines appear on the same row *@
 <div style=" display: flex; flex-direction:row;">
-   
+
     @* width is mainly for the placement of the filter button *@
     <span style="padding:2%; font-weight: bold; width: 90%; font-size: 215%">Images of category "@category"</span>
     <button class="filterButton">Filter by...</button>
 
 </div>
 
-        
+
 <div class="container DivToScroll">
-    @for (int i = 0; i < images.Count; i++)
-    {
-        @* src is a URL - it's converted from a string of the byte array *@
-        <img class="displayImages" src="/api/images/get/@images[i].Id" alt="Image with ID @images[i].Id" />
-    }
+    @* Virtualize is a special loop that loops OverscanCount data - here the imgs received from API *@
+    <Virtualize Items="@idGroups" OverscanCount="1">
+        <ItemContent>
+            <p class="imageRowContainer">
+                    @* Loads up to 3 images per row *@
+                @foreach (var id in context)
+                {
+                    @* If the image ID is -1, we don't want to display anything *@
+                    if (id == -1)
+                    {
+                        <div class="imageOnRowContainer" />
+                    }
+                    else
+                    {
+                        <div class="imageOnRowContainer">
+                            <img class="imageInContainer" src="@($"/api/images/get/{id}")" alt="Image with ID @id" />
+                        </div>
+                    }
+                }
+            </p>
+        </ItemContent>
+    </Virtualize>
 </div>
 
 
@@ -32,8 +49,20 @@
 
     private IList<ImageModel> images = [];
 
+    private IList<IList<int>> idGroups = new List<IList<int>>();
+
     protected override async Task OnInitializedAsync()
     {
         images = await DatasetAccessor.GetImagesByCategoryAsync(category);
+
+        for (int i = 0; i < 3 && images.Count % 3 != 0; i++)
+        {
+			images.Add(new ImageModel { Id = -1 });
+        }
+
+        for (int i = 0; i < images.Count; i += 3)
+        {
+			idGroups.Add(images.Skip(i).Take(3).Select(e => e.Id).ToList());
+        }
     }
 }

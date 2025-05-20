@@ -5,15 +5,12 @@
 @inject IDatasetAccessor DatasetAccessor
 @attribute [Authorize(Roles = "Administrator, Manager")]
 
-
 @if (error)
 {
     <p>Der opstod desværre en fejl. Prøv igen, eller kontakt din system administrator hvis problemet forsætter.</p>
 }
-@* This will show on screen in a milisecond before imgs load. Should it be "Loading..."? *@
 else if (dataset != null)
 {
-    @* To make both lines on the same row *@
     <div style=" display: flex; flex-direction:row;">
         <span style="padding:2%; font-weight: bold; width: 90%; font-size: 215%">Dataset @datasetId</span>
         <button class="filterButton">Filter by...</button>
@@ -21,13 +18,21 @@ else if (dataset != null)
 
     <div class="container DivToScroll" >
         @* Virtualize is a special loop that loops OverscanCount data - here the imgs received from API *@
-        <Virtualize Items="@dataset.ImageIds" OverscanCount="3">
+        <Virtualize Items="@idGroups" OverscanCount="1">
             @* OverscanCount must always be divisible by 3! As we have 3 imgs per line
             It represents the number of images loaded before and after current position *@
             <ItemContent>
-                <img class="displayImages" src="@($"/api/images/get/{context}")" alt="Image with ID @context" />
+                <p class="imageRowContainer">
+					@* Loop through the 3 images in the current group *@
+					@foreach (var id in context)
+					{
+                        <div class="imageOnRowContainer">
+                            <img class="imageInContainer" src="@($"/api/images/get/{id}")" alt="Image with ID @id" />
+                        </div>
+					}
+                </p>
             </ItemContent>
-        </Virtualize> 
+        </Virtualize>
     </div>
 }
 
@@ -38,6 +43,8 @@ else if (dataset != null)
     private DatasetModel? dataset;
     private bool error;
 
+    private IList<IList<int>> idGroups = new List<IList<int>>();
+
     protected override async Task OnInitializedAsync()
     {
         dataset = await DatasetAccessor.GetDatasetAsync(datasetId);
@@ -45,6 +52,12 @@ else if (dataset != null)
         if (dataset == null)
         {
             error = true;
+            return;
+        }
+
+        for (int i = 0; i < dataset.ImageIds.Count; i += 3)
+        {
+			idGroups.Add(dataset.ImageIds.Skip(i).Take(3).ToList());
         }
     }
 }

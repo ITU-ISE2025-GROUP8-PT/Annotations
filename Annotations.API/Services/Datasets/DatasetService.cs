@@ -103,6 +103,7 @@ public class DatasetService : IDatasetService
     public async Task<ICollection<DatasetModel>> GetDatasetOverviewAsync()
     {
         return await _dbContext.Datasets
+            .Where(ds => !ds.IsDeleted)
             .Include(ds => ds.CreatedBy)
             .Select(ds => ToDatasetModel(ds))
             .ToListAsync();

@@ -46,10 +46,10 @@ public class ImageServiceTests
 
         // 2. Mock Azure Storage
         var mockStore = new MockAzureBlobStorageClientFactory(
-            expectedName:          "Default",
+            expectedName: "Default",
             expectedContainerName: "images",
-            expectedBlobName:      "1",
-            expectedExists:        true);
+            expectedBlobName: "1",
+            expectedExists: true);
 
 
         // Act
@@ -84,7 +84,7 @@ public class ImageServiceTests
 
         var options = new DbContextOptionsBuilder<AnnotationsDbContext>()
             .UseSqlite(connection)
-            .Options;;
+            .Options; ;
 
         using (var context = new AnnotationsDbContext(options))
         {
@@ -261,8 +261,8 @@ public class ImageServiceTests
 
             mockBlobClient
                 .Setup(x => x.DeleteIfExistsAsync(
-                    It.IsAny<DeleteSnapshotsOption>(), 
-                    It.IsAny<BlobRequestConditions>(), 
+                    It.IsAny<DeleteSnapshotsOption>(),
+                    It.IsAny<BlobRequestConditions>(),
                     It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult(Azure.Response.FromValue(expectedExists, Mock.Of<Azure.Response>())));
 
@@ -495,5 +495,117 @@ public class ImageServiceTests
 
         // Assert
         Assert.Empty(result);
+    }
+
+
+
+
+
+    /// <summary>
+    /// Tests the GetMetadataAsync method of the ImageService class to ensure it returns image metadata.
+    /// </summary>
+    /// <returns></returns>
+    [Fact]
+    public async Task GetMetadataAsync_OnValidRequest_ReturnsImageMetadata()
+    {
+        // Arrange
+
+        // 1. Database context
+        var connection = new SqliteConnection("DataSource=:memory:");
+        connection.Open();
+
+        var options = new DbContextOptionsBuilder<AnnotationsDbContext>()
+            .UseSqlite(connection)
+            .Options;
+
+        var testUser = new User
+        {
+            UserId = "1",
+            UserName = "Test User"
+        };
+
+        using (var context = new AnnotationsDbContext(options))
+        {
+            context.Database.EnsureCreated();
+            context.Images.Add(new Image { Id = 1, Title = "Image1", Category = "Include", CreatedAt = DateTime.UtcNow, UploadedBy = testUser });
+            context.SaveChanges();
+        }
+
+        // 2. Mock Azure Storage
+        var mockStore = new MockAzureBlobStorageClientFactory(
+            expectedName: "Default",
+            expectedContainerName: "images",
+            expectedBlobName: "1",
+            expectedExists: true);
+
+
+        // Act
+        ImageModel result;
+
+        using (var context = new AnnotationsDbContext(options))
+        {
+            var imageService = new ImageService(mockStore.MockBlobServiceClientFactory.Object, context);
+            result = await imageService.GetMetadataAsync(1);
+        }
+
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.Equal(1, result.Id);
+    }
+
+
+
+
+
+    /// <summary>
+    /// Tests the GetMetadataAsync method of the ImageService class when the image is not found.
+    /// </summary>
+    /// <returns></returns>
+    [Fact]
+    public async Task GetMetadataAsync_OnImageNotFound_ReturnsNull()
+    {
+        // Arrange
+
+        // 1. Database context
+        var connection = new SqliteConnection("DataSource=:memory:");
+        connection.Open();
+
+        var options = new DbContextOptionsBuilder<AnnotationsDbContext>()
+            .UseSqlite(connection)
+            .Options;
+
+        var testUser = new User
+        {
+            UserId = "1",
+            UserName = "Test User"
+        };
+
+        using (var context = new AnnotationsDbContext(options))
+        {
+            context.Database.EnsureCreated();
+            context.Images.Add(new Image { Id = 1, Title = "Image1", Category = "Include", CreatedAt = DateTime.UtcNow, UploadedBy = testUser });
+            context.SaveChanges();
+        }
+
+        // 2. Mock Azure Storage
+        var mockStore = new MockAzureBlobStorageClientFactory(
+            expectedName: "Default",
+            expectedContainerName: "images",
+            expectedBlobName: "1",
+            expectedExists: true);
+
+
+        // Act
+        ImageModel result;
+
+        using (var context = new AnnotationsDbContext(options))
+        {
+            var imageService = new ImageService(mockStore.MockBlobServiceClientFactory.Object, context);
+            result = await imageService.GetMetadataAsync(2);
+        }
+
+        // Assert
+        Assert.Null(result);
     }
 }

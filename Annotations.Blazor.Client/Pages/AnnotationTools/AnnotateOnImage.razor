@@ -72,17 +72,18 @@
             <div class="mat-layout-grid">
                 <div class="mat-layout-grid-inner">
                     <div class="mat-layout-grid-cell mat-layout-grid-cell-span-2">
-                        @* Shows userdata in the left corner (currently hardcoded) *@
+                        @* Shows userdata in the left corner *@
                         <div class="MatOverwriteGrid">
                             <img src="img/billede1.png" alt="Profile Picture" class="MatOverwriteProfilePic">
-                            <div>
+                            <div style="padding: 1rem">
                                 <b>@userInfo!.Name</b>
                                 <br/>
                                 <small>@userInfo.Role</small>
                             </div>
                         </div>
+                        <MatDivider Style="margin-top: 10%; margin-bottom: 10%"></MatDivider>
                         @* RadioButtons for selecting Annotation types. Radiobuttons ensure that only one button can be on at once *@
-                        <div class="MatOverwriteMarginTop50">
+                        <div>
                             <p>Choose a type here</p>
                             <MatRadioGroup @bind-Value="@_currentVesselAnnotation!.Type">
                                 <div>
@@ -90,6 +91,22 @@
                                 </div>
                                 <div>
                                     <MatRadioButton Value="@("Veins")" TValue="string">Veins</MatRadioButton>
+                                </div>
+                            </MatRadioGroup>
+                        </div>
+                        <MatDivider Style="margin-top: 10%; margin-bottom: 10%"></MatDivider>
+                        @* RadioButtons for selecting Blood Vessel Thickness. *@
+                        <div>
+                            <p>Blood vessel thickness</p>
+                            <MatRadioGroup @bind-Value="@_currentThickness">
+                                <div>
+                                    <MatRadioButton Value="@(1.0)" TValue="double">Small</MatRadioButton>
+                                </div>
+                                <div>
+                                    <MatRadioButton Value="@(3.0)" TValue="double">Medium</MatRadioButton>
+                                </div>                            
+                                <div>
+                                    <MatRadioButton Value="@(5.0)" TValue="double">Large</MatRadioButton>
                                 </div>
                             </MatRadioGroup>
                         </div>

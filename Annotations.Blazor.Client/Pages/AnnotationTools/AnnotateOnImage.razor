@@ -8,7 +8,7 @@
 @inject IAnnotationDataAccessor dataAccessor
 @inject NavigationManager Navigation
 @attribute [Authorize(Roles = "Administrator, Manager, AnnotationsUser")]
-
+@inject AuthenticationStateProvider AuthenticationStateProvider
 
 
 <PageTitle>Annotations</PageTitle>
@@ -76,9 +76,9 @@
                         <div class="MatOverwriteGrid">
                             <img src="img/billede1.png" alt="Profile Picture" class="MatOverwriteProfilePic">
                             <div>
-                                <b>Jane Doe</b>
+                                <b>@userInfo!.Name</b>
                                 <br/>
-                                <small>Surgeon</small>
+                                <small>@userInfo.Role</small>
                             </div>
                         </div>
                         @* RadioButtons for selecting Annotation types. Radiobuttons ensure that only one button can be on at once *@
@@ -287,6 +287,7 @@
     private string _completionTitle = "";
 
     private bool _showSegmentDialog;
+    private UserInfo? userInfo;
     
     // The image on this page is a locally stored, hardcoded image, because
     // the uploaded images are currently saved on a user-local azurite instance.
@@ -349,6 +350,14 @@
     /// </summary>
     protected override async Task OnInitializedAsync()
     {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (user.Identity?.IsAuthenticated == true)
+        {
+            userInfo = UserInfo.FromClaimsPrincipal(user);
+        }
+        
         _currentUrl = Navigation.Uri;
         Navigation.LocationChanged += OnLocationChanged;
         

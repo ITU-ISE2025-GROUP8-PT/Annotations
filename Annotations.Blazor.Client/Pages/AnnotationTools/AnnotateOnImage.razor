@@ -52,10 +52,10 @@
                                 <MatRadioButton Value="@(1.0)" TValue="double">Small</MatRadioButton>
                             </div>
                             <div>
-                                <MatRadioButton Value="@(2.0)" TValue="double">Medium</MatRadioButton>
+                                <MatRadioButton Value="@(3.0)" TValue="double">Medium</MatRadioButton>
                             </div>                            
                             <div>
-                                <MatRadioButton Value="@(4.0)" TValue="double">Large</MatRadioButton>
+                                <MatRadioButton Value="@(4.5)" TValue="double">Large</MatRadioButton>
                             </div>
                         </MatRadioGroup>
                     </p>
@@ -327,7 +327,7 @@
     private List<VesselSegmentModel> _drawableSegments = new();
     private List<VesselPointModel> _drawablePoints = new();
 
-    private double _currentThickness = 0.0;
+    private double _currentThickness = 1.0;
 
     // References the image container used in the html portion (bounded to the @ref tag)
     // This is to bypass issues with JavaScript on a Blazor application.

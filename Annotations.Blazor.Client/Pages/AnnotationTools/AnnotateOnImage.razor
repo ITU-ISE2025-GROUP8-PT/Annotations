@@ -47,12 +47,17 @@
                 <MatDialogTitle>Blood vessel segment annotation</MatDialogTitle>
                 <MatDialogContent>
                     <p>
-                        <MatTextField @bind-Value="_currentSegment!.Thickness"
-                                      Label="Blood vessel thickness"
-                                      FullWidth="true"
-                                      Immediate="true"
-                                      class="MatOverwriteWhiteBG">
-                        </MatTextField>
+                        <MatRadioGroup @bind-Value="@_currentSegment!.Thickness">
+                            <div>
+                                <MatRadioButton Value="@(1.0)" TValue="double">Small</MatRadioButton>
+                            </div>
+                            <div>
+                                <MatRadioButton Value="@(2.0)" TValue="double">Medium</MatRadioButton>
+                            </div>                            
+                            <div>
+                                <MatRadioButton Value="@(4.0)" TValue="double">Large</MatRadioButton>
+                            </div>
+                        </MatRadioGroup>
                     </p>
                 </MatDialogContent>
                 <MatDialogActions>
@@ -152,7 +157,7 @@
                                         <line x1="@segment.StartPoint.X" y1="@segment.StartPoint.Y"
                                               x2="@segment.EndPoint.X" y2="@segment.EndPoint.Y"
                                               stroke="white"
-                                              stroke-width="2"
+                                              stroke-width=@segment.Thickness
                                               pointer-events="none"/>
                                     }
 
@@ -180,7 +185,7 @@
                                         <line x1="@segment.StartPoint.X" y1="@segment.StartPoint.Y"
                                               x2="@segment.EndPoint.X" y2="@segment.EndPoint.Y"
                                               stroke="@(_currentSegment == segment ? "red" : "white")"
-                                              stroke-width="2"
+                                              stroke-width=@segment.Thickness
                                               pointer-events="none"/>
                                     }
 
@@ -302,7 +307,7 @@
         Id = 0,
         StartPoint = null!,
         EndPoint = null!,
-        Thickness = 0,
+        Thickness = 1.0,
         IsVisible = true
     };
 

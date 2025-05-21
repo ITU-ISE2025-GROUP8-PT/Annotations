@@ -236,33 +236,36 @@
                                             </div>
                                         </MatExpansionPanelHeader>
                                     </MatExpansionPanelSummary>
-                                    <MatExpansionPanelDetails>
-                                        <h6>Vessel Points</h6>
-                                        @for (var j = 0; j < _savedVessels[i1].Points.Count; j++)
-                                        {
-                                            var j1 = j;
-                                            var point = _savedVessels[i1].Points[j1];
-                                            <p>
-                                                point @j
-                                                @* Visibility button that can be clicked to toggle/ untoggle points 
+                                    @if (_savedVessels[i1].IsVisible)
+                                    {
+                                        <MatExpansionPanelDetails>
+                                            <h6>Vessel Points</h6>
+                                            @for (var j = 0; j < _savedVessels[i1].Points.Count; j++)
+                                            {
+                                                var j1 = j;
+                                                var point = _savedVessels[i1].Points[j1];
+                                                <p>
+                                                    point @j
+                                                    @* Visibility button that can be clicked to toggle/ untoggle points 
                                                    MatIconButton is chosen because its easy to change/ use icons with *@
-                                                <MatIconButton Icon="visibility_off" ToggleIcon="visibility" @bind-Toggled="@point.IsVisible">
-                                                </MatIconButton>
-                                            </p>
-                                        }
-                                        <h6>Vessel Segments</h6>
-                                        @for (var j = 0; j < _savedVessels[i1].Segments.Count; j++)
-                                        {
-                                            var j1 = j;
-                                            var segment = _savedVessels[i1].Segments[j1];
-                                            <p>
-                                                segment @j
-                                                @* Visibility button that can be clicked to toggle/ untoggle segments *@
-                                                <MatIconButton Icon="visibility_off" ToggleIcon="visibility" @bind-Toggled="@segment.IsVisible">
-                                                </MatIconButton>
-                                            </p>
-                                        }
-                                    </MatExpansionPanelDetails>
+                                                    <MatIconButton Icon="visibility_off" ToggleIcon="visibility" @bind-Toggled="@point.IsVisible">
+                                                    </MatIconButton>
+                                                </p>
+                                            }
+                                            <h6>Vessel Segments</h6>
+                                            @for (var j = 0; j < _savedVessels[i1].Segments.Count; j++)
+                                            {
+                                                var j1 = j;
+                                                var segment = _savedVessels[i1].Segments[j1];
+                                                <p>
+                                                    segment @j
+                                                    @* Visibility button that can be clicked to toggle/ untoggle segments *@
+                                                    <MatIconButton Icon="visibility_off" ToggleIcon="visibility" @bind-Toggled="@segment.IsVisible">
+                                                    </MatIconButton>
+                                                </p>
+                                            }
+                                        </MatExpansionPanelDetails>
+                                    }
                                 </MatExpansionPanel>
                             }
                         </MatAccordion>

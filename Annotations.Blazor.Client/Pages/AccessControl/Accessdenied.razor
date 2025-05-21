@@ -1,0 +1,16 @@
+﻿@page "/accessdenied"
+@using Microsoft.AspNetCore.Authorization
+@inject IHttpClientFactory ClientFactory
+@attribute [Authorize]
+
+<PageTitle>Accessdenied</PageTitle>
+
+<div style="display: flex; justify-content: center; align-items: center; flex-direction: column; height: 75vh; text-align: center;">
+    <h1 style="font-size: clamp(12px, 2vw, 24px);">Unfortunately you do not have the required permission to access this site.<br/>Contact your system administrator to access this page</h1>
+    <img src="img/Accessdenied.png" alt="Access Denied" style="width: auto; height: auto; max-height: 50%;">
+</div>
+
+
+
+
+

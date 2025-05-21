@@ -5,8 +5,11 @@
 
 using Annotations.Blazor;
 using Annotations.Blazor.Components;
-using Annotations.Blazor.Services;
+using Annotations.Blazor.Extensions;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Components.Authorization;
+using Yarp.ReverseProxy.Transforms;
 
 
 const string oidcScheme = "Annotations OIDC";
@@ -27,22 +30,31 @@ builder.Services.AddAuthenticationServiceCollection(builder.Configuration);
  */
 builder.Services.ConfigureCookieOidcRefresh(CookieAuthenticationDefaults.AuthenticationScheme, oidcScheme);
 
+
 builder.Services.AddAuthorization();
 builder.Services.AddCascadingAuthenticationState();
+builder.Services.AddScoped<AuthenticationStateProvider, PersistingAuthenticationStateProvider>();
 
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
-    .AddInteractiveServerComponents();
+    .AddInteractiveWebAssemblyComponents();
 
+builder.Services.AddHttpForwarder();
 builder.Services.AddHttpContextAccessor();
-builder.Services.AddHttpClient();
-builder.Services.AddScoped<IAPIServices, APIServices>();
+
+
 
 var app = builder.Build();
 
+
+
 // Configure the HTTP request pipeline.
-if (!app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment())
+{
+    app.UseWebAssemblyDebugging();
+}
+else
 {
     app.UseExceptionHandler("/Error", createScopeForErrors: true);
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
@@ -51,13 +63,35 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+
 app.UseStaticFiles();
 app.UseAntiforgery();
 
+
 app.MapRazorComponents<App>()
-    .AddInteractiveServerRenderMode();
+    .AddInteractiveWebAssemblyRenderMode()
+    .AddAdditionalAssemblies(typeof(Annotations.Blazor.Client._Imports).Assembly);
+
+
+app.MapForwarder("/api/{**remainder}", "https://localhost:7250/", transformBuilder =>
+{
+    transformBuilder.AddRequestTransform(async transformContext =>
+    {
+        var accessToken = await transformContext.HttpContext.GetTokenAsync("access_token");
+        transformContext.ProxyRequest.Headers.Authorization = new("Bearer", accessToken);
+
+        // Preserve the original request path
+        var requestPath = transformContext.HttpContext.Request.RouteValues["remainder"]?.ToString() ?? string.Empty;
+
+        // Preserve query string parameters
+        var queryString = transformContext.HttpContext.Request.QueryString.Value ?? string.Empty;
+
+        transformContext.ProxyRequest.RequestUri = new Uri($"https://localhost:7250/{requestPath}{queryString}");
+    });
+}).RequireAuthorization();
+
 
 app.MapGroup("/authentication").MapLoginAndLogout();
-app.MapGroup("/images");
+
 
 app.Run();

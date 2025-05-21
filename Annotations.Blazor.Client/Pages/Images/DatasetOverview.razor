@@ -1,0 +1,70 @@
+@page "/images/datasets"
+@using Microsoft.AspNetCore.Authorization
+@using Annotations.Core.Models
+@using global::Annotations.Blazor.Client.Services
+@inject IDatasetAccessor DatasetAccessor
+@attribute [Authorize(Roles = "Administrator, Manager")]
+
+
+<div style=" display: flex; flex-direction:row;">
+    <span style="margin-left:13%; margin-top:0.0001%; padding-bottom:2%; font-weight: bold; width: 72%; font-size: 215%">Manage datasets</span>
+    <div style="width:15%">
+        <button class="orderingButton">Order by...</button>
+    </div>
+</div>
+
+
+@if (error)
+{
+    <p>Der opstod desværre en fejl. Prøv igen, eller kontakt din system administrator hvis problemet forsætter.</p>
+}
+
+
+<MatThemeProvider Theme="_theme">
+    <MatTable Items="datasets" class="table-formatting">
+        <MatTableHeader>
+            <th>Dataset ID</th>
+            <th>No. of Images</th>
+            <th>Category</th>
+            <th>Annotated By</th>
+            <th>Reviewed By</th>
+        </MatTableHeader>
+        <MatTableRow>
+            <td>
+                <MatButtonLink href="@($"/images/datasets/{context.Id}")">@context.Title</MatButtonLink>
+            </td>
+            <td>
+                @context.ImageCount
+            </td>
+            <td>
+                @context.Category
+            </td>
+            <td>
+                @context.AnnotatedBy
+            </td>
+            <td>
+                @context.ReviewedBy
+            </td>
+        </MatTableRow>
+    </MatTable>
+</MatThemeProvider>
+
+
+@code{
+    private IList<DatasetModel> datasets = [];
+    private bool error;
+    
+    private MatTheme _theme = new MatTheme()
+    {
+        Primary = MatThemeColors.Green._800.Value
+    };
+
+    protected override async Task OnInitializedAsync()
+    {
+		datasets = await DatasetAccessor.GetDatasetOverviewAsync();
+		if (datasets.Count() == 0)
+		{
+			error = true;
+		}
+    }
+}

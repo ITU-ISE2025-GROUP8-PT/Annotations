@@ -1,6 +1,5 @@
-﻿using System.Net.Http;
-using Annotations.Blazor.Components.Pages.Annotations;
-using Annotations.Blazor.Services;
+﻿using Annotations.Blazor.Client.Pages.AnnotationTools;
+using Annotations.Blazor.Client.Services;
 using Microsoft.AspNetCore.Http;
 
 
@@ -17,7 +16,7 @@ public class AnnotateOnImageTests : TestContext
         var authContext = this.AddTestAuthorization();
         authContext.SetAuthorized("", AuthorizationState.Unauthorized); // fakes authorized state for a fake user
         
-        Services.AddSingleton<IAPIServices, APIServices>();
+        Services.AddSingleton<IAnnotationDataAccessor, AnnotationDataAccessor>();
         Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
         Services.AddHttpClient();
         
@@ -37,7 +36,7 @@ public class AnnotateOnImageTests : TestContext
         var authContext = this.AddTestAuthorization();
         authContext.SetAuthorized("FAKE USER TEST"); // fakes authorized state for a fake user
         
-        Services.AddSingleton<IAPIServices, APIServices>();
+        Services.AddSingleton<IAnnotationDataAccessor, AnnotationDataAccessor>();
         Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
         Services.AddHttpClient();
         

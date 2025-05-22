@@ -6,16 +6,21 @@ info:
     The API allows the Admin user role to upload and delete angiographic images.
     Users can only be created or deleted by any user with the Admin user role, following RBAC principles.
     
-  version: 1.2.0
+  version: 1.3.0
 tags:
   - name: Reviews
-    description: Operations related to reviewing angiographic images.
+    description: Endpoints related to reviewing angiographic images (not implemented).
   - name: Annotations
-    description: Operations related to annotating angiographic images.
+    description: Endpoints related to annotating angiographic images.
   - name: Images
-    description: Operations related to managing the angiographic images.
+    description: Endpoints related to managing the angiographic images.
   - name: Users
-    description: Operations related to managing users and user roles. Most of these operations are handled by the CMS system Orchard Core, maintaining our user base.
+    description: Endpoints related to managing users and user roles. Most of these endpoints are handled by the CMS system Orchard Core, maintaining our user base.
+  - name: Datasets
+    description: Endpoints related to managing datasets of angiographic images.
+  - name: API Errors
+    description: Endpoints related to handling errors in Annotations.API
+    
 paths:
   /images/upload:
     post:
@@ -254,169 +259,335 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/UserModel'
+                  
+  /datasets/overview:
+    get:
+      tags:
+        - Datasets
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DatasetModel'
+  /datasets/get/{datasetId}:
+    get:
+      tags:
+        - Datasets
+      parameters:
+        - name: datasetId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: OK
+  /datasets/create:
+    post:
+      tags:
+        - Datasets
+      parameters:
+        - name: title
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: category
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ModifyDatasetResult'
+        '404':
+          description: Dataset not found
+  /datasets/delete/{datasetId}:
+    delete:
+      tags:
+        - Datasets
+      parameters:
+        - name: datasetId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: OK
+        '404':
+          description: Dataset not found
+  /datasets/set-images/{datasetId}:
+    put:
+      tags:
+        - Datasets
+      parameters:
+        - name: datasetId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int32
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: integer
+                format: int32
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ModifyDatasetResult'
+        '404':
+          description: Dataset or images not found
+          
+  /images/annotations/exception:
+    get:
+      tags:
+        - API Errors
+      responses:
+        '200':
+          description: OK
+  /error:
+    get:
+      tags:
+        - API Errors
+      responses:
+        '200':
+          description: OK
+          content:
+            text/plain:
+              schema:
+                type: string
         
 components: 
   schemas:
-    UserCreateRequest:
-      type: object
-      properties:
-        firstName:
-          type: string
-        lastName:
-          type: string
-        email:
-          type: string
-        password:
-          type: string
-          description: Some generated password, that can later be changed by the user
-        phone:
-          type: string
-        jobTitle:
-          type: string
-        affiliation:
-          type: string
-        profilePicture:
-          type: string
-          format: binary
-        userRole:
-          type: string
-          enum: [ "admin", "annotator", "reviewer" ]
-      required:
-        - email
-        - password
-        - role
-    UserUpdateRequest:
-      type: object
-      properties:
-        firstName:
-          type: string
-        lastName:
-          type: string
-        email:
-          type: string
-        password:
-          type: string
-        phone:
-          type: string
-        jobTitle:
-          type: string
-        affiliation:
-          type: string
-        profilePicture:
-          type: string
-          format: binary
-        userRole:
-          type: string
-          description: The specified user's authorization (Can only be changed by Admin)
-          enum: [ "admin", "annotator", "reviewer" ]
-    User:
-      type: object
-      properties: 
-        id:
-          type: integer
-          format: "int64"
-        firstName:
-          type: string
-        lastName:
-          type: string
-        email:
-          type: string
-        password:
-          type: string
-        phone:
-          type: string
-        jobTitle:
-          type: string
-        affiliation:
-          type: string
-        profilePicture:
-          type: string
-          format: binary
-        totalAssignmentsFinished:
-          type: integer
-        userRole:
-          type: string
-          description: The specified user's authorization
-          enum: [ "admin", "annotator", "reviewer" ]
-      required:
-        - id
-        - password
-        - userRole
-    Image:
+    ImageModel:
       type: object
       properties:
         id:
           type: integer
-          format: "int64"
-        uploadedBy:
-          type: integer
-          format: "int64"
-          description: The ID of the Admin that uploaded the image
-        deletedBy:
-          type: integer
-          format: "int64"
-          description: The ID of the Admin that deleted the image
-        imageString:
-          type: string
-          format: binary
-          description: The image file to upload
+          format: int32
         title:
           type: string
-          description: A title for the image
-        description: #name of the field
+          nullable: true
+        description:
           type: string
-          description: A description of the image    
+          nullable: true
+        category:
+          type: string
+          nullable: true
+        datasetsIds:
+          type: array
+          items:
+            type: integer
+            format: int32
+          nullable: true
+      additionalProperties: false
+    ImageUploaderResult:
       required:
-        - id
-        - imageString
-    ImageRequest:
+        - statusCode
       type: object
       properties:
-        imageString:
+        statusCode:
+          type: integer
+          format: int32
+        error:
           type: string
-          format: binary
-          description: The image file to upload
-        title:
-          type: string
-          description: A title for the image
-        description: #name of the field
-          type: string
-          description: A description of the image
-      required:
-        - imageString
+          nullable: true
+        imageId:
+          type: integer
+          format: int32
+      additionalProperties: false
+      
     Annotation:
+      required:
+        - annotationTree
+        - imgId
+        - userId
       type: object
-      properties: 
+      properties:
+        id:
+          type: integer
+          format: int32
+        userId:
+          minLength: 1
+          type: string
         imgId:
           type: integer
-          format: "int64"
-        mpId:
-          type: integer
-          format: "int64"
-        id:
-          type: integer
-          format: "int64"
-        annotationType:
-          type: string
-          description: The type of annotation made by the user
-          # TODO: make enum of different annotation types
-        annotations:
-          type: string
-          description: The annotations made by the user on the specific image
+          format: int32
+        annotationTree:
+          $ref: '#/components/schemas/VesselAnnotation'
+      additionalProperties: false
+    VesselAnnotation:
       required:
-        - imgId
-        - mpId
-        - id
-    AnnotationRequest:
+        - description
+        - imagePath
+        - isVisible
+        - points
+        - segments
+        - type
       type: object
       properties:
-        annotationType:
+        id:
+          type: integer
+          format: int32
+        imagePath:
+          minLength: 1
           type: string
-          description: The type of annotation made by the user
-          # TODO: make enum of different annotation types
-        annotations:
+        points:
+          type: array
+          items:
+            $ref: '#/components/schemas/VesselPoint'
+        segments:
+          type: array
+          items:
+            $ref: '#/components/schemas/VesselSegment'
+        description:
+          minLength: 1
           type: string
-          description: The annotations made by the user on the specific image
+        type:
+          minLength: 1
+          type: string
+        isVisible:
+          type: boolean
+      additionalProperties: false
+    VesselAnnotationModel:
+      required:
+        - description
+        - imagePath
+        - isVisible
+        - points
+        - segments
+        - type
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+        imagePath:
+          type: string
+          nullable: true
+        points:
+          type: array
+          items:
+            $ref: '#/components/schemas/VesselPointModel'
+          nullable: true
+        segments:
+          type: array
+          items:
+            $ref: '#/components/schemas/VesselSegmentModel'
+          nullable: true
+        description:
+          type: string
+          nullable: true
+        type:
+          type: string
+          nullable: true
+        isVisible:
+          type: boolean
+      additionalProperties: false
+    VesselPoint:
+      required:
+        - id
+        - isVisible
+        - x
+        - y
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+        x:
+          type: integer
+          format: int32
+        y:
+          type: integer
+          format: int32
+        isVisible:
+          type: boolean
+      additionalProperties: false
+    VesselPointModel:
+      required:
+        - id
+        - isVisible
+        - x
+        - y
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+        x:
+          type: integer
+          format: int32
+        y:
+          type: integer
+          format: int32
+        isVisible:
+          type: boolean
+      additionalProperties: false
+    VesselSegment:
+      required:
+        - endPoint
+        - id
+        - isVisible
+        - startPoint
+        - thickness
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+        startPoint:
+          $ref: '#/components/schemas/VesselPoint'
+        endPoint:
+          $ref: '#/components/schemas/VesselPoint'
+        thickness:
+          type: number
+          format: double
+        isVisible:
+          type: boolean
+      additionalProperties: false
+    VesselSegmentModel:
+      required:
+        - endPoint
+        - id
+        - isVisible
+        - startPoint
+        - thickness
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+        startPoint:
+          $ref: '#/components/schemas/VesselPointModel'
+        endPoint:
+          $ref: '#/components/schemas/VesselPointModel'
+        thickness:
+          type: number
+          format: double
+        isVisible:
+          type: boolean
+      additionalProperties: false
+      
     Review:
       type: object
       properties:
@@ -449,111 +620,72 @@ components:
         accepted:
           type: boolean
           description: Whether or not the review has been accepted
-  /datasets/overview:
-    get:
-      tags:
-        - DatasetEndpoints
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/DatasetModel'
-  /datasets/get/{datasetId}:
-    get:
-      tags:
-        - DatasetEndpoints
-      parameters:
-        - name: datasetId
-          in: path
-          required: true
-          schema:
+          
+    UserModel:
+      required:
+        - userName
+      type: object
+      properties:
+        userName:
+          type: string
+          nullable: true
+      additionalProperties: false
+      
+    DatasetModel:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+        title:
+          type: string
+          nullable: true
+        description:
+          type: string
+          nullable: true
+        imageCount:
+          type: integer
+          format: int32
+        imageIds:
+          type: array
+          items:
             type: integer
             format: int32
-      responses:
-        '200':
-          description: OK
-  /datasets/create:
-    post:
-      tags:
-        - DatasetEndpoints
-      parameters:
-        - name: title
-          in: query
-          required: true
-          schema:
-            type: string
-        - name: category
-          in: query
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ModifyDatasetResult'
-  /datasets/delete/{datasetId}:
-    delete:
-      tags:
-        - DatasetEndpoints
-      parameters:
-        - name: datasetId
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int32
-      responses:
-        '200':
-          description: OK
-  /datasets/set-images/{datasetId}:
-    put:
-      tags:
-        - DatasetEndpoints
-      parameters:
-        - name: datasetId
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int32
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: array
-              items:
-                type: integer
-                format: int32
-        required: true
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ModifyDatasetResult'
-    /images/annotations/exception:
-    get:
-      tags:
-        - Annotations.API
-      responses:
-        '200':
-          description: OK
-  /error:
-    get:
-      tags:
-        - Annotations.API
-      responses:
-        '200':
-          description: OK
-          content:
-            text/plain:
-              schema:
-                type: string
+          nullable: true
+        category:
+          type: string
+          nullable: true
+        createdBy:
+          $ref: '#/components/schemas/UserModel'
+        createdAt:
+          type: string
+          format: date-time
+          nullable: true
+        annotatedBy:
+          $ref: '#/components/schemas/UserModel'
+        reviewedBy:
+          $ref: '#/components/schemas/UserModel'
+      additionalProperties: false
+    ModifyDatasetResult:
+      required:
+        - statusCode
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          format: int32
+        error:
+          type: string
+          nullable: true
+        dataset:
+          $ref: '#/components/schemas/DatasetModel'
+  
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      description: JWT Authentication header
+      name: Authorization
+      in: header
+      
+security:
+  - Bearer: [ ]

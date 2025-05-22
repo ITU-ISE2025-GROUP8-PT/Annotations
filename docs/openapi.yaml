@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Annotations PerfusionTech
-  description: |
+  description:  |
     This API allows medical professionals to annotate angiographic images, and review other users' annotations.
     The API allows the Admin user role to upload and delete angiographic images.
     Users can only be created or deleted by any user with the Admin user role, following RBAC principles.
@@ -17,113 +17,79 @@ tags:
   - name: Users
     description: Operations related to managing users and user roles.
 paths:
-  /images/upload: # If admin ID is required for this endpoint, maybe add it to path: /{adminId}/uploadImage
+/images/upload:
     post:
       summary: Upload an image
       description: Admin can upload angiographic images for reviewers and annotators to use.
       tags:
         - Images
-      operationId: postImage # Used to make method names, when generating code
-      # TODO: identify security measures for such operations
+      parameters:
+        - name: category
+          in: query
+          required: true
+          schema:
+            type: string
       requestBody:
         content:
-          multipart/form-data: # Swagger Docs for file upload
+          multipart/form-data:
             schema:
-              $ref: '#/components/schemas/ImageRequest'
+              required:
+                - image
+              type: object
+              properties:
+                image:
+                  type: string
+                  format: binary
+            encoding:
+              image:
+                style: form
       responses:
-        '200':
+        '201':
           description: Image uploaded successfully
           content:
-            application/json: 
-              schema:
-                $ref: '#/components/schemas/Image'
-        '403':
-          description: Forbidden (user not authorized)
-          content:
             application/json:
               schema:
-                type: string
-                example: "You are not authorized to upload this image"
-        '401':
-          description: Unauthorized (authentication required)
-          content:
-            application/json:
-              schema:
-                type: string
-                example: "Authentication required"
-  /images/{imageId}:
+                $ref: '#/components/schemas/ImageUploaderResult'
+    /images/delete/{imageId}:
     delete:
       summary: Delete an image
       description: An admin user role, can delete angiographic images if needed.
       tags:
-        - Images
-      operationId: deleteImage
-      # TODO: identify security measures for such operations
+      - Images
       parameters:
         - name: imageId
           in: path
           required: true
           schema:
-            type: string
+            type: integer
+            format: int32
           description: The unique image ID for the specified image
       responses:
         '204': # Successful request, with nothing to be returned to the client
           description: Image was successfully deleted
         '404':
-          description: Image not found
-          content:
-            application/json:
-              schema:
-                type: string
-                example: "Image not found"
-        '403':
-          description: Forbidden (user not authorized)
-          content:
-            application/json:
-              schema:
-                type: string
-                example: "You are not authorized to delete this image"
+        description: Image not found
         '401':
           description: Unauthorized (authentication required)
-          content:
-            application/json:
-              schema:
-                type: string
-                example: "Authentication required"
+    /images/get/{imageId}:
     get:
       summary: Get an image by imageId
       description: All user roles will be able to access an image by imageId
       tags:
-        - Images
-      operationId: getImage
+      - Images
       parameters:
         - name: imageId
           in: path
           required: true
           schema:
-            type: string
+            type: integer
+            format: int32
           description: The unique image ID for the specified image
       responses:
         '200':
-          description: Successful operation
-          content:
-            application/json: 
-              schema:
-                type: string
-                example: "Successful operation"
-        '400':
-          description: Invalid ID supplied
+          description: OK
         '404':
           description: Image not found
-    patch:
-      summary: Update an image
-      description: Partially update an already existing image's description
-      operationId: updateImage
-      tags:
-        - Images
-      requestBody:
-        required: true
-        content:
           application/json:
             schema:
               type: object
@@ -141,7 +107,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Image'            
-  /images/{imageId}/annotations:
+    /images/{imageId}/annotations:
     post:
       summary: Create a new annotation for an angiographic image
       operationId: createAnnotation

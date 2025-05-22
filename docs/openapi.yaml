@@ -107,7 +107,7 @@ paths:
   /images/filter/{category}:
     get:
       tags:
-        - ImageEndpoints
+        - Images
       parameters:
         - name: category
           in: path
@@ -123,10 +123,11 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/ImageModel'
-      /images/annotations/save:
-      post:
+                  
+  /images/annotations/save:
+    post:
       tags:
-        - AnnotationEndpoints
+        - Annotations
       requestBody:
         content:
           application/json:
@@ -136,10 +137,10 @@ paths:
       responses:
         '200':
           description: OK
-      /images/annotations/{annotationId}:
-      get:
+  /images/annotations/{annotationId}:
+    get:
       tags:
-        - AnnotationEndpoints
+        - Annotations
       parameters:
         - name: annotationId
           in: path
@@ -154,10 +155,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Annotation'
-      /images/annotations:
-      get:
+  /images/annotations:
+    get:
       tags:
-        - AnnotationEndpoints
+        - Annotations
       parameters:
         - name: imagePath
           in: query
@@ -167,16 +168,20 @@ paths:
       responses:
         '200':
           description: OK
+  
+  /annotations/{annotationId}/review:
+    post:
+      summary: Add a review to an annotation
+      operationId: createReview
       tags:
         - Reviews
       requestBody:
-        description: The review object 
+        description: The review object
         required: true
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/ReviewRequest'
-              
       responses:
         '200':
           description: Review was created successfully
@@ -235,6 +240,7 @@ paths:
           description: Invalid review ID supplied
         '404':
           description: Review not found
+          
   /admin/user:
     post:
       summary: Create a new user (Admin only)

@@ -263,9 +263,26 @@ It will then be possible to assign these roles to users, using the user manageme
 
 ## 6. Set up SQLite database connection
 
-We are using an SQLite database to store blood vessel trees for local development. For `Annotations.API` you will need to set a user secret. An SQLite database will be created/used based on the connection string provided. I.e.:
+We are using an SQLite database to store blood vessel trees for local development. For `Annotations.API` you will need to set a user secret. An SQLite database will be created/used based on the connection string provided, by running below command(s) from your terminal:
+
+For Windows machines:
 ```bash
 dotnet user-secrets set "ConnectionStrings:DefaultConnection" "DataSource=C:\temp\annotations.db"
+```
+
+For Mac machines:
+```bash
+echo $TMPDIR
+```
+to find your temporary directory.
+Then run: 
+```bash
+dotnet user-secrets set "ConnectionStrings:DefaultConnection" "DataSource=<yourpath>"
+```
+
+For Linux Machines:
+```bash
+dotnet user-secrets set "ConnectionStrings:DefaultConnection" "DataSource=tmp"
 ```
 
 ## 7. Start the app

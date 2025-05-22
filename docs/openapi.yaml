@@ -18,8 +18,6 @@ tags:
     description: Endpoints related to managing users and user roles. Most of these endpoints are handled by the CMS system Orchard Core, maintaining our user base.
   - name: Datasets
     description: Endpoints related to managing datasets of angiographic images.
-  - name: API Errors
-    description: Endpoints related to handling errors in Annotations.API
     
 paths:
   /images/upload:
@@ -303,14 +301,12 @@ paths:
           schema:
             type: string
       responses:
-        '200':
-          description: OK
+        '201':
+          description: Created
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ModifyDatasetResult'
-        '404':
-          description: Dataset not found
   /datasets/delete/{datasetId}:
     delete:
       tags:
@@ -348,33 +344,14 @@ paths:
                 format: int32
         required: true
       responses:
-        '200':
-          description: OK
+        '201':
+          description: Dataset images updated successfully
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ModifyDatasetResult'
         '404':
           description: Dataset or images not found
-          
-  /images/annotations/exception:
-    get:
-      tags:
-        - API Errors
-      responses:
-        '200':
-          description: OK
-  /error:
-    get:
-      tags:
-        - API Errors
-      responses:
-        '200':
-          description: OK
-          content:
-            text/plain:
-              schema:
-                type: string
         
 components: 
   schemas:

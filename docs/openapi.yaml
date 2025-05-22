@@ -18,11 +18,10 @@ tags:
     description: Operations related to managing users and user roles.
 paths:
 /images/upload:
-    post:
-      summary: Upload an image
-      description: Admin can upload angiographic images for reviewers and annotators to use.
+      /images/upload:
+      post:
       tags:
-        - Images
+        - ImageEndpoints
       parameters:
         - name: category
           in: query
@@ -44,18 +43,16 @@ paths:
               image:
                 style: form
       responses:
-        '201':
-          description: Image uploaded successfully
+        '200':
+          description: OK
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ImageUploaderResult'
-    /images/delete/{imageId}:
-    delete:
-      summary: Delete an image
-      description: An admin user role, can delete angiographic images if needed.
+      /images/get/{imageId}:
+      get:
       tags:
-      - Images
+        - ImageEndpoints
       parameters:
         - name: imageId
           in: path
@@ -63,212 +60,102 @@ paths:
           schema:
             type: integer
             format: int32
-          description: The unique image ID for the specified image
-      responses:
-        '204': # Successful request, with nothing to be returned to the client
-          description: Image was successfully deleted
-        '404':
-        description: Image not found
-        '401':
-          description: Unauthorized (authentication required)
-    /images/get/{imageId}:
-    get:
-      summary: Get an image by imageId
-      description: All user roles will be able to access an image by imageId
-      tags:
-      - Images
-      parameters:
-        - name: imageId
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int32
-          description: The unique image ID for the specified image
       responses:
         '200':
           description: OK
-        '404':
-          description: Image not found
-          application/json:
-            schema:
-              type: object
-              properties:
-                title:
-                  type: string
-                  description: A title for the image
-                text:
-                  type: string
-                  description: A description of the image
-      responses:
-        '200':
-          description: Image updated successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Image'            
-    /images/{imageId}/annotations:
-    post:
-      summary: Create a new annotation for an angiographic image
-      operationId: createAnnotation
+      /images/delete/{imageId}:
+      delete:
       tags:
-        - Annotations
-      requestBody:
-        description: One Annotation object made by the user
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/AnnotationRequest'
-      responses:
-        '200':
-          description: Successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Annotation'
-    get:
-      summary: Retrieve all annotations for a specific image
-      description: ""
-      operationId: getAnnotations
-      tags:
-        - Annotations
+        - ImageEndpoints
       parameters:
-        - in: path
-          name: imageId
-          description: The image ID of the image on which the annotations where made
+        - name: imageId
+          in: path
           required: true
           schema:
             type: integer
-            format: "int64"
+            format: int32
       responses:
         '200':
-          description: The annotations were successfully retrieved
+          description: OK
+      /images/get-metadata/{imageId}:
+      get:
+      tags:
+        - ImageEndpoints
+      parameters:
+        - name: imageId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: OK
+      /images/filter/{category}:
+      get:
+      tags:
+        - ImageEndpoints
+      parameters:
+        - name: category
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Annotation'
-        '400':
-          description: Invalid image ID supplied
-  /images/datasets:
-    get:
-      summary: Get a list of datasets
-      description: A list of chronologically ordered datasets
+                  $ref: '#/components/schemas/ImageModel'
+
+      paths:
+      /images/annotations/save:
+      post:
       tags:
-        - Images
-      operationId: getDatasets
-      responses:
-        '200':
-          description: Successful operation
-          content:
-            application/json:
-              schema:
-                type: string
-                example: "Successful operation"
-          '404':
-            description: Datasets not found
-  /images/datasets/{datasetId}:
-    get:
-      summary: Get all images within the specified dataset
-      tags:
-        - Images
-      operationId: getDatasetImages
-      parameters:
-        - in: path
-          name: datasetId
-          description: The dataset id, the pictures shown, belong to
-          required: true
-          schema:
-            type: integer
-            format: "int64"
-      responses:
-        '200':
-          description: Successful operation
-          content:
-            application/json:
-              schema:
-                type: string
-                example: "Successful operation"
-        '404':
-          description: The dataset with the given id, does not exist
-  /images/filter/{category}:
-    get:
-      summary: Get images with the specified category
-      tags:
-        - Images
-      operationId: getFilteredImages
-      parameters:
-        - in: path
-          name: category
-          description: The category given to the filter
-          required: true
-          schema:
-            type: string
-      responses: 
-        '200':
-          description: Successful operation
-          content:
-            application/json:
-              schema:
-                type: string
-                example: "Successful operation"
-        '404':
-          description: No images matching the filter
-  /annotations/{annotationId}:
-    patch:
-      summary: Update an annotation
-      operationId: updateAnnotation
-      tags:
-        - Annotations
-      parameters:
-        - in: path
-          name: annotationId
-          description: The annotation ID of the annotation to be updated
-          required: true
-          schema:
-            type: integer
-            format: "int64"
+        - AnnotationEndpoints
       requestBody:
-        description: The updated Annotation object
-        required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/AnnotationRequest'
+              $ref: '#/components/schemas/VesselAnnotationModel'
+        required: true
       responses:
         '200':
-          description: Successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Annotation'        
-    delete:
-      summary: Delete an annotation
-      description: Can only be done by the Admin user role, or the annotator of the annotation
+          description: OK
+      /images/annotations/{annotationId}:
+      get:
       tags:
-        - Annotations
-      operationId: deleteAnnotation
+        - AnnotationEndpoints
       parameters:
         - name: annotationId
           in: path
           required: true
           schema:
             type: integer
-            format: "int64"
-          description: Annotation ID of the annotation that needs to be deleted
+            format: int32
       responses:
-        '204':
-          description: Annotation was successfully deleted, nothing to return
-        '400':
-          description: Invalid annotation ID supplied
-        '404':
-          description: Annotation not found
-  /annotations/{annotationId}/review:
-    post:
-      summary: Add a review to an annotation
-      operationId: createReview
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Annotation'
+      /images/annotations:
+      get:
+      tags:
+        - AnnotationEndpoints
+      parameters:
+        - name: imagePath
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
       tags:
         - Reviews
       requestBody:
@@ -671,3 +558,111 @@ components:
         accepted:
           type: boolean
           description: Whether or not the review has been accepted
+  /datasets/overview:
+    get:
+      tags:
+        - DatasetEndpoints
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DatasetModel'
+  /datasets/get/{datasetId}:
+    get:
+      tags:
+        - DatasetEndpoints
+      parameters:
+        - name: datasetId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: OK
+  /datasets/create:
+    post:
+      tags:
+        - DatasetEndpoints
+      parameters:
+        - name: title
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: category
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ModifyDatasetResult'
+  /datasets/delete/{datasetId}:
+    delete:
+      tags:
+        - DatasetEndpoints
+      parameters:
+        - name: datasetId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: OK
+  /datasets/set-images/{datasetId}:
+    put:
+      tags:
+        - DatasetEndpoints
+      parameters:
+        - name: datasetId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int32
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: integer
+                format: int32
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ModifyDatasetResult'
+    /images/annotations/exception:
+    get:
+      tags:
+        - Annotations.API
+      responses:
+        '200':
+          description: OK
+  /error:
+    get:
+      tags:
+        - Annotations.API
+      responses:
+        '200':
+          description: OK
+          content:
+            text/plain:
+              schema:
+                type: string

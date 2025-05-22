@@ -261,7 +261,14 @@ Notice that there are already some roles defined, which are specific to CMS.
 
 It will then be possible to assign these roles to users, using the user management interface within Orchard Core. 
 
-## 6. Start the app
+## 6. Set up SQLite database connection
+
+We are using an SQLite database to store blood vessel trees for local development. For `Annotations.API` you will need to set a user secret. An SQLite database will be created/used based on the connection string provided. I.e.:
+```bash
+dotnet user-secrets set "ConnectionStrings:DefaultConnection" "DataSource=C:\temp\annotations.db"
+```
+
+## 7. Start the app
 
 1. Start Azurite in your storage data folder: `azurite run`
 2. Ensure that Orchard Core is running: `dotnet run`
@@ -270,9 +277,9 @@ It will then be possible to assign these roles to users, using the user manageme
 
 It is now possible to run Annotations locally for testing. 
 
-## 7. Supporting tools
+## 8. Supporting tools
 
-### 7.1 `user-jwts`
+### 8.1 `user-jwts`
 
 This can be used with `Annotations.API` for debugging and testing endpoints using tokens created directly without Orchard Core. 
 

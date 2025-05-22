@@ -1,6 +1,8 @@
 ﻿using Annotations.Blazor.Client.Pages.AnnotationTools;
 using Annotations.Blazor.Client.Services;
 using Microsoft.AspNetCore.Http;
+using System.Security.Claims;
+using Annotations.Blazor.Client;
 
 
 namespace Annotations.Blazor.Tests.Unit;
@@ -14,11 +16,21 @@ public class AnnotateOnImageTests : TestContext
         // Arrange
         JSInterop.Mode = JSRuntimeMode.Loose; // allows JS to run during bUnit tests
         var authContext = this.AddTestAuthorization();
+        
+        var claims = new[]
+        {
+            new Claim(UserInfo.UserIdClaimType, "test-user-id"),
+            new Claim(UserInfo.NameClaimType, "FAKE USER TEST"),
+            new Claim(UserInfo.RoleClaimType, "test-role")
+        };
+        
         authContext.SetAuthorized("", AuthorizationState.Unauthorized); // fakes authorized state for a fake user
+        authContext.SetClaims(claims);
         
         Services.AddSingleton<IAnnotationDataAccessor, AnnotationDataAccessor>();
         Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
         Services.AddHttpClient();
+        
         
         // Act
         var annotatePage = RenderComponent<AnnotateOnImage>();
@@ -34,7 +46,14 @@ public class AnnotateOnImageTests : TestContext
         // Arrange
         JSInterop.Mode = JSRuntimeMode.Loose; // allows JS to run during bUnit tests
         var authContext = this.AddTestAuthorization();
-        authContext.SetAuthorized("FAKE USER TEST"); // fakes authorized state for a fake user
+        var claims = new[]
+        {
+            new Claim(UserInfo.UserIdClaimType, "test-user-id"),
+            new Claim(UserInfo.NameClaimType, "FAKE USER TEST"),
+            new Claim(UserInfo.RoleClaimType, "test-role")
+        };
+        authContext.SetAuthorized("FAKE USER TEST");
+        authContext.SetClaims(claims);// fakes authorized state for a fake user
         
         Services.AddSingleton<IAnnotationDataAccessor, AnnotationDataAccessor>();
         Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();

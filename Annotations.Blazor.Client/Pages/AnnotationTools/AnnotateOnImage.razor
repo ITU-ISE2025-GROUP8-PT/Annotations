@@ -8,7 +8,7 @@
 @inject IAnnotationDataAccessor dataAccessor
 @inject NavigationManager Navigation
 @attribute [Authorize(Roles = "Administrator, Manager, AnnotationsUser")]
-
+@inject AuthenticationStateProvider AuthenticationStateProvider
 
 
 <PageTitle>Annotations</PageTitle>
@@ -47,12 +47,17 @@
                 <MatDialogTitle>Blood vessel segment annotation</MatDialogTitle>
                 <MatDialogContent>
                     <p>
-                        <MatTextField @bind-Value="_currentSegment!.Thickness"
-                                      Label="Blood vessel thickness"
-                                      FullWidth="true"
-                                      Immediate="true"
-                                      class="MatOverwriteWhiteBG">
-                        </MatTextField>
+                        <MatRadioGroup @bind-Value="@_currentSegment!.Thickness">
+                            <div>
+                                <MatRadioButton Value="@(1.0)" TValue="double">Small</MatRadioButton>
+                            </div>
+                            <div>
+                                <MatRadioButton Value="@(3.0)" TValue="double">Medium</MatRadioButton>
+                            </div>                            
+                            <div>
+                                <MatRadioButton Value="@(5.0)" TValue="double">Large</MatRadioButton>
+                            </div>
+                        </MatRadioGroup>
                     </p>
                 </MatDialogContent>
                 <MatDialogActions>
@@ -67,17 +72,18 @@
             <div class="mat-layout-grid">
                 <div class="mat-layout-grid-inner">
                     <div class="mat-layout-grid-cell mat-layout-grid-cell-span-2">
-                        @* Shows userdata in the left corner (currently hardcoded) *@
+                        @* Shows userdata in the left corner *@
                         <div class="MatOverwriteGrid">
                             <img src="img/billede1.png" alt="Profile Picture" class="MatOverwriteProfilePic">
                             <div>
-                                <b>Jane Doe</b>
+                                <b>@userInfo!.Name</b>
                                 <br/>
-                                <small>Surgeon</small>
+                                <small>@userInfo.Role</small>
                             </div>
                         </div>
+                        <MatDivider Style="margin-top: 10%; margin-bottom: 10%"></MatDivider>
                         @* RadioButtons for selecting Annotation types. Radiobuttons ensure that only one button can be on at once *@
-                        <div class="MatOverwriteMarginTop50">
+                        <div>
                             <p>Choose a type here</p>
                             <MatRadioGroup @bind-Value="@_currentVesselAnnotation!.Type">
                                 <div>
@@ -85,6 +91,22 @@
                                 </div>
                                 <div>
                                     <MatRadioButton Value="@("Veins")" TValue="string">Veins</MatRadioButton>
+                                </div>
+                            </MatRadioGroup>
+                        </div>
+                        <MatDivider Style="margin-top: 10%; margin-bottom: 10%"></MatDivider>
+                        @* RadioButtons for selecting Blood Vessel Thickness. *@
+                        <div>
+                            <p>Blood vessel thickness</p>
+                            <MatRadioGroup @bind-Value="@_currentThickness">
+                                <div>
+                                    <MatRadioButton Value="@(1.0)" TValue="double">Small</MatRadioButton>
+                                </div>
+                                <div>
+                                    <MatRadioButton Value="@(3.0)" TValue="double">Medium</MatRadioButton>
+                                </div>                            
+                                <div>
+                                    <MatRadioButton Value="@(5.0)" TValue="double">Large</MatRadioButton>
                                 </div>
                             </MatRadioGroup>
                         </div>
@@ -152,7 +174,7 @@
                                         <line x1="@segment.StartPoint.X" y1="@segment.StartPoint.Y"
                                               x2="@segment.EndPoint.X" y2="@segment.EndPoint.Y"
                                               stroke="white"
-                                              stroke-width="2"
+                                              stroke-width=@segment.Thickness
                                               pointer-events="none"/>
                                     }
 
@@ -180,7 +202,7 @@
                                         <line x1="@segment.StartPoint.X" y1="@segment.StartPoint.Y"
                                               x2="@segment.EndPoint.X" y2="@segment.EndPoint.Y"
                                               stroke="@(_currentSegment == segment ? "red" : "white")"
-                                              stroke-width="2"
+                                              stroke-width=@segment.Thickness
                                               pointer-events="none"/>
                                     }
 
@@ -231,33 +253,36 @@
                                             </div>
                                         </MatExpansionPanelHeader>
                                     </MatExpansionPanelSummary>
-                                    <MatExpansionPanelDetails>
-                                        <h6>Vessel Points</h6>
-                                        @for (var j = 0; j < _savedVessels[i1].Points.Count; j++)
-                                        {
-                                            var j1 = j;
-                                            var point = _savedVessels[i1].Points[j1];
-                                            <p>
-                                                point @j
-                                                @* Visibility button that can be clicked to toggle/ untoggle points 
+                                    @if (_savedVessels[i1].IsVisible)
+                                    {
+                                        <MatExpansionPanelDetails>
+                                            <h6>Vessel Points</h6>
+                                            @for (var j = 0; j < _savedVessels[i1].Points.Count; j++)
+                                            {
+                                                var j1 = j;
+                                                var point = _savedVessels[i1].Points[j1];
+                                                <p>
+                                                    point @j
+                                                    @* Visibility button that can be clicked to toggle/ untoggle points 
                                                    MatIconButton is chosen because its easy to change/ use icons with *@
-                                                <MatIconButton Icon="visibility_off" ToggleIcon="visibility" @bind-Toggled="@point.IsVisible">
-                                                </MatIconButton>
-                                            </p>
-                                        }
-                                        <h6>Vessel Segments</h6>
-                                        @for (var j = 0; j < _savedVessels[i1].Segments.Count; j++)
-                                        {
-                                            var j1 = j;
-                                            var segment = _savedVessels[i1].Segments[j1];
-                                            <p>
-                                                segment @j
-                                                @* Visibility button that can be clicked to toggle/ untoggle segments *@
-                                                <MatIconButton Icon="visibility_off" ToggleIcon="visibility" @bind-Toggled="@segment.IsVisible">
-                                                </MatIconButton>
-                                            </p>
-                                        }
-                                    </MatExpansionPanelDetails>
+                                                    <MatIconButton Icon="visibility_off" ToggleIcon="visibility" @bind-Toggled="@point.IsVisible">
+                                                    </MatIconButton>
+                                                </p>
+                                            }
+                                            <h6>Vessel Segments</h6>
+                                            @for (var j = 0; j < _savedVessels[i1].Segments.Count; j++)
+                                            {
+                                                var j1 = j;
+                                                var segment = _savedVessels[i1].Segments[j1];
+                                                <p>
+                                                    segment @j
+                                                    @* Visibility button that can be clicked to toggle/ untoggle segments *@
+                                                    <MatIconButton Icon="visibility_off" ToggleIcon="visibility" @bind-Toggled="@segment.IsVisible">
+                                                    </MatIconButton>
+                                                </p>
+                                            }
+                                        </MatExpansionPanelDetails>
+                                    }
                                 </MatExpansionPanel>
                             }
                         </MatAccordion>
@@ -279,6 +304,7 @@
     private string _completionTitle = "";
 
     private bool _showSegmentDialog;
+    private UserInfo? userInfo;
     
     // The image on this page is a locally stored, hardcoded image, because
     // the uploaded images are currently saved on a user-local azurite instance.
@@ -302,7 +328,7 @@
         Id = 0,
         StartPoint = null!,
         EndPoint = null!,
-        Thickness = 0,
+        Thickness = 1.0,
         IsVisible = true
     };
 
@@ -322,7 +348,7 @@
     private List<VesselSegmentModel> _drawableSegments = new();
     private List<VesselPointModel> _drawablePoints = new();
 
-    private double _currentThickness = 0.0;
+    private double _currentThickness = 1.0;
 
     // References the image container used in the html portion (bounded to the @ref tag)
     // This is to bypass issues with JavaScript on a Blazor application.
@@ -341,6 +367,14 @@
     /// </summary>
     protected override async Task OnInitializedAsync()
     {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (user.Identity?.IsAuthenticated == true)
+        {
+            userInfo = UserInfo.FromClaimsPrincipal(user);
+        }
+        
         _currentUrl = Navigation.Uri;
         Navigation.LocationChanged += OnLocationChanged;
         

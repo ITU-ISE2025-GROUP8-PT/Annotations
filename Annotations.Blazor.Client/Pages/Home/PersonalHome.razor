@@ -3,7 +3,10 @@
 @page "/home/{userid}"
 @attribute [Authorize(Roles = "Administrator, Manager, AnnotationsUser")]
 @namespace Home
+@using Annotations.Blazor.Client
 @using Microsoft.AspNetCore.Authorization
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
 
 <style>
     .mat-layout-grid-cell{
@@ -22,7 +25,7 @@
     }
 
 </style>
-<h2> Welcome user</h2>
+<h2> Welcome @userInfo!.Name</h2>
 <div class="mat-layout-grid mat-layout-grid-align-left mat-layout-grid-cell-span-3">
     <div class="mat-layout-grid-inner">
 
@@ -72,9 +75,9 @@
                     <div class = "personal-style">
                         <b>Personal Information</b>
                         <br/>
-                        Jane Doe
+                        @userInfo!.Name
                         <br/>
-                        Surgeon at Frederiksberg Hospital
+                        @userInfo.Role
                         <br/>
                     </div>
                 </div>
@@ -90,14 +93,23 @@
 
 @code {
     private string? currentUrl;
+    private UserInfo? userInfo;
 
     MatTheme theme = new MatTheme()
     {
         Primary = MatThemeColors.Green._800.Value
     };
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync ()
     {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (user.Identity?.IsAuthenticated == true)
+        {
+            userInfo = UserInfo.FromClaimsPrincipal(user);
+        }
+        
         currentUrl = Navigation.Uri;
         Navigation.LocationChanged += HandleLocationChanged;
     }

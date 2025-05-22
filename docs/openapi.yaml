@@ -17,11 +17,12 @@ tags:
   - name: Users
     description: Operations related to managing users and user roles.
 paths:
-/images/upload:
-      /images/upload:
-      post:
+  /images/upload:
+    post:
+      summary: Upload an image
+      description: Admin can upload angiographic images for reviewers and annotators to use.
       tags:
-        - ImageEndpoints
+        - Images
       parameters:
         - name: category
           in: query
@@ -43,16 +44,56 @@ paths:
               image:
                 style: form
       responses:
-        '200':
-          description: OK
+        '201':
+          description: Image uploaded successfully
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ImageUploaderResult'
-      /images/get/{imageId}:
-      get:
+  /images/delete/{imageId}:
+    delete:
+      summary: Delete an image
+      description: An admin user role, can delete angiographic images if needed.
       tags:
-        - ImageEndpoints
+        - Images
+      parameters:
+        - name: imageId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int32
+          description: The unique image ID for the specified image
+      responses:
+        '204': # Successful request, with nothing to be returned to the client
+          description: Image was successfully deleted
+        '404':
+          description: Image not found
+        '401':
+          description: Unauthorized (authentication required)
+  /images/get/{imageId}:
+    get:
+      summary: Get an image by imageId
+      description: All user roles will be able to access an image by imageId
+      tags:
+        - Images
+      parameters:
+        - name: imageId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int32
+          description: The unique image ID for the specified image
+      responses:
+        '200':
+          description: OK
+        '404':
+          description: Image not found
+  /images/get-metadata/{imageId}:
+    get:
+      tags:
+        - Images
       parameters:
         - name: imageId
           in: path
@@ -63,36 +104,8 @@ paths:
       responses:
         '200':
           description: OK
-      /images/delete/{imageId}:
-      delete:
-      tags:
-        - ImageEndpoints
-      parameters:
-        - name: imageId
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int32
-      responses:
-        '200':
-          description: OK
-      /images/get-metadata/{imageId}:
-      get:
-      tags:
-        - ImageEndpoints
-      parameters:
-        - name: imageId
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int32
-      responses:
-        '200':
-          description: OK
-      /images/filter/{category}:
-      get:
+  /images/filter/{category}:
+    get:
       tags:
         - ImageEndpoints
       parameters:
@@ -110,8 +123,6 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/ImageModel'
-
-      paths:
       /images/annotations/save:
       post:
       tags:

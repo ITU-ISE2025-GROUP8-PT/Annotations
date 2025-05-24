@@ -41,12 +41,15 @@ public static class ImageEndpoints
 
     /// <summary>
     /// This is the upload endpoint where the image first gets validated. 
-    /// This is then uploaded into Azure Blob Storage as a JSON file. 
+    /// The image's metadata is uploaded into a SQLite database.
+    /// The image itself is uploaded into Azure Blob Storage. 
     /// </summary>
     /// <param name="image"> The file containing the image. </param>
     /// <param name="category"> Which category the image should have. </param>
-    /// <param name="context"> The SQLite database context. </param>
-    /// <param name="_imageService"> An image service instance. </param>
+    /// <param name="claimsPrincipal">For authorization</param>
+    /// <param name="httpContext"></param>
+    /// <param name="uploader">Where the uploading takes place</param>
+    /// <param name="userService">Used to assign a user to the image</param>
     /// <returns></returns>
     private static async Task<ImageUploaderResult> UploadImageHandler(
         IFormFile       image, 
@@ -95,6 +98,7 @@ public static class ImageEndpoints
     /// Retrieves an image based on the provided imageid.
     /// </summary>
     /// <param name="imageId"></param>
+    /// <param name="httpContext"></param>
     /// <param name="imageService"> An image service instance. </param>
     /// <returns> Image downloadable as stream. </returns>
     private static async Task<IResult> GetImageHandler(
